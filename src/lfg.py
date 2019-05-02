@@ -1,7 +1,7 @@
 """ lfg - logic formula generator """
 import random
 from operator import methodcaller
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, InitVar
 from typing import List, Optional, Set, Tuple
 
 
@@ -29,10 +29,14 @@ class VariableGenerator:
     name: str
     unique_variables: int = 100
     total_variables: int = 2_000_000
+    negate_probability: float = 0.5
     __variable_number: int = 0
     __generated_used_variables: int = 0
 
     def __post_init__(self):
+        if self.negate_probability < 0 or self.negate_probability > 1:
+            raise Exception("negate_pobability range is [0, 1]")
+
         if self.unique_variables > self.total_variables:
             raise Exception("Number of total variables must be greater or equal to unique variables")
 
@@ -86,7 +90,9 @@ class VariableGenerator:
             return None
         self.__generated_used_variables += 1
 
-        return Variable(name=self.name, number=random.randint(0, self.__variable_number - 1))
+        return Variable(name=self.name,
+                        number=random.randint(0, self.__variable_number - 1),
+                        negated=random_bool(self.negate_probability))
 
     @property
     def new_variable(self) -> Optional[Variable]:
@@ -96,7 +102,9 @@ class VariableGenerator:
         if not self.unique_variables_left:
             return None
 
-        var = Variable(name=self.name, number=self.__variable_number)
+        var = Variable(name=self.name,
+                       number=self.__variable_number,
+                       negated=random_bool(self.negate_probability))
         self.__variable_number += 1
         return var
 
@@ -116,21 +124,22 @@ class ClauseGenerator:
     generator is depleted when self.clauses_left == 0
     """
     variable_gen: VariableGenerator
+    max_clause_size: InitVar[int] = None
     total_clauses: int = 200
-    max_clause_size: int = 100
-    negate_probability: float = 0.5
     __generated_clauses: int = 0
 
-    def __post_init__(self):
-        if self.negate_probability < 0 or self.negate_probability > 1:
-            raise Exception("negate_pobability range is [0, 1]")
+    def __post_init__(self, max_clause_size):
+        # this ensures that length of clause will be uniform
+        if max_clause_size is None:
+            self.max_clause_size = 2*self.variable_gen.total_variables // self.total_clauses
 
         if self.variable_gen.variables_left < self.clauses_left:
-            raise Exception("can not produce enough clauses with given variable generator")
+            raise Exception(f"There are not enough variables in given variable generator, "
+                            f"should be more than {self.clauses_left}")
 
-        if self.max_clause_size * self.total_clauses < self.variable_gen.variables_left:
-            print("warning: variable generator will not be completely depleted "
-                  f"because of too small max_clause_size")
+        if self.variable_gen.variables_left > self.max_clause_size * self.total_clauses:
+            raise Exception(f"There are too many variables in variable generator, "
+                            f"should be less than {self.max_clause_size * self.total_clauses}")
 
     @property
     def clauses_left(self) -> int:
@@ -155,31 +164,38 @@ class ClauseGenerator:
         if self.clauses_left == 1 and self.variable_gen.variables_left < self.max_clause_size:
             size = self.variable_gen.variables_left
         else:
-            # cover case, there must be at least one variable per clause
-            max_range = min(self.max_clause_size, self.variable_gen.variables_left - self.clauses_left)
-            size = random.randint(1, max_range) if max_range != 0 else 1
+            size = random.randint(1, self.max_clause_size)
 
-            # cover case, there are too many variables left for remaining cases
-            while self.variable_gen.variables_left - size > (self.clauses_left - 1) * self.max_clause_size:
-                size += 1
+            # cover case, there must be at least one variable per clause
+            size = min(size, self.variable_gen.variables_left - self.clauses_left)
+
+            # cover case, there are too many variables left for remaining clauses
+            max_variables_consumed_by_remaining_clauses = (self.clauses_left - 1) * self.max_clause_size
+            if self.variable_gen.variables_left - size > max_variables_consumed_by_remaining_clauses:
+                size = self.variable_gen.variables_left - max_variables_consumed_by_remaining_clauses
 
         clause = Clause()
         for _ in range(size):
             variable = self.variable_gen.random_variable
-            variable.negated = random_bool(self.negate_probability)
             clause.variables.append(variable)
         self.__generated_clauses += 1
         return clause
 
 
 if __name__ == '__main__':
-    clauses = 1000
-    v = VariableGenerator("a", unique_variables=50, total_variables=2000)
-    c = ClauseGenerator(variable_gen=v, total_clauses=1000, max_clause_size=100, negate_probability=0.1)
+    clauses = 10
+    v = VariableGenerator(name="a",
+                          unique_variables=5,
+                          total_variables=200,
+                          negate_probability=0.1)
+    c = ClauseGenerator(variable_gen=v,
+                        total_clauses=10,
+                        )
     print(f"p {c.total_clauses} {v.total_variables}")
+    # print(c.new_clause.to_dimacs())
     for i in range(clauses):
         print(c.new_clause.to_dimacs())
-    # print("left clauses: ")
-    # print(c.clauses_left)
-    # print("left variables: ")
-    # print(v.variables_left)
+    print("left clauses: ")
+    print(c.clauses_left)
+    print("left variables: ")
+    print(v.variables_left)
