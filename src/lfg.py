@@ -124,13 +124,13 @@ class ClauseGenerator:
     generator is depleted when self.clauses_left == 0
     """
     variable_gen: VariableGenerator
-    max_clause_size: InitVar[int] = None
+    max_clause_size: int = None
     total_clauses: int = 200
     __generated_clauses: int = 0
 
-    def __post_init__(self, max_clause_size):
+    def __post_init__(self):
         # this ensures that length of clause will be uniform
-        if max_clause_size is None:
+        if self.max_clause_size is None:
             self.max_clause_size = 2*self.variable_gen.total_variables // self.total_clauses
 
         if self.variable_gen.variables_left < self.clauses_left:
