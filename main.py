@@ -1,6 +1,6 @@
 import argparse
 
-from src.lfg import VariableGenerator, ClauseGenerator
+from src.clause import VariableGenerator, ClauseGenerator
 
 
 def parse_args():
