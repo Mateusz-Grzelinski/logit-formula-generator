@@ -38,12 +38,12 @@ class VariableGenerator:
 
     @property
     def generated_variables(self) -> int:
-        """:return number of generated variables"""
+        """:return number of antlr_generated variables"""
         return self.generated_unique_variables + self.__generated_used_variables
 
     @property
     def generated_unique_variables(self) -> int:
-        """:return number of generated unique variables"""
+        """:return number of antlr_generated unique variables"""
         return self.__variable_number
 
     @property
@@ -65,7 +65,7 @@ class VariableGenerator:
         if self.unique_variables_left == self.variables_left:
             return self.new_variable
 
-        # there are no variables generated yet
+        # there are no variables antlr_generated yet
         if self.generated_variables == 0:
             return self.new_variable
 
@@ -79,7 +79,7 @@ class VariableGenerator:
 
     @property
     def used_variable(self) -> Optional[Variable]:
-        """Get random, arleady generated variable
+        """Get random, arleady antlr_generated variable
         :return Variable or None when self.total_variables is hit
         """
         if not self.__variable_number:
