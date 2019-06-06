@@ -1,7 +1,7 @@
 import argparse
 from collections import namedtuple
 
-from src.clause import LiteralGenerator, ClauseGenerator
+from src.clause import LiteralGenerator, VariableLengthClauseGenerator, KSATClauseGenerator
 
 k_sat_propability = namedtuple('k_SAT_number', ['k', 'propability'])
 k_sat_number_of_clauses = namedtuple('k_SAT_number', ['k', 'number_of_clauses'])
@@ -141,9 +141,12 @@ if __name__ == '__main__':
                          unique_literals=5,
                          total_literals=200,
                          negate_probability=0.1)
-    c = ClauseGenerator(literal_gen=v,
-                        total_clauses=10,
-                        )
+    # c = VariableLengthClauseGenerator(literal_gen=v,
+    #                                   total_clauses=10,
+    #                                   )
+    c = KSATClauseGenerator(literal_gen=v,
+                            k_clauses={1: 1, 2: 1, 4:4}
+                            )
     print(f"p {c.total_clauses} {v.total_literals}")
-    for i in range(clauses):
-        print(c.new_clause.to_dimacs())
+    for i in c:
+        print(i.to_dimacs())

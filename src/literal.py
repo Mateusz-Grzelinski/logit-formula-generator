@@ -24,10 +24,10 @@ class LiteralGenerator:
     """
     name: str
     unique_literals: int = 100
-    total_literals: int = 2_000_000
+    total_literals: int = 2_000
     negate_probability: float = 0.5
-    __literal_number: int = 0
-    __generated_used_literal: int = 0
+    _literal_number: int = 0
+    _generated_used_literal: int = 0
 
     def __post_init__(self):
         if self.negate_probability < 0 or self.negate_probability > 1:
@@ -39,12 +39,12 @@ class LiteralGenerator:
     @property
     def generated_literals(self) -> int:
         """:return number of antlr_generated literals"""
-        return self.generated_unique_literals + self.__generated_used_literal
+        return self.generated_unique_literals + self._generated_used_literal
 
     @property
     def generated_unique_literals(self) -> int:
         """:return number of antlr_generated unique literals"""
-        return self.__literal_number
+        return self._literal_number
 
     @property
     def literals_left(self) -> int:
@@ -82,12 +82,12 @@ class LiteralGenerator:
         """Get random, arleady antlr_generated literal
         :return Variable or None when self.total_literals is hit
         """
-        if not self.__literal_number:
+        if not self._literal_number:
             return None
-        self.__generated_used_literal += 1
+        self._generated_used_literal += 1
 
         return Literal(name=self.name,
-                       number=random.randint(0, self.__literal_number - 1),
+                       number=random.randint(0, self._literal_number - 1),
                        negated=random_bool(self.negate_probability))
 
     @property
@@ -99,7 +99,7 @@ class LiteralGenerator:
             return None
 
         var = Literal(name=self.name,
-                      number=self.__literal_number,
+                      number=self._literal_number,
                       negated=random_bool(self.negate_probability))
-        self.__literal_number += 1
+        self._literal_number += 1
         return var
