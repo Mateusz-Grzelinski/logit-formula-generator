@@ -11,10 +11,11 @@ class Literal:
     number: int = 0
     negated: bool = False
 
-    def as_dimacs(self) -> str:
-        if self.negated:
-            return f"-{self.name}{self.number}"
-        return f"{self.name}{self.number}"
+    def to_dimacs(self) -> str:
+        return f'-{self.name}{self.number}' if self.negated else f'{self.name}{self.number}'
+
+    def to_tptp(self) -> str:
+        return f'~{self.name}{self.number}' if self.negated else f'{self.name}{self.number}'
 
 
 @dataclass

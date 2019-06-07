@@ -12,7 +12,12 @@ class Clause:
     literals: List[Literal] = field(default_factory=list)
 
     def to_dimacs(self) -> str:
-        return f"{' '.join(map(methodcaller('as_dimacs'), self.literals))} 0"
+        literals_dimacs = (literal.to_dimacs() for literal in self.literals)
+        return f'{" ".join(literals_dimacs)} 0'
+
+    def to_tptp(self) -> str:
+        literal_tptp = (literal.to_tptp() for literal in self.literals)
+        return f'c(placeholder_name, axiom, ({" | ".join(literal_tptp)}) ).'
 
 
 class ClauseGenerator:
