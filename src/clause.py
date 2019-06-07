@@ -114,7 +114,7 @@ class VariableLengthClauseGenerator(ClauseGenerator):
             size = random.randint(1, self.max_clause_size)
 
             # cover case, there must be at least one literal per clause
-            size = min(size, self.literal_gen.literals_left - self.clauses_left)
+            size = min(size, self.literal_gen.literals_left - self.clauses_left + 1)
 
             # cover case, there are too many variables left for remaining clauses
             max_variables_consumed_by_remaining_clauses = (self.clauses_left - 1) * self.max_clause_size
