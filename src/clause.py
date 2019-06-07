@@ -65,12 +65,12 @@ class VariableLengthClauseGenerator(ClauseGenerator):
             self.max_clause_size = 2 * self.literal_gen.total_literals // self.total_clauses
 
         if self.literal_gen.literals_left < self.clauses_left:
-            raise Exception("There are not enough variables in given variable generator, "
-                            f"should be more than {self.clauses_left}")
+            raise Exception('There are not enough variables in given variable generator, '
+                            f'should be more than {self.clauses_left}')
 
         if self.literal_gen.literals_left > self.max_clause_size * self.total_clauses:
-            raise Exception("There are too many variables in variable generator, "
-                            f"should be less than {self.max_clause_size * self.total_clauses}")
+            raise Exception('There are too many variables in variable generator, '
+                            f'should be less than {self.max_clause_size * self.total_clauses}')
 
     @property
     def total_clauses(self) -> int:
@@ -128,8 +128,8 @@ class KSATClauseGenerator(ClauseGenerator):
         self._generated_clauses: int = 0
 
         if self.literal_gen.literals_left < self.clauses_left:
-            raise Exception("There are not enough variables in given variable generator, "
-                            f"should be more than {self.clauses_left}")
+            raise Exception('There are not enough variables in given variable generator, '
+                            f'should be more than {self.clauses_left}')
 
         # if self.literal_gen.literals_left > self._required_literals * self.total_clauses:
         #     raise Exception("There are too many variables in variable generator, "

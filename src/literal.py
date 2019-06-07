@@ -32,10 +32,10 @@ class LiteralGenerator:
 
     def __post_init__(self):
         if self.negate_probability < 0 or self.negate_probability > 1:
-            raise Exception("negate_pobability range is [0, 1]")
+            raise Exception('negate_pobability range is [0, 1]')
 
         if self.unique_literals > self.total_literals:
-            raise Exception("Number of total literals must be greater or equal to unique literals")
+            raise Exception('number of total literals must be greater or equal to unique literals')
 
     @property
     def generated_literals(self) -> int:
