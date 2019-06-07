@@ -18,7 +18,7 @@ class Clause:
 
     def to_tptp(self) -> str:
         literal_tptp = (literal.to_tptp() for literal in self.literals)
-        return f'c(placeholder_name, axiom, ({" | ".join(literal_tptp)}) ).'
+        return f'cnf(placeholder_name, axiom, ({" | ".join(literal_tptp)}) ).'
 
 
 class ClauseGenerator:
