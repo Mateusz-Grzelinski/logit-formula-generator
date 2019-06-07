@@ -18,24 +18,49 @@ class Literal:
         return f'~{self.name}{self.number}' if self.negated else f'{self.name}{self.number}'
 
 
-@dataclass
 class LiteralGenerator:
     """Generates exactly total_literals literals by appending number to name
     generator is depleted when self.literals_left == 0
     """
-    name: str
-    unique_literals: int = 100
-    total_literals: int = 2_000
-    negate_probability: float = 0.5
-    _literal_number: int = 0
-    _generated_used_literal: int = 0
 
-    def __post_init__(self):
-        if self.negate_probability < 0 or self.negate_probability > 1:
+    def __init__(self, total_literals: int, name: str = 'p', unique_literals: int = None,
+                 negate_probability: float = 0.5):
+        """
+        :param total_literals: how many literals to produce
+        :param name: prefix of literal
+        :param unique_literals: how many different literals to produce
+        :param negate_probability: what percent of literals should be negeted (0.0 to 1.0)
+        """
+        self.name = name
+        self._total_literals = total_literals
+        self._unique_literals = total_literals if unique_literals is None else unique_literals
+        self._negate_probability = negate_probability
+        self._literal_number = 0
+        self._generated_used_literal = 0
+
+        if self._negate_probability < 0 or self._negate_probability > 1:
             raise Exception('negate_pobability range is [0, 1]')
 
-        if self.unique_literals > self.total_literals:
+        if self._unique_literals < 1:
+            raise Exception('number of unique literals can not be less than 1')
+
+        if self._total_literals < 1:
+            raise Exception('number of literals to generate can not be less than 1')
+
+        if self._unique_literals > self._total_literals:
             raise Exception('number of total literals must be greater or equal to unique literals')
+
+    @property
+    def total_literals(self) -> int:
+        return self._total_literals
+
+    @property
+    def negate_propability(self) -> float:
+        return self._negate_probability
+
+    @property
+    def unique_literals(self) -> int:
+        return self._unique_literals
 
     @property
     def generated_literals(self) -> int:
@@ -50,12 +75,12 @@ class LiteralGenerator:
     @property
     def literals_left(self) -> int:
         """:return how many literals in total generator can produce"""
-        return self.total_literals - self.generated_literals
+        return self._total_literals - self.generated_literals
 
     @property
     def unique_literals_left(self) -> int:
         """:return how many unique literals generator can produce"""
-        return self.unique_literals - self.generated_unique_literals
+        return self._unique_literals - self.generated_unique_literals
 
     @property
     def random_literal(self) -> Optional[Literal]:
@@ -89,7 +114,7 @@ class LiteralGenerator:
 
         return Literal(name=self.name,
                        number=random.randint(0, self._literal_number - 1),
-                       negated=random_bool(self.negate_probability))
+                       negated=random_bool(self._negate_probability))
 
     @property
     def new_literal(self) -> Optional[Literal]:
@@ -101,6 +126,6 @@ class LiteralGenerator:
 
         var = Literal(name=self.name,
                       number=self._literal_number,
-                      negated=random_bool(self.negate_probability))
+                      negated=random_bool(self._negate_probability))
         self._literal_number += 1
         return var

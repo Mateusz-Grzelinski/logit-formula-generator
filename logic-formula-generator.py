@@ -52,15 +52,17 @@ def float_colon_float(argument: str) -> float:
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description='Script for generating SAT formulas')
-    parser.add_argument('-v', '--version', action='version',
+    parser.add_argument('-v', '--version',
+                        action='version',
                         version='%(prog)s Pre-alpha 0.1',
                         help='Prints current version')
     parser.add_argument('-s', '--seed',
                         type=int)
     parser.set_defaults(parser_used='general')
 
-    subparsers = parser.add_subparsers(description='generate CNF formula')
-    cnf_parser = subparsers.add_parser('cnf')
+    subparsers = parser.add_subparsers(description='available generators types')
+    cnf_parser = subparsers.add_parser('cnf',
+                                       description='generate formula in cnf format')
     cnf_parser.set_defaults(parser_used='cnf')
     cnf_parser.add_argument('-l', '--literals',
                             type=int,
@@ -80,7 +82,8 @@ def parse_args() -> argparse.Namespace:
     cnf_parser.add_argument('-r', '--variables-to-clauses-ratio',
                             type=float_colon_float)
 
-    k_sat_parser = subparsers.add_parser('k-sat')
+    k_sat_parser = subparsers.add_parser('k-sat',
+                                         description='generate k-SAT formula or any combination of k-SAT formulas')
     k_sat_parser.set_defaults(parser_used='k-sat')
 
     group = k_sat_parser.add_mutually_exclusive_group()
@@ -136,17 +139,12 @@ def parse_args() -> argparse.Namespace:
 if __name__ == '__main__':
     args = parse_args()
 
-    clauses = 10
-    v = LiteralGenerator(name="a",
-                         unique_literals=5,
-                         total_literals=200,
-                         negate_probability=0.1)
-    # c = VariableLengthClauseGenerator(literal_gen=v,
+    # c = VariableLengthClauseGenerator(
     #                                   total_clauses=10,
     #                                   )
-    c = KSATClauseGenerator(literal_gen=v,
+    c = KSATClauseGenerator(
                             k_clauses={1: 1, 2: 1, 4:4}
                             )
-    print(f"p {c.total_clauses} {v.total_literals}")
+    print(f"p {c.total_clauses} {c.literal_gen.total_literals}")
     for i in c:
-        print(i.to_dimacs())
+        print(i.to_tptp())
