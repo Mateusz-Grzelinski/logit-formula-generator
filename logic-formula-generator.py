@@ -1,6 +1,7 @@
 import argparse
 import random
 import sys
+import time
 from math import ceil
 from typing import Tuple
 
@@ -10,8 +11,11 @@ version = 'Pre-alpha 0.1'
 bug_message = 'this shouldn\'t happen. This is bug'
 
 
-def print_header(lit_gen: LiteralGenerator, clause_gen: VariableLengthClauseGenerator, output_file: str = None,
-                 comment_sign: str = '%', comment: str = ''):
+def print_header(lit_gen: LiteralGenerator,
+                 clause_gen: VariableLengthClauseGenerator,
+                 seed: int,
+                 output_file: str = None,
+                 comment_sign: str = '%'):
     r_justed = lambda value: str(value).rjust(5)
     output_file = 'stdout' if output_file is None else output_file
     cnf_header = f'''
@@ -28,9 +32,11 @@ Syntax   : Number of clauses     :{r_justed(clause_gen.total_clauses)} ({r_juste
            Maximal term depth    :{r_justed(1)} ({r_justed(1)} average)
 {'-' * 76}
 
-Comments : generator sources available at https://github.com/Mateusz-Grzelinski/logit-formula-generator {comment}
+Comments : generator sources available at https://github.com/Mateusz-Grzelinski/logit-formula-generator
            negate probability    :{r_justed(clause_gen.literal_gen.negate_propability)}
+           seed                  :{r_justed(seed)}
 '''
+
     for line in cnf_header.split('\n'):
         if not line.strip():
             print()
@@ -166,12 +172,6 @@ def parse_args() -> argparse.Namespace:
         parser.print_help()
         sys.exit(1)
     elif args.parser_used == 'cnf':
-        # generator parser
-        if args.seed is not None:
-            random.seed(int(args.seed))
-
-        if args.output_file is not None:
-            sys.stdout = open(args.output_file)
 
         # cnf subparser
         if args.variables_to_clauses_ratio is not None:
@@ -331,11 +331,13 @@ if __name__ == '__main__':
         assert False, bug_message
 
     if args.output_format == 'tptp':
-        print_header(clause_gen.literal_gen, clause_gen, args.output_file, '%')
+        print_header(lit_gen=clause_gen.literal_gen, clause_gen=clause_gen, output_file=args.output_file,
+                     comment_sign='%', seed=args.seed)
         for i in clause_gen:
             print(i.to_tptp())
     elif args.output_format == 'dimacs':
-        print_header(clause_gen.literal_gen, clause_gen, args.output_file, 'c')
+        print_header(lit_gen=clause_gen.literal_gen, clause_gen=clause_gen, output_file=args.output_file,
+                     comment_sign='c', seed=args.seed)
         print(f"p {clause_gen.total_clauses} {clause_gen.literal_gen.total_literals}")
         for i in clause_gen:
             print(i.to_dimacs())
