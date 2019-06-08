@@ -168,6 +168,15 @@ def parse_args() -> argparse.Namespace:
                             '-k 1,5 3,6 - formula has 5 1-SAT clauses, 6 3-SAT clauses. Use of -c/--clauses is prohibited now')
 
     args = parser.parse_args()
+
+    # common options
+    if args.seed is None:
+        args.seed = int(time.time() * 1000)
+    random.seed(int(args.seed))
+
+    if args.output_file is not None:
+        sys.stdout = open(args.output_file, 'w')
+
     if args.parser_used == 'general':
         parser.print_help()
         sys.exit(1)
