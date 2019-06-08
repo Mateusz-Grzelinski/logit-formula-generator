@@ -1,27 +1,59 @@
 import argparse
+import random
 import sys
-from collections import namedtuple
+from math import ceil
 from typing import Tuple
 
-from src.clause import LiteralGenerator, VariableLengthClauseGenerator
+from src.clause import LiteralGenerator, VariableLengthClauseGenerator, KSATClauseGenerator
 
-k_sat_propability = namedtuple('k_SAT_number', ['k', 'propability'])
-k_sat_number_of_clauses = namedtuple('k_SAT_number', ['k', 'number_of_clauses'])
+version = 'Pre-alpha 0.1'
+bug_message = 'this shouldn\'t happen. This is bug'
 
 
-def _k_sat_number_of_clauses_type_check(argument: str) -> k_sat_number_of_clauses:
+def print_header(lit_gen: LiteralGenerator, clause_gen: VariableLengthClauseGenerator, output_file: str = None,
+                 comment_sign: str = '%', comment: str = ''):
+    r_justed = lambda value: str(value).rjust(5)
+    output_file = 'stdout' if output_file is None else output_file
+    cnf_header = f'''
+{'-' * 76}
+File     : {output_file} : logic-formula-generator {version}
+Syntax   : Number of clauses     :{r_justed(clause_gen.total_clauses)} ({r_justed('-')} non-Horn;{r_justed(
+        '-')} unit;{r_justed('-')} RR)
+           Number of atoms       :{r_justed(lit_gen.total_literals)} ({r_justed('-')} equality)
+           Maximal clause size   :{r_justed(clause_gen.max_clause_size)} ({r_justed('-')} average)
+           Number of predicates  :{r_justed(lit_gen.unique_literals)} ({r_justed('-')} propositional;{r_justed(
+        '0-0')} arity)
+           Number of functors    :{r_justed(0)} ({r_justed(0)} constant;{r_justed('---')} arity)
+           Number of variables   :{r_justed(0)} ({r_justed(0)} singleton)
+           Maximal term depth    :{r_justed(1)} ({r_justed(1)} average)
+{'-' * 76}
+
+Comments : generator sources available at https://github.com/Mateusz-Grzelinski/logit-formula-generator {comment}
+           negate probability    :{r_justed(clause_gen.literal_gen.negate_propability)}
+'''
+    for line in cnf_header.split('\n'):
+        if not line.strip():
+            print()
+            continue
+        if line.strip() == '-' * 76:
+            print(f'{comment_sign}{line}')
+            continue
+        print(f'{comment_sign} {line}')
+
+
+def _k_sat_number_of_clauses_type_check(argument: str) -> Tuple[int, int]:
     if ',' in argument:
         k, number_of_clauses = argument.split(',')
-        k = k_sat_number_of_clauses(int(k), int(number_of_clauses))
+        k = int(k), int(number_of_clauses)
     else:
         k = int(argument)
-        k = k_sat_number_of_clauses(k, None)
-    if k.k < 1:
+        k = k, None
+    if k[0] < 1:
         raise argparse.ArgumentTypeError(f'in k-SAT the \'k\' can not be less than 1, not {k.k}')
     return k
 
 
-def _k_sat_propability_type_check(argument: str) -> k_sat_propability:
+def _k_sat_propability_type_check(argument: str) -> Tuple[int, float]:
     """type check for parser: integer,float, example 1,0.7
     integer > 0, 0 <= float <= 1
     CNF k-SAT number can be provided with probability after coma
@@ -29,14 +61,13 @@ def _k_sat_propability_type_check(argument: str) -> k_sat_propability:
     """
     if ',' in argument:
         k, probability = argument.split(',')
-        k = k_sat_propability(int(k), float(probability))
+        k = int(k), float(probability)
     else:
-        k = int(argument)
-        k = k_sat_propability(k, None)
-    if k.k < 1:
-        raise argparse.ArgumentTypeError(f'in k-SAT the \'k\' can not be less than 1, not {k.k}')
-    if k.propability is not None and (k.propability > 1 or k.propability < 0):
-        raise argparse.ArgumentTypeError(f'the probability must be between 0 and 1, not {k.propability}')
+        k = int(argument), None
+    if k[0] < 1:
+        raise argparse.ArgumentTypeError(f'in k-SAT the \'k\' can not be less than 1, not {k[0]}')
+    if k[1] is not None and (k[1] > 1 or k[1] < 0):
+        raise argparse.ArgumentTypeError(f'the probability must be between 0 and 1, not {k[1]}')
     return k
 
 
@@ -53,7 +84,7 @@ def parse_args() -> argparse.Namespace:
     parser.set_defaults(parser_used='general')
     parser.add_argument('-v', '--version',
                         action='version',
-                        version='Pre-alpha 0.1',
+                        version=version,
                         help='prints current version')
     parser.add_argument('-s', '--seed',
                         type=int,
@@ -82,35 +113,38 @@ def parse_args() -> argparse.Namespace:
                                  'ratio literals:clauses defaults to 2:1')
     cnf_parser.add_argument('-m', '--max-variables-per-clause',
                             type=int,
-                            help='maximum clause length. Defaults to 2 * literals/clauses')
+                            help='maximum clause length. Defaults to literals/clauses')
     cnf_parser.add_argument('-n', '--negate-probability',
                             type=float,
-                            help='propability, that literal will be negative. Default 0.5')
+                            help='probability, that literal will be negative. Default 0.5')
     cnf_parser.add_argument('-r', '--variables-to-clauses-ratio',
                             type=_literal_to_clause_ratio,
                             help='in format \'float:float\'. 2.5:1 means there are 2.5 variables per 1 clause (rounded down to int). '
-                                 'Combine with -l/--literals or -c/--clauses to get precise number of variables'
-                                 '')
+                                 'Combine with -l/--literals or -c/--clauses to get precise number of variables')
 
     k_sat_parser = subparsers.add_parser('k-sat',
                                          description='generate k-SAT formula or any combination of k-SAT formulas')
     k_sat_parser.set_defaults(parser_used='k-sat')
 
-    group = k_sat_parser.add_mutually_exclusive_group()
-    group.add_argument('-c', '--clauses',
-                       type=int,
-                       help='how many clauses to generate')
-    group.add_argument('-l', '--literals',
-                       type=int,
-                       help='how many variables to generate')
+    # group = k_sat_parser.add_mutually_exclusive_group()
+    k_sat_parser.add_argument('-c', '--clauses',
+                              type=int,
+                              help='how many clauses to generate. Use only with -k option. Note that number of clauses will '
+                                   'be met, at the cost of different probability')
+    # group.add_argument('-l', '--literals',
+    #                    type=int,
+    #                    help='how many variables to generate. Use only with -k option')
+    k_sat_parser.add_argument('-n', '--negate-probability',
+                              type=float,
+                              help='probability, that literal will be negative. Default 0.5')
     k_sat_parser.add_argument('-u', '--unique-literals',
                               type=int,
                               help='how many different literals to produce. Defaults to --literals')
 
     group = k_sat_parser.add_mutually_exclusive_group(required=True)
-    group.add_argument('-k',
+    group.add_argument('-k', '--k-probability',
                        type=_k_sat_propability_type_check,
-                       metavar='K,Probability',
+                       metavar='K,PROBABILITY',
                        nargs='+',
                        help='generate only CNF in k-SAT. Pass list of allowed k values. '
                             'probabilities must sum up to 1. Leave probability empty to calculate automatically'
@@ -134,10 +168,10 @@ def parse_args() -> argparse.Namespace:
     elif args.parser_used == 'cnf':
         # generator parser
         if args.seed is not None:
-            raise NotImplementedError()
+            random.seed(int(args.seed))
 
         if args.output_file is not None:
-            raise NotImplementedError()
+            sys.stdout = open(args.output_file)
 
         # cnf subparser
         if args.variables_to_clauses_ratio is not None:
@@ -152,8 +186,7 @@ def parse_args() -> argparse.Namespace:
             elif args.literals is None:
                 args.literals = int(args.clauses * ratio)
             else:
-                assert False, 'this shouldn\'t happen. This is bug'
-
+                assert False, bug_message
         elif args.clauses is not None and args.literals is None:
             args.literals = int(args.clauses * 2)
         elif args.clauses is None and args.literals is not None:
@@ -164,12 +197,14 @@ def parse_args() -> argparse.Namespace:
             if args.literals < args.clauses:
                 cnf_parser.error('there must be at least one literal per clause')
         else:
-            assert False, 'this shouldn\'t happen. This is bug'
+            assert False, bug_message
 
-        args.max_variables_per_clause = args.literals // args.clauses * 2 if args.max_variables_per_clause is None else args.max_variables_per_clause
+        if args.max_variables_per_clause is None:
+            args.max_variables_per_clause = ceil(args.literals / args.clauses)
+
         if args.negate_probability is not None:
             if not 0 <= args.negate_probability <= 1:
-                parser.error('probability range is [0.0, 1.0]')
+                cnf_parser.error('probability range is [0.0, 1.0]')
         else:
             args.negate_probability = 0.5
 
@@ -179,10 +214,86 @@ def parse_args() -> argparse.Namespace:
         else:
             args.unique_literals = args.literals
 
-
-
     elif args.parser_used == 'k-sat':
-        raise NotImplementedError()
+        k_clauses = {}
+        if args.k_probability is not None:
+            if args.clauses is None:
+                k_sat_parser.error('provide how many clauses to generate with -c')
+            # todo check for duplicate k
+
+            P = sum(p for k, p in args.k_probability if p is not None)
+            if P > 1:
+                k_sat_parser.error('sum of probabilities is bigger than 1')
+
+            number_of_k_with_none_probability = len([_ for _, p in args.k_probability if p is None])
+            for i, (k, p) in enumerate(args.k_probability):
+                if p is None:
+                    args.k_probability[i] = k, (1 - P) / number_of_k_with_none_probability
+
+            if sum(p for k, p in args.k_probability) != 1:
+                k_sat_parser.error('probability must sum up to 1')
+            if any(p < 0 for k, p in args.k_probability):
+                k_sat_parser.error('negative probability detected')
+            if any(p == 0 for k, p in args.k_probability):
+                k_sat_parser.error('probability equal to 0 is pointless')
+            if any(p == 1 for k, p in args.k_probability) and len(args.k_probability) > 1:
+                k_sat_parser.error('one element has probability of 1. The rest has probability of 0')
+
+            clauses_left = args.clauses
+            for k, p in args.k_probability:
+                number_of_k_sat = int(args.clauses * p)
+                clauses_left -= number_of_k_sat
+                if number_of_k_sat == 0:
+                    print(f'WARNING: none {k}-SAT formula will be generated. Increase -c/--clauses or probability')
+                else:
+                    k_clauses[k] = number_of_k_sat
+
+            # make sure all clauses are distributed
+            if clauses_left != 0:
+                args.k_probability = sorted(args.k_probability, key=lambda k_p: k_p[1])
+                i = 0
+                while clauses_left != 0:
+                    k = args.k_probability[i][0]
+                    k_clauses[k] += 1
+                    clauses_left -= 1
+                    i += 1
+                    i %= len(args.k_probability)
+
+        elif args.k_number_of_clauses is not None:
+            if not any(n is None for k, n in args.k_number_of_clauses):
+                if args.clauses is not None:
+                    k_sat_parser.error('do not provide -c/--clauses, when all of k-SAT number of occurrences '
+                                       'is provided in -k-n')
+            else:
+                if args.clauses is None:
+                    k_sat_parser.error('provide total number of clauses with -c/--clauses, so that I can compute '
+                                       'missing k-SAT number of occurrences')
+
+                clauses_left = args.clauses - sum(n for k, n in args.k_number_of_clauses if n is not None)
+                number_of_k_with_none_n = len([k for k, n in args.k_number_of_clauses if n is None])
+                if number_of_k_with_none_n != 0:
+                    average_calauses_per_none_n = int(clauses_left / number_of_k_with_none_n)
+                    # args.k_number_of_clauses = []  # todo
+                    for i, (k, n) in enumerate(args.k_number_of_clauses):
+                        if n is None:
+                            args.k_number_of_clauses[i] = k, average_calauses_per_none_n
+                            clauses_left -= average_calauses_per_none_n
+
+                # make sure all clauses are distributed
+                if clauses_left != 0:
+                    args.k_number_of_clauses = sorted(args.k_number_of_clauses, key=lambda k_n: k_n[1])
+                    i = 0
+                    while clauses_left != 0:
+                        k = args.k_number_of_clauses[i][0]
+                        k_clauses[k] += 1
+                        clauses_left -= 1
+                        i += 1
+                        i %= len(args.k_number_of_clauses)
+
+            for k, n in args.k_number_of_clauses:
+                k_clauses[k] = n
+
+        args.k_clauses = k_clauses
 
     return args
 
@@ -190,30 +301,42 @@ def parse_args() -> argparse.Namespace:
 if __name__ == '__main__':
     args = parse_args()
     print(args)
+
+    clause_gen = None
     if args.parser_used == 'cnf':
-        var_gen_input = {}
-        clause_gen_input = {}
+        lit_gen_init = {}
+        clause_gen_init = {}
         if args.literals is not None:
-            var_gen_input['total_literals'] = args.literals
-        # if args.literal_prefix is not None:
-        #     var_gen_input['name'] = args.literal_prefix
+            lit_gen_init['total_literals'] = args.literals
         if args.unique_literals is not None:
-            var_gen_input['unique_literals'] = args.unique_literals
+            lit_gen_init['unique_literals'] = args.unique_literals
         if args.negate_probability is not None:
-            var_gen_input['negate_probability'] = args.negate_probability
+            lit_gen_init['negate_probability'] = args.negate_probability
 
-        clause_gen_input['total_clauses'] = args.clauses
+        clause_gen_init['total_clauses'] = args.clauses
 
-        lit_gen = LiteralGenerator(**var_gen_input)
-        clause_gen = VariableLengthClauseGenerator(literal_gen=lit_gen, **clause_gen_input)
-        if args.output_format == 'tptp':
-            for i in clause_gen:
-                print(i.to_tptp())
-        elif args.format == 'dimacs':
-            print(f"p {clause_gen.total_clauses} {clause_gen.literal_gen.total_literals}")
-            for i in clause_gen:
-                print(i.to_dimacs())
+        clause_gen = VariableLengthClauseGenerator(lit_gen_init_vars=lit_gen_init, **clause_gen_init)
 
-    # c = KSATClauseGenerator(
-    #     k_clauses={1: 1, 2: 1, 4: 4}
-    # )
+    elif args.parser_used == 'k-sat':
+        lit_gen_init = {}
+        clause_gen_init = {}
+        if args.unique_literals is not None:
+            lit_gen_init['unique_literals'] = args.unique_literals
+        if args.negate_probability is not None:
+            lit_gen_init['negate_probability'] = args.negate_probability
+
+        clause_gen_init['k_clauses'] = args.k_clauses
+
+        clause_gen = KSATClauseGenerator(lit_gen_init_vars=lit_gen_init, **clause_gen_init)
+    else:
+        assert False, bug_message
+
+    if args.output_format == 'tptp':
+        print_header(clause_gen.literal_gen, clause_gen, args.output_file, '%')
+        for i in clause_gen:
+            print(i.to_tptp())
+    elif args.output_format == 'dimacs':
+        print_header(clause_gen.literal_gen, clause_gen, args.output_file, 'c')
+        print(f"p {clause_gen.total_clauses} {clause_gen.literal_gen.total_literals}")
+        for i in clause_gen:
+            print(i.to_dimacs())
