@@ -1,15 +1,16 @@
 import random
 from abc import abstractmethod
+from collections import defaultdict
 from dataclasses import dataclass, field
 from math import ceil
-from typing import List, Optional, Dict, Any
+from typing import List, Optional, Dict, Set, Union
 
-from src.literal import Literal, LiteralGenerator
+from src.literal import Literal, LiteralGenerator, RandomLiteralGenerator
 
 
 @dataclass
 class Clause:
-    literals: List[Literal] = field(default_factory=list)
+    literals: Set[Literal] = field(default_factory=set)
 
     def to_dimacs(self) -> str:
         literals_dimacs = (literal.to_dimacs() for literal in self.literals)
@@ -19,6 +20,9 @@ class Clause:
         literal_tptp = (literal.to_tptp() for literal in self.literals)
         return f'cnf(placeholder_name, axiom, ({" | ".join(literal_tptp)}) ).'
 
+    def __hash__(self) -> int:
+        return hash(i for i in self.literals)
+
 
 class ClauseGenerator:
     @property
@@ -27,9 +31,9 @@ class ClauseGenerator:
         """:return total number of clauses that generator can produce"""
 
     @property
-    @abstractmethod
     def clauses_left(self) -> int:
         """:return number of clauses that generator can still produce"""
+        return self.total_clauses - self.generated_clauses
 
     @property
     @abstractmethod
@@ -38,149 +42,118 @@ class ClauseGenerator:
 
     @property
     @abstractmethod
-    def new_clause(self) -> Optional[Clause]:
+    def clause(self) -> Optional[Clause]:
         """Generate new clause"""
+
+    def generate(self) -> List[frozenset]:
+        return [i for i in iter(self)]
 
     def __iter__(self):
         while True:
             if self.clauses_left != 0:
-                yield self.new_clause
+                yield self.clause
             else:
                 break
-
-
-class VariableLengthClauseGenerator(ClauseGenerator):
-    """Generates exactly total_clauses by calling new_clause
-    uses VariableGenerator to control number of variables
-    generator is depleted when self.clauses_left == 0
-    """
-
-    def __init__(self, total_clauses: int, lit_gen_init_vars: Dict[str, Any] = None, max_clause_size: int = None):
-        """
-        :param total_clauses: number of clauses to generate
-        :param if literal_gen is None, it will be created with default literal:clause ratio 2:1.
-        if provided does not satisfy certain constrains, exception will be raised
-        :param max_clause_size: if None, defaults to literal_gen.total_literals / 2, but not less than 1
-        """
-        self._generated_clauses = 0
-        self._total_clauses = total_clauses
-        # this ensures that length of clause will be uniform
-
-        if self._total_clauses < 1:
-            raise Exception('number of calsues to generate can not be less than 1')
-
-        if lit_gen_init_vars is None:
-            lit_gen_init_vars = {}
-        if lit_gen_init_vars.get('total_literals') is None:
-            # keep the default literal:clause ration 2:1
-            lit_gen_init_vars['total_literals'] = self.total_clauses * 2
-        if lit_gen_init_vars.get('name') is None:
-            lit_gen_init_vars['name'] = 'p'
-
-        self.literal_gen = LiteralGenerator(**lit_gen_init_vars)
-
-        self.max_clause_size = ceil(
-            self.literal_gen.total_literals / self._total_clauses) if max_clause_size is None else max_clause_size
-        if self.max_clause_size < 1:
-            self.max_clause_size = 1
-
-        if self.literal_gen.literals_left < self.clauses_left:
-            raise Exception('There are not enough variables in given variable generator, '
-                            f'should be more than {self.clauses_left}')
-
-        if self.literal_gen.literals_left > self.max_clause_size * self.total_clauses:
-            raise Exception('There are too many variables in variable generator, '
-                            f'should be less than {self.max_clause_size * self.total_clauses}')
-
-    @property
-    def total_clauses(self) -> int:
-        return self._total_clauses
-
-    @property
-    def clauses_left(self) -> int:
-        """:return number of clauses that generator can produce"""
-        return self._total_clauses - self.generated_clauses
-
-    @property
-    def generated_clauses(self) -> int:
-        """:return number of clauses that generator has produced"""
-        return self._generated_clauses
-
-    @property
-    def new_clause(self) -> Optional[Clause]:
-        """Generate new clause
-        :return Clause or None, when
-        """
-        # generator depleted
-        if self.clauses_left == 0:
-            return None
-
-        # help generator to end clause generation by putting all remaining variables to one clause
-        if self.clauses_left == 1 and self.literal_gen.literals_left < self.max_clause_size:
-            size = self.literal_gen.literals_left
-        else:
-            size = random.randint(1, self.max_clause_size)
-
-            # cover case, there must be at least one literal per clause
-            size = min(size, self.literal_gen.literals_left - self.clauses_left + 1)
-
-            # cover case, there are too many variables left for remaining clauses
-            max_variables_consumed_by_remaining_clauses = (self.clauses_left - 1) * self.max_clause_size
-            if self.literal_gen.literals_left - size > max_variables_consumed_by_remaining_clauses:
-                size = self.literal_gen.literals_left - max_variables_consumed_by_remaining_clauses
-
-        clause = Clause()
-        for _ in range(size):
-            literal = self.literal_gen.random_literal
-            clause.literals.append(literal)
-        self._generated_clauses += 1
-        return clause
 
 
 class KSATClauseGenerator(ClauseGenerator):
     """Generate clauses in k-SAT format"""
 
-    def __init__(self, k_clauses: Dict[int, int], lit_gen_init_vars: Dict[str, Any] = None):
-        """
-        :param k_clauses keys are k value (how many literals in clauses),
-         the value is how many of this kind of clause to produce
-        :param literal_gen is not provided, one will be automatically created with proper setting.
-         if provided literal_gen does not satisfy certain constrains, exception will be raised
-        """
-        # [k, required number of k clauses]
-        self.k_clauses: Dict[int, int] = k_clauses
-        self._required_literals = sum(k * number_of_k for k, number_of_k in k_clauses.items())
-        self._total_clauses = sum(number_of_k for number_of_k in k_clauses.values())
-        self._max_clause_size = max(k for k in k_clauses.keys())
-        self._generated_clauses: int = 0
+    def __init__(self, k_clauses: Union[Dict[int, int], str], literal_gen: LiteralGenerator = None,
+                 total_clauses: int = None, max_clause_size: int = None):
+        self._generated_clauses = set()
 
-        if lit_gen_init_vars is None:
-            lit_gen_init_vars = {}
-        if lit_gen_init_vars.get('total_literals') is None:
-            lit_gen_init_vars['total_literals'] = self._required_literals
-        if lit_gen_init_vars.get('name') is None:
-            lit_gen_init_vars['name'] = 'p'
+        if literal_gen is None:
+            # keep the default literal:clause ration 2:1
+            self.literal_gen = KSATClauseGenerator._default_literal_generator(total_literals=total_clauses * 2)
+        else:
+            self.literal_gen = literal_gen
 
-        # if literal_gen is None:
-        self.literal_gen = LiteralGenerator(**lit_gen_init_vars)
+        if isinstance(k_clauses, dict):
+            if total_clauses is not None:
+                raise Exception('todo')
+            if max_clause_size is not None:
+                raise Exception('todo')
 
-        if self.literal_gen.literals_left != self._required_literals:
-            raise Exception(f'literal generator should produce exactly {self._required_literals}')
+            self.k_clauses: Dict[int, int] = k_clauses
+            KSATClauseGenerator._check_literal_generator_constraints(self.literal_gen, self.total_clauses,
+                                                                     self.max_clause_size)
+
+        elif k_clauses == 'random':
+            if total_clauses is None:
+                raise Exception('todo')
+
+            if total_clauses < 1:
+                raise Exception('number of clauses to generate can not be less than 1')
+
+            if max_clause_size is None:
+                max_clause_size = ceil(self.literal_gen.total_literal / total_clauses) * 2
+            elif max_clause_size < 1:
+                raise Exception('max_clause_size can not be less than 1')
+
+            KSATClauseGenerator._check_literal_generator_constraints(self.literal_gen, total_clauses, max_clause_size)
+
+            self.k_clauses = defaultdict(int)
+            # take literal_gen.total_literals into consideration
+            while total_clauses != 0:
+                # help generator to end clause generation by putting all remaining variables to one clause
+                if total_clauses == 1 and self.literal_gen.literals_left < max_clause_size:
+                    k = self.literal_gen.literals_left
+                else:
+                    k = random.randint(1, max_clause_size)
+
+                    # cover case, there must be at least one literal per clause
+                    k = min(k, self.literal_gen.total_literal - self.required_literals - total_clauses + 1)
+
+                    # cover case, there are too many variables left for remaining clauses
+                    max_variables_consumed_by_remaining_clauses = (total_clauses - 1) * max_clause_size
+                    if self.literal_gen.total_literal - self.required_literals - k > max_variables_consumed_by_remaining_clauses:
+                        k = self.literal_gen.total_literal - self.required_literals - max_variables_consumed_by_remaining_clauses
+
+                total_clauses -= 1
+                self.k_clauses[k] += 1
+            print(dict(self.k_clauses))
+
+        else:
+            raise Exception('unknown value of k_clause')
+
+        assert self.literal_gen.total_literal == self.required_literals
+
+    @staticmethod
+    def _check_literal_generator_constraints(literal_gen, total_clauses, max_clause_size):
+        if literal_gen.total_literal < total_clauses:
+            raise Exception('There are not enough variables in given variable generator, '
+                            f'should be more than {total_clauses}. There must be at least one literal per clause')
+        if literal_gen.total_literal > max_clause_size * total_clauses:
+            raise Exception('There are too many variables in variable generator, '
+                            f'should be less than {max_clause_size * total_clauses}')
+
+    @staticmethod
+    def _default_literal_generator(total_literals: int):
+        return RandomLiteralGenerator(total_literals=total_literals,
+                                      name='p',
+                                      unique_literals=0.75,
+                                      negate_probability=0.5)
+
+    @property
+    def total_clauses(self):
+        return sum(number_of_k for number_of_k in self.k_clauses.values())
 
     @property
     def max_clause_size(self):
-        return self._max_clause_size
+        return max(k for k in self.k_clauses.keys())
 
     @property
-    def total_clauses(self) -> int:
-        return self._total_clauses
+    def required_literals(self):
+        return sum(k * number_of_k for k, number_of_k in self.k_clauses.items())
 
     @property
     def generated_clauses(self) -> int:
-        return self._generated_clauses
+        return len(self._generated_clauses)
 
     @property
-    def new_clause(self) -> Optional[Clause]:
+    def clause(self) -> Optional[Clause]:
+        # todo add constraint can generate self.total_clauses different clauses
         if self.clauses_left == 0:
             return None
 
@@ -190,14 +163,13 @@ class KSATClauseGenerator(ClauseGenerator):
         else:
             self.k_clauses[next_clause_size] -= 1
 
-        clause = Clause()
-        for _ in range(next_clause_size):
-            literal = self.literal_gen.random_literal
-            clause.literals.append(literal)
-        self._generated_clauses += 1
+        clause = Clause(literals={self.literal_gen.literal for _ in range(next_clause_size)})
+        self._generated_clauses.add(clause)
         return clause
 
-    @property
-    def clauses_left(self) -> int:
-        """:return number of clauses that generator can produce"""
-        return self._total_clauses - self.generated_clauses
+
+if __name__ == '__main__':
+    l = RandomLiteralGenerator(total_literals=100)
+    rcg = KSATClauseGenerator(total_clauses=10, k_clauses='random')
+    for l in rcg:
+        print(l.to_tptp())
