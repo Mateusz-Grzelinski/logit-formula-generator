@@ -1,6 +1,8 @@
 import random
+from abc import abstractmethod
 from dataclasses import dataclass
-from typing import Optional
+from math import ceil
+from typing import Optional, List, Union
 
 from src._common import random_bool
 
@@ -11,6 +13,14 @@ class Literal:
     number: int = 0
     negated: bool = False
 
+    def __hash__(self) -> int:
+        return hash((self.name, self.number, self.negated))
+
+    def __eq__(self, other):
+        if not isinstance(other, type(self)):
+            return NotImplemented
+        return self.name == other.name and self.number == other.number and self.negated == other.negated
+
     def to_dimacs(self) -> str:
         return f'-{self.name}{self.number}' if self.negated else f'{self.name}{self.number}'
 
@@ -19,26 +29,68 @@ class Literal:
 
 
 class LiteralGenerator:
+    def generate(self) -> List[Literal]:
+        return [i for i in iter(self)]
+
+    def __iter__(self):
+        while True:
+            if self.literals_left != 0:
+                yield self.literal
+            else:
+                break
+
+    @property
+    @abstractmethod
+    def total_literal(self) -> int:
+        pass
+
+    @property
+    @abstractmethod
+    def generated_literal(self) -> int:
+        """:return number of antlr_generated literals"""
+        pass
+
+    @property
+    def literals_left(self) -> int:
+        """:return how many literals in total generator can produce"""
+        return self.total_literal - self.generated_literal
+
+    @property
+    @abstractmethod
+    def literal(self) -> Optional[Literal]:
+        """Get used or new Variable
+        :return Variable or None, when can not generate neither new nor used Variable
+        """
+        pass
+
+
+class RandomLiteralGenerator(LiteralGenerator):
     """Generates exactly total_literals literals by appending number to name
     generator is depleted when self.literals_left == 0
     """
 
-    def __init__(self, total_literals: int, name: str = 'p', unique_literals: int = None,
+    def __init__(self, total_literals: int, name: str = 'p', unique_literals: Union[int, float] = None,
                  negate_probability: float = 0.5):
         """
         :param total_literals: how many literals to produce
         :param name: prefix of literal
-        :param unique_literals: how many different literals to produce
-        :param negate_probability: what percent of literals should be negeted (0.0 to 1.0)
+        :param unique_literals: how many different literals to produce, either fixed value or percentage
+        :param negate_probability: what percent of literals should be negated [0.0 to 1.0]
         """
-        self.name = name
+        self._name = name
         self._total_literals = total_literals
-        self._unique_literals = total_literals if unique_literals is None else unique_literals
         self._negate_probability = negate_probability
         self._literal_number = 0
         self._generated_used_literal = 0
 
-        if self._negate_probability < 0 or self._negate_probability > 1:
+        if unique_literals is None:
+            self._unique_literals = total_literals
+        elif 0 <= unique_literals < 1:
+            self._unique_literals = ceil(total_literals * unique_literals)
+        elif unique_literals >= 1:
+            self._unique_literals = int(unique_literals)
+
+        if not 0 <= self._negate_probability <= 1:
             raise Exception('negate_pobability range is [0, 1]')
 
         if self._unique_literals < 1:
@@ -51,19 +103,15 @@ class LiteralGenerator:
             raise Exception('number of total literals must be greater or equal to unique literals')
 
     @property
-    def total_literals(self) -> int:
+    def total_literal(self) -> int:
         return self._total_literals
 
     @property
-    def negate_propability(self) -> float:
-        return self._negate_probability
-
-    @property
-    def unique_literals(self) -> int:
+    def unique_literal(self) -> int:
         return self._unique_literals
 
     @property
-    def generated_literals(self) -> int:
+    def generated_literal(self) -> int:
         """:return number of antlr_generated literals"""
         return self.generated_unique_literals + self._generated_used_literal
 
@@ -73,17 +121,12 @@ class LiteralGenerator:
         return self._literal_number
 
     @property
-    def literals_left(self) -> int:
-        """:return how many literals in total generator can produce"""
-        return self._total_literals - self.generated_literals
-
-    @property
     def unique_literals_left(self) -> int:
         """:return how many unique literals generator can produce"""
         return self._unique_literals - self.generated_unique_literals
 
     @property
-    def random_literal(self) -> Optional[Literal]:
+    def literal(self) -> Optional[Literal]:
         """Get used or new Variable
         :return Variable or None, when can not generate neither new nor used Variable
         """
@@ -92,19 +135,19 @@ class LiteralGenerator:
             return self.new_literal
 
         # there are no literals antlr_generated yet
-        if self.generated_literals == 0:
+        if self.generated_literal == 0:
             return self.new_literal
 
         # actual random generating
         if self.unique_literals_left != 0:
-            return self.used_literal if random_bool() else self.new_literal
+            return self.used_name if random_bool() else self.new_literal
         elif self.literals_left != 0:
-            return self.used_literal
+            return self.used_name
         else:
             return None
 
     @property
-    def used_literal(self) -> Optional[Literal]:
+    def used_name(self) -> Optional[Literal]:
         """Get random, arleady antlr_generated literal
         :return Variable or None when self.total_literals is hit
         """
@@ -112,7 +155,7 @@ class LiteralGenerator:
             return None
         self._generated_used_literal += 1
 
-        return Literal(name=self.name,
+        return Literal(name=self._name,
                        number=random.randint(0, self._literal_number - 1),
                        negated=random_bool(self._negate_probability))
 
@@ -124,8 +167,32 @@ class LiteralGenerator:
         if not self.unique_literals_left:
             return None
 
-        var = Literal(name=self.name,
+        var = Literal(name=self._name,
                       number=self._literal_number,
                       negated=random_bool(self._negate_probability))
         self._literal_number += 1
         return var
+
+
+class LiteralPicker(LiteralGenerator):
+
+    def __init__(self, literals: List[Literal], total_literals):
+        self.literals = literals
+        self._total_literals = total_literals
+        self._generated_literals = 0
+
+    @property
+    def total_literal(self) -> int:
+        return self._total_literals
+
+    @property
+    def generated_literal(self) -> int:
+        return self._generated_literals
+
+    @property
+    def literal(self) -> Optional[Literal]:
+        if self.literals_left == 0:
+            return None
+
+        self._generated_literals += 1
+        return random.choice(self.literals)
