@@ -5,14 +5,15 @@ import time
 from math import ceil
 from typing import Tuple
 
-from src.clause import LiteralGenerator, VariableLengthClauseGenerator, KSATClauseGenerator
+from src.clause import KSATClauseGenerator
+from src.literal import RandomLiteralGenerator
 
 version = 'Pre-alpha 0.1'
 bug_message = 'this shouldn\'t happen. This is bug'
 
 
-def print_header(lit_gen: LiteralGenerator,
-                 clause_gen: VariableLengthClauseGenerator,
+def print_header(lit_gen: RandomLiteralGenerator,
+                 clause_gen: KSATClauseGenerator,
                  seed: int,
                  output_file: str = None,
                  comment_sign: str = '%'):
@@ -33,7 +34,7 @@ Syntax   : Number of clauses     :{r_justed(clause_gen.total_clauses)} ({r_juste
 {'-' * 76}
 
 Comments : generator sources available at https://github.com/Mateusz-Grzelinski/logit-formula-generator
-           negate probability    :{r_justed(clause_gen.literal_gen.negate_propability)}
+           negate probability    :{r_justed(clause_gen.literal_gen.negate_probability)}
            seed                  :{r_justed(seed)}
 '''
 
@@ -55,7 +56,7 @@ def _k_sat_number_of_clauses_type_check(argument: str) -> Tuple[int, int]:
         k = int(argument)
         k = k, None
     if k[0] < 1:
-        raise argparse.ArgumentTypeError(f'in k-SAT the \'k\' can not be less than 1, not {k.k}')
+        raise argparse.ArgumentTypeError(f'in k-SAT the \'k\' can not be less than 1, not {k[0]}')
     return k
 
 
@@ -323,7 +324,8 @@ if __name__ == '__main__':
 
         clause_gen_init['total_clauses'] = args.clauses
 
-        clause_gen = VariableLengthClauseGenerator(lit_gen_init_vars=lit_gen_init, **clause_gen_init)
+        lit_gen = RandomLiteralGenerator(**lit_gen_init)
+        clause_gen = KSATClauseGenerator(literal_gen=lit_gen, k_clauses='random', **clause_gen_init)
 
     elif args.parser_used == 'k-sat':
         lit_gen_init = {}
@@ -335,7 +337,8 @@ if __name__ == '__main__':
 
         clause_gen_init['k_clauses'] = args.k_clauses
 
-        clause_gen = KSATClauseGenerator(lit_gen_init_vars=lit_gen_init, **clause_gen_init)
+        lit_gen = RandomLiteralGenerator(**lit_gen_init)
+        clause_gen = KSATClauseGenerator(literal_gen=lit_gen, **clause_gen_init)
     else:
         assert False, bug_message
 
