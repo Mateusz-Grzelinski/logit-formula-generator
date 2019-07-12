@@ -89,7 +89,7 @@ class RandomLiteralGenerator(LiteralGenerator):
         self._name = name
         self._total_literals = total_literals
         self._negate_probability = negate_probability
-        self._literal_number = 0
+        self._generated_unique_literals = 0
         self._generated_used_literal = 0
 
         if unique_literals is None:
@@ -127,7 +127,7 @@ class RandomLiteralGenerator(LiteralGenerator):
     @property
     def generated_unique_literals(self) -> int:
         """:return number of antlr_generated unique literals"""
-        return self._literal_number
+        return self._generated_unique_literals
 
     @property
     def unique_literals_left(self) -> int:
@@ -157,15 +157,15 @@ class RandomLiteralGenerator(LiteralGenerator):
 
     @property
     def used_literal(self) -> Optional[Literal]:
-        """Get random, arleady antlr_generated literal
+        """Get random, already generated literal
         :return Variable or None when self.total_literals is hit
         """
-        if not self._literal_number:
+        if self._generated_unique_literals == 0:
             return None
         self._generated_used_literal += 1
 
         return Literal(name=self._name,
-                       number=random.randint(0, self._literal_number - 1),
+                       number=random.randint(0, self._generated_unique_literals - 1),
                        negated=random_bool(self._negate_probability))
 
     @property
@@ -173,13 +173,13 @@ class RandomLiteralGenerator(LiteralGenerator):
         """Generate new variable until self.unique_literals is hit
         :return new unique Variable, or None when self.unique_literals_left is 0
         """
-        if not self.unique_literals_left:
+        if self.unique_literals_left == 0:
             return None
 
         var = Literal(name=self._name,
-                      number=self._literal_number,
+                      number=self._generated_unique_literals,
                       negated=random_bool(self._negate_probability))
-        self._literal_number += 1
+        self._generated_unique_literals += 1
         return var
 
 
@@ -191,7 +191,7 @@ class LiteralPicker(LiteralGenerator):
 
     def __init__(self, literals: List[Literal], total_literals):
         self.literals = literals
-        self._negate_probability = len([i for i in literals if i.negated]) / len(literals)
+        self._negate_probability = len([i for i in literals if i is not None and i.negated]) / len(literals)
         self._total_literals = total_literals
         self._generated_literals = 0
 
@@ -206,7 +206,26 @@ class LiteralPicker(LiteralGenerator):
     @property
     def literal(self) -> Optional[Literal]:
         if self.literals_left == 0:
-            return None
+            raise StopIteration()
 
         self._generated_literals += 1
         return random.choice(self.literals)
+
+
+if __name__ == '__main__':
+
+    lit_gen = RandomLiteralGenerator(total_literals=21,
+                                     unique_literals=5,
+                                     name='a')
+    from src.clause import KSATClauseGenerator
+
+    clause_gen1 = KSATClauseGenerator(k_clauses={3: 7},
+                                      literal_gen=lit_gen)
+    # clause_gen2 = KSATClauseGenerator(k_clauses={3: 7})
+
+    # for i,l in enumerate(lit_gen):
+    #     print(f"{l}, {lit_gen.literals_left}")
+    for l in clause_gen1:
+        print(f"{l}, {lit_gen.literals_left}")
+    # for l in clause_gen2:
+    #     print(l)
