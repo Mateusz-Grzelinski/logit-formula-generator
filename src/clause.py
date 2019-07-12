@@ -173,9 +173,9 @@ class KSATClauseGenerator(ClauseGenerator):
             clause = Clause(literals={self.literal_gen.literal for _ in range(next_clause_size)})
             if clause not in self._generated_clauses:
                 self._generated_clauses.add(clause)
+                self.k_clauses[next_clause_size] -= 1
                 if self.k_clauses[next_clause_size] == 0:
                     del self.k_clauses[next_clause_size]
-                self.k_clauses[next_clause_size] -= 1
                 return clause
             else:
                 self.literal_gen = lit_gen_state
