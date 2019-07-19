@@ -75,7 +75,7 @@ class KSATClauseGenerator(ClauseGenerator):
         assert self.literal_gen.total_literals == self.required_literals, \
             f'Generator must produce {self.required_literals}, not {self.literal_gen.total_literals} literals'
 
-    def __exact_constructor(self, k_clauses: Dict[int, int], literal_gen: LiteralGenerator):
+    def __exact_constructor(self, literal_gen: LiteralGenerator, k_clauses: Dict[int, int]):
         self.k_clauses: Dict[int, int] = k_clauses
         self._total_clauses = sum(number_of_k for number_of_k in k_clauses.values())
 
@@ -110,19 +110,20 @@ class KSATClauseGenerator(ClauseGenerator):
         self.k_clauses = {}
         # take literal_gen.total_literals into consideration
         while total_clauses != 0:
+            literals_left = self.literal_gen.total_literals - self.required_literals
             # help generator to end clause generation by putting all remaining variables to one clause
-            if total_clauses == 1 and self.literal_gen.total_literals - self.required_literals < max_clause_size:
+            if total_clauses == 1 and literals_left < max_clause_size:
                 k = self.literal_gen.total_literals - self.required_literals
             else:
                 k = random.randint(1, max_clause_size)
 
                 # cover case, when there must be at least one literal per clause
-                k = min(k, self.literal_gen.total_literals - self.required_literals - total_clauses + 1)
+                k = min(k, literals_left - total_clauses + 1)
 
                 # cover case, when there are too many variables left for remaining clauses
-                max_variables_consumed_by_remaining_clauses = (self.total_clauses - 1) * max_clause_size
-                if self.literal_gen.total_literals - self.required_literals - k > max_variables_consumed_by_remaining_clauses:
-                    k = self.literal_gen.total_literals - self.required_literals - max_variables_consumed_by_remaining_clauses
+                max_variables_consumed_by_remaining_clauses = (total_clauses - 1) * max_clause_size
+                if literals_left - k > max_variables_consumed_by_remaining_clauses:
+                    k = literals_left - max_variables_consumed_by_remaining_clauses
 
             total_clauses -= 1
             if self.k_clauses.get(k) is None:
