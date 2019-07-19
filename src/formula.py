@@ -44,7 +44,7 @@ class FormulaGenerator:
         return f
 
     def _shuffle(self, formula: Formula):
-        for mix in self.mixes:
+        for i, mix in enumerate(self.mixes):
             # indexes, number_of_clauses, mix_clause_gen
             groups = [formula.clause_groups[i] for i in mix.indexes]
 
@@ -68,6 +68,9 @@ class FormulaGenerator:
             else:
                 # print("mix ok")
                 clauses = list(clause_gen)
+                str_indexes = '_'.join(str(i) for i in mix.indexes)
+                for clause in clauses:
+                    clause.name = f'mix_clause{i}_{str_indexes}'
                 formula.clause_groups.append(clauses)
         return formula
 

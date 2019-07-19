@@ -10,11 +10,12 @@ from src.literal import Literal, LiteralGenerator, RandomLiteralGenerator
 
 @dataclass
 class Clause:
+    name: str = 'clause_name'
     literals: Set[Literal] = field(default_factory=set)
 
     def to_tptp(self) -> str:
         literal_tptp = (literal.to_tptp() for literal in self.literals)
-        return f'cnf(placeholder_name, axiom, ({" | ".join(literal_tptp)}) ).'
+        return f'cnf({self.name}, axiom, ({" | ".join(literal_tptp)}) ).'
 
     def __hash__(self) -> int:
         return hash(i for i in self.literals)
@@ -197,6 +198,7 @@ class KSATClauseGenerator(ClauseGenerator):
 if __name__ == '__main__':
 
     from src.predicate import ConstantGenerator, SafetyGenerator, LivenessGenerator
+
     lit_gen = RandomLiteralGenerator(total_literals=10,
                                      unique_literals=5,
                                      predicate_generator=[
