@@ -10,19 +10,19 @@ from src.predicate import SimplePredicateGenerator, Predicate
 class Literal:
     def __init__(self, predicate: Predicate, negated: bool = False):
         self.predicate = predicate
-        self.negated: bool = negated
+        self.is_negated: bool = negated
 
     def to_tptp(self) -> str:
-        out = '~' if self.negated else ''
+        out = '~' if self.is_negated else ''
         return out + self.predicate.to_tptp()
 
     def __hash__(self) -> int:
-        return hash((self.predicate, self.negated))
+        return hash((self.predicate, self.is_negated))
 
     def __eq__(self, other):
         if not isinstance(other, type(self)):
             return False
-        return self.predicate == other.predicate and self.negated == other.negated
+        return self.predicate == other.predicate and self.is_negated == other.is_negated
 
     def __str__(self):
         return self.to_tptp()
@@ -194,7 +194,7 @@ class LiteralPicker(LiteralGenerator):
 
     def __init__(self, literals: List[Literal], total_literals):
         self.literals = literals
-        self._negate_probability = len([i for i in literals if i is not None and i.negated]) / len(literals)
+        self._negate_probability = len([i for i in literals if i is not None and i.is_negated]) / len(literals)
         self._total_literals = total_literals
         self._generated_literals = 0
 

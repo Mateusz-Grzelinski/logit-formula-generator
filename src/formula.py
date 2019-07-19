@@ -4,7 +4,7 @@ import copy
 import itertools
 import sys
 from dataclasses import dataclass
-from typing import Tuple, List
+from typing import Tuple, List, Union, Iterable, Generator
 
 from src.clause import ClauseGenerator, Clause, KSATClauseGenerator
 from src.literal import LiteralPicker, RandomLiteralGenerator
@@ -18,32 +18,95 @@ class Mix:
 
     @staticmethod
     def chain_mix(clause_groups: List[Clause], groups_per_mix: int, skip: int = 0) -> List[Mix]:
-        pass
+        raise NotImplemented
 
 
-@dataclass
 class Formula:
-    clause_groups: List[List[Clause]]
+    def __init__(self, clauses: Union[List[Clause], List[List[Clause]]] = None):
+        if all(isinstance(el, list) for el in clauses) and isinstance(clauses, list):
+            self.clause_groups = clauses
+        elif isinstance(clauses, list):
+            self.clause_groups = [clauses]
+        else:
+            raise Exception('clauses must be list of lists, or list of clauses')
 
-    def to_tptp(self):
-        out = ''
-        for clause in itertools.chain.from_iterable(self.clause_groups):
-            out += clause.to_tptp() + '\n'
-        return out
+    @property
+    def clauses(self) -> Iterable[Clause]:
+        return itertools.chain.from_iterable(self.clause_groups)
+
+    def to_tptp(self) -> Generator[None, List[Clause], None]:
+        for clause in self.clauses:
+            yield clause.to_tptp()
+
+    @property
+    def number_of_clauses(self):
+        return len(list(self.clauses))
+
+    @property
+    def number_of_atoms(self):
+        # this logic will become more complex, when equality and recursive term is supported
+        return sum(len(clause.literals) for clause in self.clauses)
+
+    @property
+    def max_clause_size(self):
+        return max(len(clause.literals) for clause in self.clauses)
+
+    @property
+    def number_of_predicates(self):
+        predicates = set()
+        for clause in self.clauses:
+            predicates.update(literal.predicate.name for literal in clause.literals)
+        return len(predicates)
+
+    @property
+    def number_of_functors(self):
+        # in general, functor is predicate inside predicate, special case is 0-arity predicate, called constant
+        # ex. pred(constant, functor_1(a), functor_2(a, a))
+        # see tptp SYN005-1.010.p for reference
+        number_of_constants = 0
+        for clause in self.clauses:
+            variables = set()
+            for literal in clause.literals:
+                arguments = literal.predicate.arguments
+                variables.update(arg for arg in arguments if arg[0].islower())
+            number_of_constants += len(variables)
+        return number_of_constants
+
+    @property
+    def number_of_variables(self):
+        # see tptp SYN002-1.007.008.p for reference
+        number_of_variables = 0
+        for clause in self.clauses:
+            variables = set()
+            for literal in clause.literals:
+                arguments = literal.predicate.arguments
+                variables.update(arg for arg in arguments if arg[0].isupper())
+            number_of_variables += len(variables)
+        return number_of_variables
+
+    @property
+    def max_term_depth(self):
+        return 1
+
+    @property
+    def number_of_negated_literals(self):
+        negated_literals = 0
+        for clause in self.clauses:
+            negated_literals += len([literal for literal in clause.literals if literal.is_negated])
+        return negated_literals
 
 
 class FormulaGenerator:
     def __init__(self, mixes: List[Mix], clause_generators: List[ClauseGenerator]):
-        # self.patterns?
         self.mixes: List[Mix] = mixes
         self.clause_generators = clause_generators
 
-    def generate(self):
-        f = Formula(clause_groups=[list(clause_gen) for clause_gen in self.clause_generators])
-        f = self._shuffle(f)
-        return f
+    def generate(self) -> Formula:
+        formula = Formula(clauses=[list(clause_gen) for clause_gen in self.clause_generators])
+        formula = self._shuffle(formula)
+        return formula
 
-    def _shuffle(self, formula: Formula):
+    def _shuffle(self, formula: Formula) -> Formula:
         for i, mix in enumerate(self.mixes):
             # indexes, number_of_clauses, mix_clause_gen
             groups = [formula.clause_groups[i] for i in mix.indexes]
