@@ -12,16 +12,17 @@ from src.literal import Literal, LiteralGenerator, RandomLiteralGenerator
 class Clause:
     literals: Set[Literal] = field(default_factory=set)
 
-    def to_dimacs(self) -> str:
-        literals_dimacs = (literal.to_dimacs() for literal in self.literals)
-        return f'{" ".join(literals_dimacs)} 0'
-
     def to_tptp(self) -> str:
         literal_tptp = (literal.to_tptp() for literal in self.literals)
         return f'cnf(placeholder_name, axiom, ({" | ".join(literal_tptp)}) ).'
 
     def __hash__(self) -> int:
         return hash(i for i in self.literals)
+
+    def __eq__(self, other):
+        if not isinstance(other, type(self)):
+            return False
+        return self.literals == other.literals
 
 
 class ClauseGenerator:
@@ -70,7 +71,8 @@ class KSATClauseGenerator(ClauseGenerator):
         else:
             raise Exception('unknown value of k_clause')
 
-        assert self.literal_gen.total_literals == self.required_literals
+        assert self.literal_gen.total_literals == self.required_literals, \
+            f'Generator must produce {self.required_literals}, not {self.literal_gen.total_literals} literals'
 
     def __exact_constructor(self, k_clauses: Dict[int, int], literal_gen: LiteralGenerator):
         self.k_clauses: Dict[int, int] = k_clauses
@@ -139,9 +141,9 @@ class KSATClauseGenerator(ClauseGenerator):
     @staticmethod
     def _default_literal_generator(total_literals: int):
         return RandomLiteralGenerator(total_literals=total_literals,
-                                      name='p',
                                       unique_literals=0.75,
-                                      negate_probability=0.5)
+                                      negate_probability=0.5,
+                                      predicate_generator=[ConstantGenerator(predicate_name='constant')])
 
     @property
     def total_clauses(self):
@@ -170,7 +172,18 @@ class KSATClauseGenerator(ClauseGenerator):
             # optimize: introduce state pattern instead copy
             lit_gen_state = copy.deepcopy(self.literal_gen)
 
-            clause = Clause(literals={self.literal_gen.literal for _ in range(next_clause_size)})
+            literals = set()
+
+            while len(literals) != next_clause_size:
+                lit_gen_state_loop = copy.deepcopy(self.literal_gen)
+                lit = self.literal_gen.literal
+                if lit in literals:
+                    self.literal_gen = lit_gen_state_loop
+                    continue
+                literals.add(lit)
+            assert all(literals), 'there is None element in literals'
+
+            clause = Clause(literals=literals)
             if clause not in self._generated_clauses:
                 self._generated_clauses.add(clause)
                 self.k_clauses[next_clause_size] -= 1
@@ -183,13 +196,20 @@ class KSATClauseGenerator(ClauseGenerator):
 
 if __name__ == '__main__':
 
+    from src.predicate import ConstantGenerator, SafetyGenerator, LivenessGenerator
     lit_gen = RandomLiteralGenerator(total_literals=10,
                                      unique_literals=5,
-                                     name='a')
+                                     predicate_generator=[
+                                         ConstantGenerator(predicate_name='constant'),
+                                         SafetyGenerator(predicate_name='safety', argument='A'),
+                                         LivenessGenerator(predicate_name='liveness', argument='a')
+                                     ])
     clause_gen1 = KSATClauseGenerator(k_clauses={2: 5},
                                       literal_gen=lit_gen)
     cl = list(clause_gen1)
     for c in cl:
         if not c.literals:
             print("none!!!!")
-    print([c.to_tptp() for c in cl])
+    from pprint import pprint
+
+    pprint([c.to_tptp() for c in cl])

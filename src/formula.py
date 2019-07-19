@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import copy
 import itertools
+import sys
 from dataclasses import dataclass
 from typing import Tuple, List
 
@@ -63,7 +64,7 @@ class FormulaGenerator:
                                                  total_clauses=mix.number_of_clauses,
                                                  literal_gen=literal_gen)
             except Exception as e:
-                print(f"Mix is not possible, skipping {mix}")
+                print(f"Mix is not possible, skipping {mix}", file=sys.stderr)
             else:
                 # print("mix ok")
                 clauses = list(clause_gen)
@@ -72,6 +73,8 @@ class FormulaGenerator:
 
 
 if __name__ == '__main__':
+    from src.predicate import SafetyGenerator, LivenessGenerator
+
     m = [Mix(indexes=(0, 1),
              number_of_clauses=2,
              number_of_literals=5),
@@ -82,15 +85,23 @@ if __name__ == '__main__':
 
     lit_gen = RandomLiteralGenerator(total_literals=10,
                                      unique_literals=5,
-                                     name='a')
+                                     predicate_generator=[
+                                         # ConstantGenerator(predicate_name='constant'),
+                                         SafetyGenerator(predicate_name='safety', argument='A'),
+                                         # LivenessGenerator(predicate_name='liveness', argument='a')
+                                     ])
+    lit_gen2 = RandomLiteralGenerator(total_literals=21,
+                                      unique_literals=9,
+                                      predicate_generator=[
+                                          # ConstantGenerator(predicate_name='constant'),
+                                          # SafetyGenerator(predicate_name='safety', argument='A'),
+                                          LivenessGenerator(predicate_name='liveness', argument='a')
+                                      ])
     clause_gen1 = KSATClauseGenerator(k_clauses={2: 5},
                                       literal_gen=lit_gen)
-    clause_gen2 = KSATClauseGenerator(k_clauses={3: 7})
-    # cl = list(clause_gen1)
-    # for c in cl:
-    #     if not c.literals:
-    #         print("none!!!!")
-    # print([c.to_tptp() for c in cl])
-    f = FormulaGenerator(m, clause_generators=[clause_gen1, clause_gen2])
+    clause_gen2 = KSATClauseGenerator(k_clauses={3: 7},
+                                      literal_gen=lit_gen2)
+    f = FormulaGenerator(mixes=m,
+                         clause_generators=[clause_gen1, clause_gen2])
     formula = f.generate()
     print(formula.to_tptp())
