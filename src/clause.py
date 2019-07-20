@@ -138,7 +138,7 @@ class KSATClauseGenerator(ClauseGenerator):
                             f'should be more than {total_clauses}. There must be at least one literal per clause')
         if literal_gen.total_literals > max_clause_size * total_clauses:
             raise Exception('There are too many variables in variable generator, '
-                            f'should be less than {max_clause_size * total_clauses}')
+                            f'should be less than {max_clause_size * total_clauses}, is {literal_gen.total_literals}')
 
     @staticmethod
     def _default_literal_generator(total_literals: int):

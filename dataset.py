@@ -51,7 +51,7 @@ def dataset_1():
                                              ])
             clause_gen = KSATClauseGenerator(k_clauses='random',
                                              total_clauses=total_clauses,
-                                             max_clause_size=1.5 * total_literals // total_clauses,
+                                             max_clause_size=round(1.6 * total_literals // total_clauses),
                                              literal_gen=lit_gen)
             formula = Formula(clauses=list(clause_gen))
             save_test_file(formula=formula, filename=f'dataset1_{total_clauses}_{ratio}', dir='data_set_1')
@@ -126,7 +126,7 @@ def dataset_3():
                                          ])
         clause_gen = KSATClauseGenerator(k_clauses='random',
                                          total_clauses=total_clauses,
-                                         max_clause_size=1.5 * total_literals // total_clauses,
+                                         max_clause_size=round(1.6 * total_literals // total_clauses),
                                          literal_gen=lit_gen)
         return clause_gen
 
@@ -137,8 +137,8 @@ def dataset_3():
 
             mixes = Mix.chain_mix(clause_groups_length=len(clause_gens), groups_per_mix=2)
             for mix in mixes:
-                mix.number_of_literals = 50
-                mix.number_of_clauses = random.randint(2, 25)
+                mix.number_of_literals = random.randint(25, 100)
+                mix.number_of_clauses = random.randint(2, 20)
 
             formula_gen = FormulaGenerator(mixes=mixes, clause_generators=clause_gens)
             formula = formula_gen.generate()
@@ -151,8 +151,8 @@ if __name__ == '__main__':
     print('Starting')
 
     random.seed(seed)
-    dataset_1()
-    dataset_2()
+    # dataset_1()
+    # dataset_2()
     dataset_3()
 
     print('Finished')
