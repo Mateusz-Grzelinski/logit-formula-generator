@@ -13,12 +13,29 @@ from src.literal import LiteralPicker, RandomLiteralGenerator
 @dataclass
 class Mix:
     indexes: Tuple[int, ...]
-    number_of_clauses: int
-    number_of_literals: int
+    number_of_clauses: int = 1
+    number_of_literals: int = 1
 
     @staticmethod
-    def chain_mix(clause_groups: List[Clause], groups_per_mix: int, skip: int = 0) -> List[Mix]:
-        raise NotImplemented
+    def chain_mix(clause_groups_length: int, groups_per_mix: int, skip: int = 0) -> List[Mix]:
+        """:return mixes with indexes set to chain pattern, ex.
+        groups_per_mix=2: (0,1), (1,2), (2,3), ...
+        groups_per_mix=3: (0,1,2), (1,2,3), ...
+        groups_per_mix=3, skip=1: (0,1,2), (2,3,4), ...
+        """
+        mixes = []
+
+        if skip != 0:
+            ran = range(0, clause_groups_length, skip)
+        else:
+            ran = range(clause_groups_length)
+
+        for i in ran:
+            if i + groups_per_mix > clause_groups_length:
+                break
+            mix = Mix(indexes=tuple(j for j in range(i, i + groups_per_mix)))
+            mixes.append(mix)
+        return mixes
 
 
 class Formula:
@@ -107,6 +124,7 @@ class FormulaGenerator:
         return formula
 
     def _shuffle(self, formula: Formula) -> Formula:
+        # todo new clause should be different from all others
         for i, mix in enumerate(self.mixes):
             # indexes, number_of_clauses, mix_clause_gen
             groups = [formula.clause_groups[i] for i in mix.indexes]
@@ -117,7 +135,7 @@ class FormulaGenerator:
                 literals = literals.union(clause.literals)
             for literal in literals.copy():
                 new_literal = copy.deepcopy(literal)
-                new_literal.negated = not new_literal.negated
+                new_literal.is_negated = not new_literal.is_negated
                 literals.add(new_literal)
 
             try:
