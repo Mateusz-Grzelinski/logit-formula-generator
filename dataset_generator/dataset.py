@@ -1,39 +1,16 @@
-import os
 import random
 import time
+from multiprocessing.pool import Pool
 
+from dataset_generator.processes import generate_process, save_test_file
 from src.clause import KSATClauseGenerator
 from src.formula import Formula, Mix, FormulaGenerator
-from src.headers import TPTPHeader
 from src.literal import RandomLiteralGenerator
 from src.predicate import SafetyGenerator, LivenessGenerator
 
 seed = int(time.time() * 1000)
-directory = 'test_data'
-
-
-def save_test_file(formula: Formula, filename: str, dir: str = ''):
-    global directory
-    if not os.path.splitext(filename)[1]:
-        filename += '.p'
-    header = TPTPHeader()
-    header.read_from(formula)
-    header.version = 'not versioned'
-    header.output_file = filename
-    header.comment_sign = '%'
-
-    if not os.path.isdir(directory):
-        os.mkdir(directory)
-    dir = os.path.join(directory, dir)
-    if not os.path.isdir(dir):
-        os.mkdir(dir)
-    filename = os.path.join(dir, filename)
-
-    with open(filename, 'w+') as file:
-        file.truncate()
-        file.write(header.get_header())
-        for part in formula.to_tptp():
-            file.write(part + '\n')
+pool = Pool()
+argument_queue = list()
 
 
 def dataset_1():
@@ -53,8 +30,7 @@ def dataset_1():
                                              total_clauses=total_clauses,
                                              max_clause_size=round(1.6 * total_literals // total_clauses),
                                              literal_gen=lit_gen)
-            formula = Formula(clauses=list(clause_gen))
-            save_test_file(formula=formula, filename=f'dataset1_{total_clauses}_{ratio}', dir='data_set_1')
+            argument_queue.append((clause_gen, f'data_set1_{total_clauses}_{ratio}', 'data_set_1'))
 
 
 def dataset_2():
@@ -74,8 +50,7 @@ def dataset_2():
                                              total_clauses=total_clauses,
                                              max_clause_size=round(1.6 * total_literals // total_clauses),
                                              literal_gen=lit_gen)
-            formula = Formula(clauses=list(clause_gen))
-            save_test_file(formula=formula, filename=f'dataset2_{total_clauses}_{ratio}:1', dir='data_set_2')
+            argument_queue.append((clause_gen, f'data_set2_{total_clauses}_{ratio}:1', 'data_set_2'))
 
             lit_gen = RandomLiteralGenerator(total_literals=total_literals,
                                              unique_literals=0.75,
@@ -88,8 +63,7 @@ def dataset_2():
                                              total_clauses=total_clauses,
                                              max_clause_size=round(1.6 * total_literals // total_clauses),
                                              literal_gen=lit_gen)
-            formula = Formula(clauses=list(clause_gen))
-            save_test_file(formula=formula, filename=f'dataset2_{total_clauses}_1:{ratio}', dir='data_set_2')
+            argument_queue.append((clause_gen, f'data_set2_{total_clauses}_1:{ratio}', 'data_set_2'))
 
 
 def dataset_3():
@@ -250,4 +224,6 @@ if __name__ == '__main__':
     # dataset_3()
     # dataset_4()
 
-    print('Finished')
+    pool.map(generate_process, argument_queue)
+    pool.close()
+    print('All processes finished')
