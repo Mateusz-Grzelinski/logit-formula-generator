@@ -145,7 +145,7 @@ class KSATClauseGenerator(ClauseGenerator):
         return RandomLiteralGenerator(total_literals=total_literals,
                                       unique_literals=0.75,
                                       negate_probability=0.5,
-                                      predicate_generator=[ConstantGenerator(predicate_name='constant')])
+                                      predicate_generators=[ConstantGenerator(predicate_name='constant')])
 
     @property
     def total_clauses(self):
@@ -202,7 +202,7 @@ if __name__ == '__main__':
 
     lit_gen = RandomLiteralGenerator(total_literals=10,
                                      unique_literals=5,
-                                     predicate_generator=[
+                                     predicate_generators=[
                                          ConstantGenerator(predicate_name='constant'),
                                          SafetyGenerator(predicate_name='safety', argument='A'),
                                          LivenessGenerator(predicate_name='liveness', argument='a')

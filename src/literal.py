@@ -78,8 +78,9 @@ class RandomLiteralGenerator(LiteralGenerator):
     def negate_probability(self) -> float:
         return self._negate_probability
 
-    def __init__(self, predicate_generator: List[SimplePredicateGenerator],
+    def __init__(self, predicate_generators: List[SimplePredicateGenerator],
                  total_literals: int,
+                 predicate_generators_weights: List[float] = None,
                  unique_literals: Union[int, float] = None,
                  negate_probability: float = 0.5):
         """
@@ -87,9 +88,13 @@ class RandomLiteralGenerator(LiteralGenerator):
         :param unique_literals: how many different literals to produce, either fixed value or percentage
         :param negate_probability: what percent of literals should be negated [0.0 to 1.0]
         """
-        self.predicate_generators = predicate_generator
+        if predicate_generators_weights is not None and len(predicate_generators_weights) != len(predicate_generators):
+            raise Exception('predicate weights and generators lists must be the same length')
+        self.predicate_generators = predicate_generators
+        self.predicate_generators_weights = predicate_generators_weights
         self._total_literals = total_literals
         self._negate_probability = negate_probability
+        # todo is it really needed?
         self._generated_unique_literals = 0
         self._generated_used_literal = 0
 
@@ -114,7 +119,7 @@ class RandomLiteralGenerator(LiteralGenerator):
 
     @property
     def _predicate_generator(self):
-        return random.choice(self.predicate_generators)
+        return random.choices(self.predicate_generators, weights=self.predicate_generators_weights)[0]
 
     @property
     def total_literals(self) -> int:
@@ -225,7 +230,7 @@ if __name__ == '__main__':
 
     lit_gen = RandomLiteralGenerator(total_literals=21,
                                      unique_literals=5,
-                                     predicate_generator=[
+                                     predicate_generators=[
                                          ConstantGenerator(predicate_name='c'),
                                          SafetyGenerator(predicate_name='s', argument='A'),
                                          LivenessGenerator(predicate_name='l', argument='a')

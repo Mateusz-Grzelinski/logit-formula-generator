@@ -18,7 +18,9 @@ class Mix:
 
     @staticmethod
     def chain_mix(clause_groups_length: int, groups_per_mix: int, skip: int = 0) -> List[Mix]:
-        """:return mixes with indexes set to chain pattern, ex.
+        """
+        :return mixes with indexes set to chain pattern, ex.
+
         groups_per_mix=2: (0,1), (1,2), (2,3), ...
         groups_per_mix=3: (0,1,2), (1,2,3), ...
         groups_per_mix=3, skip=1: (0,1,2), (2,3,4), ...
@@ -169,14 +171,14 @@ if __name__ == '__main__':
 
     lit_gen = RandomLiteralGenerator(total_literals=10,
                                      unique_literals=5,
-                                     predicate_generator=[
+                                     predicate_generators=[
                                          # ConstantGenerator(predicate_name='constant'),
                                          SafetyGenerator(predicate_name='safety', argument='A'),
                                          # LivenessGenerator(predicate_name='liveness', argument='a')
                                      ])
     lit_gen2 = RandomLiteralGenerator(total_literals=21,
                                       unique_literals=9,
-                                      predicate_generator=[
+                                      predicate_generators=[
                                           # ConstantGenerator(predicate_name='constant'),
                                           # SafetyGenerator(predicate_name='safety', argument='A'),
                                           LivenessGenerator(predicate_name='liveness', argument='a')
