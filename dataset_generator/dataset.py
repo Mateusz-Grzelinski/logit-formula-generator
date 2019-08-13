@@ -3,10 +3,10 @@ import time
 from multiprocessing.pool import Pool
 
 from dataset_generator.processes import generate_process, save_test_file
+from src.atom import SafetyGenerator, LivenessGenerator
 from src.clause import KSATClauseGenerator
 from src.formula import Formula, Mix, FormulaGenerator
 from src.literal import RandomLiteralGenerator
-from src.predicate import SafetyGenerator, LivenessGenerator
 
 seed = int(time.time() * 1000)
 pool = Pool()

@@ -4,25 +4,25 @@ from math import ceil
 from typing import Optional, List, Union
 
 from src._common import random_bool
-from src.predicate import SimplePredicateGenerator, Predicate
+from src.atom import SimpleAtomGenerator, Atom
 
 
 class Literal:
-    def __init__(self, predicate: Predicate, negated: bool = False):
-        self.predicate = predicate
+    def __init__(self, atom: Atom, negated: bool = False):
+        self.atom = atom
         self.is_negated: bool = negated
 
     def to_tptp(self) -> str:
         out = '~' if self.is_negated else ''
-        return out + self.predicate.to_tptp()
+        return out + self.atom.to_tptp()
 
     def __hash__(self) -> int:
-        return hash((self.predicate, self.is_negated))
+        return hash((self.atom, self.is_negated))
 
     def __eq__(self, other):
         if not isinstance(other, type(self)):
             return False
-        return self.predicate == other.predicate and self.is_negated == other.is_negated
+        return self.atom == other.atom and self.is_negated == other.is_negated
 
     def __str__(self):
         return self.to_tptp()
@@ -78,7 +78,7 @@ class RandomLiteralGenerator(LiteralGenerator):
     def negate_probability(self) -> float:
         return self._negate_probability
 
-    def __init__(self, predicate_generators: List[SimplePredicateGenerator],
+    def __init__(self, predicate_generators: List[SimpleAtomGenerator],
                  total_literals: int,
                  predicate_generators_weights: List[float] = None,
                  unique_literals: Union[int, float] = None,
@@ -118,7 +118,7 @@ class RandomLiteralGenerator(LiteralGenerator):
             raise Exception('number of total literals must be greater or equal to unique literals')
 
     @property
-    def _predicate_generator(self):
+    def _atom_generator(self):
         return random.choices(self.predicate_generators, weights=self.predicate_generators_weights)[0]
 
     @property
@@ -174,7 +174,7 @@ class RandomLiteralGenerator(LiteralGenerator):
             return None
         self._generated_used_literal += 1
 
-        return Literal(predicate=self._predicate_generator.used_predicate,
+        return Literal(atom=self._atom_generator.used_predicate,
                        negated=random_bool(self._negate_probability))
 
     @property
@@ -185,7 +185,7 @@ class RandomLiteralGenerator(LiteralGenerator):
         if self.unique_literals_left == 0:
             return None
 
-        var = Literal(predicate=self._predicate_generator.new_predicate,
+        var = Literal(atom=self._atom_generator.new_atom,
                       negated=random_bool(self._negate_probability))
         self._generated_unique_literals += 1
         return var
@@ -226,7 +226,7 @@ class LiteralPicker(LiteralGenerator):
 
 if __name__ == '__main__':
 
-    from src.predicate import ConstantGenerator, SafetyGenerator, LivenessGenerator
+    from src.atom import ConstantGenerator, SafetyGenerator, LivenessGenerator
 
     lit_gen = RandomLiteralGenerator(total_literals=21,
                                      unique_literals=5,

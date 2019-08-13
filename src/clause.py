@@ -3,27 +3,187 @@ import random
 from abc import abstractmethod
 from dataclasses import dataclass, field
 from math import ceil
-from typing import Dict, Set, Union
+from typing import Dict, Set, Union, List
 
+from src.atom import Atom
 from src.literal import Literal, LiteralGenerator, RandomLiteralGenerator
 
 
 @dataclass
 class Clause:
     name: str = 'clause_name'
-    literals: Set[Literal] = field(default_factory=set)
+    total_literals: Set[Literal] = field(default_factory=set)
 
     def to_tptp(self) -> str:
-        literal_tptp = (literal.to_tptp() for literal in self.literals)
+        literal_tptp = (literal.to_tptp() for literal in self.total_literals)
         return f'cnf({self.name}, axiom, ({" | ".join(literal_tptp)}) ).'
 
     def __hash__(self) -> int:
-        return hash(i for i in self.literals)
+        return hash(i for i in self.total_literals)
 
     def __eq__(self, other):
         if not isinstance(other, type(self)):
             return False
-        return self.literals == other.literals
+        return self.total_literals == other.total_literals
+
+    @property
+    def predicates(self) -> Set[Atom]:
+        """:return set of unique predicates in clause"""
+        # predicate hash is generated based on name and arguments
+        # in maths predicate is unique only based on its name
+        # if we would put atoms in set, 2 atoms with the same name and different argument could show up
+        predicates = set()
+        predicate_names = set()
+        for literal in self.total_literals:
+            if literal.atom.name not in predicate_names:
+                predicates.add(literal.atom)
+            predicate_names.add(literal.atom.name)
+        return predicates
+
+    @property
+    def number_of_predicates(self) -> int:
+        """:return number of unique predicates in clause"""
+        return len(self.predicates)
+
+    @property
+    def total_predicates(self):
+        """Like self.predicates, but no deduplication is done"""
+        predicates = list()
+        for literal in self.total_literals:
+            predicates.extend(literal.atom)
+        return predicates
+
+    @property
+    def total_number_of_predicates(self):
+        return len(self.total_predicates)
+
+    @property
+    def predicate_arities(self) -> Dict[int, int]:
+        predicates = {}
+        for pred in self.predicates:
+            if predicates.get(pred.arity) is None:
+                predicates[pred.arity] = 0
+            else:
+                predicates[pred.arity] += 1
+        return predicates
+
+    @property
+    def functors(self) -> Set[str]:
+        functors = set()
+        for literal in self.total_literals:
+            functors.update(literal.atom.functors)
+        return functors
+
+    @property
+    def number_of_functors(self):
+        return len(self.functors)
+
+    @property
+    def total_functors(self) -> List[str]:
+        total_functors = list()
+        for literal in self.total_literals:
+            total_functors.extend(literal.atom.total_functors)
+        return total_functors
+
+    @property
+    def total_number_of_functors(self):
+        return len(self.total_functors)
+
+    @property
+    def functor_arities(self) -> Dict[int, int]:
+        """Not supported. Functor arity is always 0 """
+        functors = {}
+        for functor in self.total_functors:
+            if functors.get(functor) is None:
+                # in future: functors[functor.arity] = 0
+                functors[0] = 0
+            else:
+                functors[0] += 1
+        return functors
+
+    @property
+    def atoms(self):
+        """Iterate atoms in clause, without duplicates"""
+        atoms = set()
+        for literal in self.total_literals:
+            atoms.add(literal.atom)
+        return atoms
+
+    @property
+    def number_of_atoms(self):
+        """Similar to self.number_of_literals, but ignores sing.
+
+        if self.number_of_atoms < self.number_of_literals that means in formula there is used atom and `not` atom
+        """
+        return len(self.atoms)
+
+    @property
+    def total_atoms(self):
+        """Atoms with duplicates"""
+        atoms = list()
+        for literal in self.total_literals:
+            atoms.append(literal.atom)
+        return atoms
+
+    @property
+    def total_number_of_atoms(self):
+        return len(self.total_atoms)
+
+    @property
+    def total_number_of_literals(self) -> int:
+        return len(self.total_literals)
+
+    @property
+    def total_number_of_negated_literals(self) -> int:
+        return len([literal for literal in self.total_literals if literal.is_negated])
+
+    @property
+    def is_unit(self) -> bool:
+        """Unit clause is clause with one predicate"""
+        return len(self.predicates) == 1
+
+    @property
+    def variables(self) -> Set[str]:
+        variables = set()
+        for literal in self.total_literals:
+            variables.update(literal.atom.variables)
+        return variables
+
+    @property
+    def number_of_variables(self) -> int:
+        return len(self.variables)
+
+    @property
+    def total_variables(self) -> List[str]:
+        variables = list()
+        for literal in self.total_literals:
+            variables.extend(literal.atom.total_variables)
+        return variables
+
+    @property
+    def total_number_of_variables(self) -> int:
+        return len(self.total_variables)
+
+    @property
+    def singleton_variables(self) -> Set[str]:
+        repeated_variables = set()
+        singleton_variables = set()
+        for literal in self.total_literals:
+            for variable in literal.atom.variables:
+                if variable in repeated_variables:
+                    continue
+
+                if variable in singleton_variables:
+                    singleton_variables.remove(variable)
+                    repeated_variables.add(variable)
+                    continue
+
+                singleton_variables.add(variable)
+        return singleton_variables
+
+    @property
+    def number_of_singleton_variables(self) -> int:
+        return len(self.singleton_variables)
 
 
 class ClauseGenerator:
@@ -185,7 +345,7 @@ class KSATClauseGenerator(ClauseGenerator):
                 literals.add(lit)
             assert all(literals), 'there is None element in literals'
 
-            clause = Clause(literals=literals)
+            clause = Clause(total_literals=literals)
             if clause not in self._generated_clauses:
                 self._generated_clauses.add(clause)
                 self.k_clauses[next_clause_size] -= 1
@@ -198,7 +358,7 @@ class KSATClauseGenerator(ClauseGenerator):
 
 if __name__ == '__main__':
 
-    from src.predicate import ConstantGenerator, SafetyGenerator, LivenessGenerator
+    from src.atom import ConstantGenerator, SafetyGenerator, LivenessGenerator, Atom, Atom, Atom
 
     lit_gen = RandomLiteralGenerator(total_literals=10,
                                      unique_literals=5,

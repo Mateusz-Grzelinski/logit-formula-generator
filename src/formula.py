@@ -4,7 +4,8 @@ import copy
 import itertools
 import sys
 from dataclasses import dataclass
-from typing import Tuple, List, Union, Iterable, Generator
+from statistics import mean
+from typing import Tuple, List, Union, Generator, Iterator, Dict
 
 from src.clause import ClauseGenerator, Clause, KSATClauseGenerator
 from src.literal import LiteralPicker, RandomLiteralGenerator
@@ -50,69 +51,157 @@ class Formula:
             raise Exception('clauses must be list of lists, or list of clauses')
 
     @property
-    def clauses(self) -> Iterable[Clause]:
+    def clauses(self) -> Iterator[Clause]:
         return itertools.chain.from_iterable(self.clause_groups)
 
-    def to_tptp(self) -> Generator[None, List[Clause], None]:
+    def to_tptp(self) -> Generator[None, List[str], None]:
         for clause in self.clauses:
             yield clause.to_tptp()
+
+    @property
+    def max_term_depth(self):
+        max_result = 0
+        for clause in self.clauses:
+            max_result = max(max_result, max(atom.arity for atom in clause.atoms))
+            # add functors in furture
+            # for atom in clause.atoms:
+            #     max_result = max(functor.arity for functor in atom.functors)
+        return max_result
+
+    @property
+    def atoms(self):
+        atoms = set()
+        for clause in self.clauses:
+            atoms.update(clause.atoms)
+        return atoms
+
+    @property
+    def number_of_atoms(self):
+        return len(self.atoms)
+
+    @property
+    def total_atoms(self):
+        atoms = list()
+        for clause in self.clauses:
+            atoms.extend(clause.total_atoms)
+        return atoms
+
+    @property
+    def total_number_of_atoms(self):
+        return len(self.total_atoms)
+
+    @property
+    def literals(self):
+        """Deduplicated literals"""
+        literals = set()
+        for clause in self.clauses:
+            literals.update(clause.total_literals)
+        return literals
+
+    @property
+    def number_of_literals(self):
+        # this logic will become more complex, when equality and recursive term is supported
+        return len(self.literals)
+
+    @property
+    def total_literals(self):
+        """Literals with duplicates"""
+        literals = list()
+        for clause in self.clauses:
+            literals.extend(clause.total_literals)
+        return literals
+
+    @property
+    def total_number_of_literals(self):
+        return len(self.total_literals)
+
+    @property
+    def total_number_of_negated_literals(self):
+        return sum(clause.total_number_of_negated_literals for clause in self.clauses)
 
     @property
     def number_of_clauses(self):
         return len(list(self.clauses))
 
     @property
-    def number_of_atoms(self):
-        # this logic will become more complex, when equality and recursive term is supported
-        return sum(len(clause.literals) for clause in self.clauses)
+    def max_clause_size(self):
+        return max(clause.total_number_of_literals for clause in self.clauses)
 
     @property
-    def max_clause_size(self):
-        return max(len(clause.literals) for clause in self.clauses)
+    def average_clause_size(self):
+        return mean(clause.total_number_of_literals for clause in self.clauses)
 
     @property
     def number_of_predicates(self):
-        predicates = set()
-        for clause in self.clauses:
-            predicates.update(literal.predicate.name for literal in clause.literals)
-        return len(predicates)
+        return sum(clause.number_of_predicates for clause in self.clauses)
 
     @property
     def number_of_functors(self):
-        # in general, functor is predicate inside predicate, special case is 0-arity predicate, called constant
-        # ex. pred(constant, functor_1(a), functor_2(a, a))
-        # see tptp SYN005-1.010.p for reference
-        number_of_constants = 0
-        for clause in self.clauses:
-            variables = set()
-            for literal in clause.literals:
-                arguments = literal.predicate.arguments
-                variables.update(arg for arg in arguments if arg[0].islower())
-            number_of_constants += len(variables)
-        return number_of_constants
+        """Functor is predicate that returns term. Variables have scope per clause.
+
+        For example: `cnf(p0(A), p1(A)` has 1 variable called `A`
+        """
+        return sum(clause.number_of_functors for clause in self.clauses)
+
+    @property
+    def total_number_of_functors(self):
+        return sum(clause.total_number_of_functors for clause in self.clauses)
 
     @property
     def number_of_variables(self):
-        # see tptp SYN002-1.007.008.p for reference
-        number_of_variables = 0
+        """Variable is term that starts with uppercase. Variables have scope per clause.
+
+        For example: `cnf(p0(A), p1(A)` has 1 variable called `A`
+        """
+        result = 0
         for clause in self.clauses:
-            variables = set()
-            for literal in clause.literals:
-                arguments = literal.predicate.arguments
-                variables.update(arg for arg in arguments if arg[0].isupper())
-            number_of_variables += len(variables)
-        return number_of_variables
+            result += sum(pred.number_of_variables for pred in clause.predicates)
+        return result
 
     @property
-    def max_term_depth(self):
-        return 1
+    def total_number_of_variables(self):
+        """Number of variables, ignoring their scope. This is not a correct way of counting variables.
+
+        For example: `cnf(p0(A), p1(A)` has 2 variables called `A`
+        """
+        return sum(clause.total_number_of_variables for clause in self.clauses)
 
     @property
-    def number_of_negated_literals(self):
-        negated_literals = 0
+    def number_of_singleton_variables(self):
+        """Singleton variables is used only once in clause
+
+        For example: `cnf(name, axiom, p(A) | p(B) | p(A))` has 1 singleton variable `B`
+        """
+        return sum(clause.number_of_singleton_variables for clause in self.clauses)
+
+    @property
+    def number_of_unit_clauses(self):
+        """Unit clause has only one atom"""
+        return len([clause for clause in self.clauses if clause.is_unit])
+
+    @property
+    def predicate_arities(self) -> Dict[int, int]:
+        """:return dictionary: key is arity, values is number of occurrences"""
+        predicates = {}
         for clause in self.clauses:
-            negated_literals += len([literal for literal in clause.literals if literal.is_negated])
-        return negated_literals
+            for predicate_arity, predicate_occurrences in clause.predicate_arities.items():
+                if predicates.get(predicate_arity) is not None:
+                    predicates[predicate_arity] += predicate_occurrences
+                else:
+                    predicates[predicate_occurrences] = predicate_occurrences
+        return predicates
+
+    @property
+    def functor_arities(self) -> Dict[int, int]:
+        """:return dictionary: key is arity, values is number of occurrences"""
+        functors = {}
+        for clause in self.clauses:
+            for functor_arity, functor_arity_occurrences in clause.functor_arities.items():
+                if functors.get(functor_arity) is not None:
+                    functors[functor_arity] += functor_arity_occurrences
+                else:
+                    functors[functor_arity] = functor_arity_occurrences
+        return functors
 
 
 class FormulaGenerator:
@@ -159,7 +248,7 @@ class FormulaGenerator:
 
 
 if __name__ == '__main__':
-    from src.predicate import SafetyGenerator, LivenessGenerator
+    from src.atom import SafetyGenerator, LivenessGenerator
 
     m = [Mix(indexes=(0, 1),
              number_of_clauses=2,
