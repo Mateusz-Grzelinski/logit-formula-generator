@@ -188,7 +188,7 @@ class Formula:
                 if predicates.get(predicate_arity) is not None:
                     predicates[predicate_arity] += predicate_occurrences
                 else:
-                    predicates[predicate_occurrences] = predicate_occurrences
+                    predicates[predicate_arity] = predicate_occurrences
         return predicates
 
     @property
