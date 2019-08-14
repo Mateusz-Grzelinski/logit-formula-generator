@@ -143,10 +143,16 @@ class Clause:
         return len(self.predicates) == 1
 
     @property
-    def variables(self) -> Set[str]:
-        variables = set()
+    def variables(self) -> List[str]:
+        """Variables are unique per clause
+        variable in different clause with the same name is different variable
+
+        There are 2 variables in following examlpe, both callled 'X':
+        `cnf(name1, axiom, p1(X)). cnf(name2, axiom, p2(X)).`
+        """
+        variables = list()
         for literal in self.total_literals:
-            variables.update(literal.atom.variables)
+            variables.extend(literal.atom.variables)
         return variables
 
     @property

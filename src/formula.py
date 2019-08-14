@@ -5,7 +5,7 @@ import itertools
 import sys
 from dataclasses import dataclass
 from statistics import mean
-from typing import Tuple, List, Union, Generator, Iterator, Dict
+from typing import Tuple, List, Union, Generator, Iterator, Dict, Set, Literal
 
 from src.clause import ClauseGenerator, Clause, KSATClauseGenerator
 from src.literal import LiteralPicker, RandomLiteralGenerator
@@ -59,7 +59,7 @@ class Formula:
             yield clause.to_tptp()
 
     @property
-    def max_term_depth(self):
+    def max_term_depth(self) -> int:
         max_result = 0
         for clause in self.clauses:
             max_result = max(max_result, max(atom.arity for atom in clause.atoms))
@@ -69,29 +69,29 @@ class Formula:
         return max_result
 
     @property
-    def atoms(self):
+    def atoms(self) -> Set[Atom]:
         atoms = set()
         for clause in self.clauses:
             atoms.update(clause.atoms)
         return atoms
 
     @property
-    def number_of_atoms(self):
+    def number_of_atoms(self) -> int:
         return len(self.atoms)
 
     @property
-    def total_atoms(self):
+    def total_atoms(self) -> List[Atom]:
         atoms = list()
         for clause in self.clauses:
             atoms.extend(clause.total_atoms)
         return atoms
 
     @property
-    def total_number_of_atoms(self):
+    def total_number_of_atoms(self) -> int:
         return len(self.total_atoms)
 
     @property
-    def literals(self):
+    def literals(self) -> Set[Literal]:
         """Deduplicated literals"""
         literals = set()
         for clause in self.clauses:
@@ -99,12 +99,12 @@ class Formula:
         return literals
 
     @property
-    def number_of_literals(self):
+    def number_of_literals(self) -> int:
         # this logic will become more complex, when equality and recursive term is supported
         return len(self.literals)
 
     @property
-    def total_literals(self):
+    def total_literals(self) -> List[Literal]:
         """Literals with duplicates"""
         literals = list()
         for clause in self.clauses:
@@ -112,31 +112,31 @@ class Formula:
         return literals
 
     @property
-    def total_number_of_literals(self):
+    def total_number_of_literals(self) -> int:
         return len(self.total_literals)
 
     @property
-    def total_number_of_negated_literals(self):
+    def total_number_of_negated_literals(self) -> int:
         return sum(clause.total_number_of_negated_literals for clause in self.clauses)
 
     @property
-    def number_of_clauses(self):
+    def number_of_clauses(self) -> int:
         return len(list(self.clauses))
 
     @property
-    def max_clause_size(self):
+    def max_clause_size(self) -> int:
         return max(clause.total_number_of_literals for clause in self.clauses)
 
     @property
-    def average_clause_size(self):
+    def average_clause_size(self) -> float:
         return mean(clause.total_number_of_literals for clause in self.clauses)
 
     @property
-    def number_of_predicates(self):
+    def number_of_predicates(self) -> int:
         return sum(clause.number_of_predicates for clause in self.clauses)
 
     @property
-    def number_of_functors(self):
+    def number_of_functors(self) -> int:
         """Functor is predicate that returns term. Variables have scope per clause.
 
         For example: `cnf(p0(A), p1(A)` has 1 variable called `A`
@@ -144,22 +144,19 @@ class Formula:
         return sum(clause.number_of_functors for clause in self.clauses)
 
     @property
-    def total_number_of_functors(self):
+    def total_number_of_functors(self) -> int:
         return sum(clause.total_number_of_functors for clause in self.clauses)
 
     @property
-    def number_of_variables(self):
+    def number_of_variables(self) -> int:
         """Variable is term that starts with uppercase. Variables have scope per clause.
 
         For example: `cnf(p0(A), p1(A)` has 1 variable called `A`
         """
-        result = 0
-        for clause in self.clauses:
-            result += sum(pred.number_of_variables for pred in clause.predicates)
-        return result
+        return sum(clause.number_of_variables for clause in self.clauses)
 
     @property
-    def total_number_of_variables(self):
+    def total_number_of_variables(self) -> int:
         """Number of variables, ignoring their scope. This is not a correct way of counting variables.
 
         For example: `cnf(p0(A), p1(A)` has 2 variables called `A`
@@ -167,7 +164,7 @@ class Formula:
         return sum(clause.total_number_of_variables for clause in self.clauses)
 
     @property
-    def number_of_singleton_variables(self):
+    def number_of_singleton_variables(self) -> int:
         """Singleton variables is used only once in clause
 
         For example: `cnf(name, axiom, p(A) | p(B) | p(A))` has 1 singleton variable `B`
@@ -175,7 +172,7 @@ class Formula:
         return sum(clause.number_of_singleton_variables for clause in self.clauses)
 
     @property
-    def number_of_unit_clauses(self):
+    def number_of_unit_clauses(self) -> int:
         """Unit clause has only one atom"""
         return len([clause for clause in self.clauses if clause.is_unit])
 
@@ -248,7 +245,7 @@ class FormulaGenerator:
 
 
 if __name__ == '__main__':
-    from src.atom import SafetyGenerator, LivenessGenerator
+    from src.atom import SafetyGenerator, LivenessGenerator, Atom
 
     m = [Mix(indexes=(0, 1),
              number_of_clauses=2,
