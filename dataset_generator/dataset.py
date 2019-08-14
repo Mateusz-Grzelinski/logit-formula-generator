@@ -79,14 +79,14 @@ def dataset_3():
                                          ])
         clause_gen = KSATClauseGenerator(k_clauses=k_clauses.copy(),
                                          literal_gen=lit_gen)
-        formula = Formula(clauses=list(clause_gen))
+        _part_filename = [f'{key}:{value}' for key, value in k_clauses.items()]
+        filename = f'dataset3_{total_clauses}_{"_".join(_part_filename)}'
+        dir = 'data_set_3'
 
-        part_filename = [f'{key}:{value}' for key, value in k_clauses.items()]
-        save_test_file(formula=formula, filename=f'dataset2_{total_clauses}_{"_".join(part_filename)}',
-                       dir='data_set_2')
+        argument_queue.append((clause_gen, filename, dir))
 
-    for total_clauses in [100, 200, 300, 400, 500, 1000, 2500, 5000]:
-        print(f'generating dataset 2, total clauses {total_clauses}')
+    for total_clauses in [100, 200, 300, 400, 500, 1000, 2000, 3000, 4000, 5000]:
+        print(f'generating dataset 3, total clauses {total_clauses}')
 
         # part 1 - 4 equal
         k_clauses = {1: round(0.25 * total_clauses),
