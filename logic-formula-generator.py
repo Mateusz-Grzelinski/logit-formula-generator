@@ -25,7 +25,7 @@ File     : {output_file} : logic-formula-generator {version}
 Syntax   : Number of clauses     :{r_justed(clause_gen.total_clauses)} ({r_justed('-')} non-Horn;{r_justed(
         '-')} unit;{r_justed('-')} RR)
            Number of atoms       :{r_justed(lit_gen.total_literals)} ({r_justed('-')} equality)
-           Maximal clause size   :{r_justed(clause_gen.max_clause_size)} ({r_justed('-')} average)
+           Maximal clause total_number_of_literals   :{r_justed(clause_gen.max_clause_size)} ({r_justed('-')} average)
            Number of predicates  :{r_justed(lit_gen.unique_literals)} ({r_justed('-')} propositional;{r_justed(
         '0-0')} arity)
            Number of functors    :{r_justed(0)} ({r_justed(0)} constant;{r_justed('---')} arity)

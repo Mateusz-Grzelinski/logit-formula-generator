@@ -1,31 +1,31 @@
 import random
 from abc import abstractmethod
-from dataclasses import dataclass
 from math import ceil
 from typing import Optional, List, Union
 
 from src._common import random_bool
+from src.atom import SimpleAtomGenerator, Atom
 
 
-@dataclass
 class Literal:
-    name: str
-    number: int = 0
-    negated: bool = False
+    def __init__(self, atom: Atom, negated: bool = False):
+        self.atom = atom
+        self.is_negated: bool = negated
+
+    def to_tptp(self) -> str:
+        out = '~' if self.is_negated else ''
+        return out + self.atom.to_tptp()
 
     def __hash__(self) -> int:
-        return hash((self.name, self.number, self.negated))
+        return hash((self.atom, self.is_negated))
 
     def __eq__(self, other):
         if not isinstance(other, type(self)):
-            return NotImplemented
-        return self.name == other.name and self.number == other.number and self.negated == other.negated
+            return False
+        return self.atom == other.atom and self.is_negated == other.is_negated
 
-    def to_dimacs(self) -> str:
-        return f'-{self.name}{self.number}' if self.negated else f'{self.name}{self.number}'
-
-    def to_tptp(self) -> str:
-        return f'~{self.name}{self.number}' if self.negated else f'{self.name}{self.number}'
+    def __str__(self):
+        return self.to_tptp()
 
 
 class LiteralGenerator:
@@ -47,7 +47,7 @@ class LiteralGenerator:
     @property
     @abstractmethod
     def generated_literal(self) -> int:
-        """:return number of antlr_generated literals"""
+        """:return number of generated literals"""
         pass
 
     @property
@@ -78,18 +78,24 @@ class RandomLiteralGenerator(LiteralGenerator):
     def negate_probability(self) -> float:
         return self._negate_probability
 
-    def __init__(self, total_literals: int, name: str = 'p', unique_literals: Union[int, float] = None,
+    def __init__(self, predicate_generators: List[SimpleAtomGenerator],
+                 total_literals: int,
+                 predicate_generators_weights: List[float] = None,
+                 unique_literals: Union[int, float] = None,
                  negate_probability: float = 0.5):
         """
         :param total_literals: how many literals to produce
-        :param name: prefix of literal
         :param unique_literals: how many different literals to produce, either fixed value or percentage
         :param negate_probability: what percent of literals should be negated [0.0 to 1.0]
         """
-        self._name = name
+        if predicate_generators_weights is not None and len(predicate_generators_weights) != len(predicate_generators):
+            raise Exception('predicate weights and generators lists must be the same length')
+        self.predicate_generators = predicate_generators
+        self.predicate_generators_weights = predicate_generators_weights
         self._total_literals = total_literals
         self._negate_probability = negate_probability
-        self._literal_number = 0
+        # todo is it really needed?
+        self._generated_unique_literals = 0
         self._generated_used_literal = 0
 
         if unique_literals is None:
@@ -100,7 +106,7 @@ class RandomLiteralGenerator(LiteralGenerator):
             self._unique_literals = int(unique_literals)
 
         if not 0 <= self._negate_probability <= 1:
-            raise Exception('negate_pobability range is [0, 1]')
+            raise Exception('negate_probability range is [0, 1]')
 
         if self._unique_literals < 1:
             raise Exception('number of unique literals can not be less than 1')
@@ -112,6 +118,10 @@ class RandomLiteralGenerator(LiteralGenerator):
             raise Exception('number of total literals must be greater or equal to unique literals')
 
     @property
+    def _atom_generator(self):
+        return random.choices(self.predicate_generators, weights=self.predicate_generators_weights)[0]
+
+    @property
     def total_literals(self) -> int:
         return self._total_literals
 
@@ -121,13 +131,13 @@ class RandomLiteralGenerator(LiteralGenerator):
 
     @property
     def generated_literal(self) -> int:
-        """:return number of antlr_generated literals"""
+        """:return number of generated literals"""
         return self.generated_unique_literals + self._generated_used_literal
 
     @property
     def generated_unique_literals(self) -> int:
-        """:return number of antlr_generated unique literals"""
-        return self._literal_number
+        """:return number of generated unique literals"""
+        return self._generated_unique_literals
 
     @property
     def unique_literals_left(self) -> int:
@@ -143,7 +153,7 @@ class RandomLiteralGenerator(LiteralGenerator):
         if self.unique_literals_left == self.literals_left:
             return self.new_literal
 
-        # there are no literals antlr_generated yet
+        # there are no literals generated yet
         if self.generated_literal == 0:
             return self.new_literal
 
@@ -157,15 +167,14 @@ class RandomLiteralGenerator(LiteralGenerator):
 
     @property
     def used_literal(self) -> Optional[Literal]:
-        """Get random, arleady antlr_generated literal
+        """Get random, already generated literal
         :return Variable or None when self.total_literals is hit
         """
-        if not self._literal_number:
+        if self._generated_unique_literals == 0:
             return None
         self._generated_used_literal += 1
 
-        return Literal(name=self._name,
-                       number=random.randint(0, self._literal_number - 1),
+        return Literal(atom=self._atom_generator.used_predicate,
                        negated=random_bool(self._negate_probability))
 
     @property
@@ -173,13 +182,12 @@ class RandomLiteralGenerator(LiteralGenerator):
         """Generate new variable until self.unique_literals is hit
         :return new unique Variable, or None when self.unique_literals_left is 0
         """
-        if not self.unique_literals_left:
+        if self.unique_literals_left == 0:
             return None
 
-        var = Literal(name=self._name,
-                      number=self._literal_number,
+        var = Literal(atom=self._atom_generator.new_atom,
                       negated=random_bool(self._negate_probability))
-        self._literal_number += 1
+        self._generated_unique_literals += 1
         return var
 
 
@@ -191,9 +199,13 @@ class LiteralPicker(LiteralGenerator):
 
     def __init__(self, literals: List[Literal], total_literals):
         self.literals = literals
-        self._negate_probability = len([i for i in literals if i.negated]) / len(literals)
+        self._negate_probability = len([i for i in literals if i is not None and i.is_negated]) / len(literals)
         self._total_literals = total_literals
         self._generated_literals = 0
+
+    @classmethod
+    def from_predicate_picker(cls):
+        raise NotImplemented
 
     @property
     def total_literals(self) -> int:
@@ -210,3 +222,28 @@ class LiteralPicker(LiteralGenerator):
 
         self._generated_literals += 1
         return random.choice(self.literals)
+
+
+if __name__ == '__main__':
+
+    from src.atom import ConstantGenerator, SafetyGenerator, LivenessGenerator
+
+    lit_gen = RandomLiteralGenerator(total_literals=21,
+                                     unique_literals=5,
+                                     predicate_generators=[
+                                         ConstantGenerator(predicate_name='c'),
+                                         SafetyGenerator(predicate_name='s', argument='A'),
+                                         LivenessGenerator(predicate_name='l', argument='a')
+                                     ])
+    from src.clause import KSATClauseGenerator
+
+    clause_gen1 = KSATClauseGenerator(k_clauses={3: 7},
+                                      literal_gen=lit_gen)
+    # clause_gen2 = KSATClauseGenerator(k_clauses={3: 7})
+
+    # for i,l in enumerate(lit_gen):
+    #     print(f"{l}, {lit_gen.literals_left}")
+    for l in clause_gen1:
+        print(f"{l}, {lit_gen.literals_left}")
+    # for l in clause_gen2:
+    #     print(l)
