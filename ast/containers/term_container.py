@@ -1,9 +1,7 @@
 from __future__ import annotations
-from typing import Union, List
 
-from containers.container import Container
-from containers.functor_container import FunctorContainer
-from containers.variable_container import VariableContainer
+from ast.containers import FunctorContainer
+from ast.containers import VariableContainer
 
 
 class TermContainer(VariableContainer, FunctorContainer):

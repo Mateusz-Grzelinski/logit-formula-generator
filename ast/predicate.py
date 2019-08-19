@@ -1,8 +1,8 @@
 from typing import List, Union
 
+from ast.containers import TermContainer
 from ast.functor import Functor
 from ast.variable import Variable
-from containers.term_container import TermContainer
 
 
 class Predicate(TermContainer):

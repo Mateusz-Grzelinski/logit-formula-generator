@@ -2,9 +2,9 @@ from __future__ import annotations
 
 from typing import List
 
+from ast.containers import LiteralContainer
 from ast.literal import Literal
 from ast.operands import LogicalOperand
-from containers.literal_container import LiteralContainer
 
 
 class CNFClause(LiteralContainer):

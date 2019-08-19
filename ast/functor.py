@@ -1,14 +1,14 @@
 from __future__ import annotations
-from typing import List, Union
 
+from typing import List
+
+from ast.containers.term_container import TermContainer
 from ast.term import Term
-from ast.variable import Variable
-from containers.term_container import TermContainer
 
 
 class Functor(Term, TermContainer):
     def __init__(self, name: str,
-                 terms: List[Union[Variable, Functor]] = None):
+                 terms: List[Term] = None):
         Term.__init__(self, name)
         TermContainer.__init__(self, additional_containers=[], items=terms)
 

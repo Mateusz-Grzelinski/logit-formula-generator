@@ -1,4 +1,4 @@
-from containers.literal_container import LiteralContainer
+from ast.containers import LiteralContainer
 
 
 class CNFClauseContainer(LiteralContainer):

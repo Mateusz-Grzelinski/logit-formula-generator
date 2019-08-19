@@ -3,11 +3,8 @@ from __future__ import annotations
 from typing import List
 
 from ast.atom import Atom
+from ast.containers import QuantifierContainer
 from ast.variable import Variable
-from containers.atom_container import AtomContainer
-from containers.predicate_container import PredicateContainer
-from containers.quantifier_container import QuantifierContainer
-from containers.variable_container import VariableContainer
 
 
 class Quantifier(QuantifierContainer):

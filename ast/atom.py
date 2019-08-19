@@ -1,15 +1,12 @@
 from __future__ import annotations
 
-from dataclasses import dataclass
-from typing import Set, List, Optional, Union, Dict
+from typing import List, Optional, Union, Dict
 
+from ast.containers import PredicateContainer
+from ast.containers import TermContainer
 from ast.operands import MathOperand
 from ast.predicate import Predicate
 from ast.term import Term
-from ast.variable import Variable
-from containers.predicate_container import PredicateContainer
-from containers.term_container import TermContainer
-from containers.variable_container import VariableContainer
 
 
 class Atom(TermContainer, PredicateContainer):

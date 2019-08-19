@@ -1,7 +1,7 @@
 from typing import Generator
 
-from containers.predicate_container import PredicateContainer
-from containers.term_container import TermContainer
+from ast.containers import PredicateContainer
+from ast.containers import TermContainer
 
 
 class AtomContainer(TermContainer, PredicateContainer):

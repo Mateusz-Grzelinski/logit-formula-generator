@@ -1,7 +1,8 @@
 from __future__ import annotations
-from typing import List, Generator
 
-from containers.container import Container
+from typing import Generator
+
+from common.container import Container
 
 
 class VariableContainer(Container):
@@ -17,5 +18,6 @@ class VariableContainer(Container):
 
     @property
     def number_of_variables(self):
+        # todo count variables per scope (clause, quantifier)
         return len(set(self.variables)) + \
                sum(len(set(v_cont.variables)) for v_cont in self._other_containers if isinstance(v_cont, VariableContainer))

@@ -1,7 +1,8 @@
 from __future__ import annotations
-from typing import List, Generator
 
-from containers.container import Container
+from typing import Generator
+
+from common.container import Container
 
 
 class PredicateContainer(Container):
