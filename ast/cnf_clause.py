@@ -1,12 +1,9 @@
 from __future__ import annotations
-from typing import List, Any
 
-from docutils.nodes import literal
+from typing import List
 
 from ast.literal import Literal
 from ast.operands import LogicalOperand
-from containers.atom_container import AtomContainer
-from containers.container import Container
 from containers.literal_container import LiteralContainer
 
 
