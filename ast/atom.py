@@ -2,11 +2,11 @@ from __future__ import annotations
 
 from typing import List, Optional, Union, Dict
 
-from ast.containers import PredicateContainer
-from ast.containers import TermContainer
-from ast.operands import MathOperand
-from ast.predicate import Predicate
-from ast.term import Term
+from .containers import PredicateContainer
+from .containers import TermContainer
+from .operands import MathOperand
+from .predicate import Predicate
+from .term import Term
 
 
 class Atom(TermContainer, PredicateContainer):

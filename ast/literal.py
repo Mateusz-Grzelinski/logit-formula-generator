@@ -1,6 +1,6 @@
-from ast.atom import Atom
-from ast.containers import AtomContainer
-from ast.operands import LogicalOperand
+from .atom import Atom
+from .containers import AtomContainer
+from .operands import LogicalOperand
 
 
 class Literal(AtomContainer):

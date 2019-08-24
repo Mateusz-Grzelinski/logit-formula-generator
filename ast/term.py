@@ -1,7 +1,9 @@
 from __future__ import annotations
 
+from abc import ABC
 
-class Term:
+
+class Term(ABC):
     """Term is element of language
 
     """

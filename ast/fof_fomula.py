@@ -2,8 +2,8 @@ from __future__ import annotations
 
 from typing import Set
 
-from ast.containers import AtomContainer
-from ast.containers.quantifier_container import QuantifierContainer
+from .containers import AtomContainer
+from .containers import QuantifierContainer
 
 
 class FOFFormula(AtomContainer, QuantifierContainer):

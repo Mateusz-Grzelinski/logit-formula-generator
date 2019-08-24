@@ -2,9 +2,9 @@ from __future__ import annotations
 
 from typing import List
 
-from ast.atom import Atom
-from ast.containers import QuantifierContainer
-from ast.variable import Variable
+from .atom import Atom
+from .containers import QuantifierContainer
+from .variable import Variable
 
 
 class Quantifier(QuantifierContainer):

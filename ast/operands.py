@@ -1,7 +1,6 @@
-import enum
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from enum import Enum
-from typing import Set, ClassVar, Union
+from typing import ClassVar, Union
 
 
 class LogicalOperand(Enum):

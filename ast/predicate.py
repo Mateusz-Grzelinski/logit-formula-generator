@@ -1,7 +1,7 @@
 from typing import List
 
-from ast.containers import TermContainer
-from ast.term import Term
+from .containers import TermContainer
+from .term import Term
 
 
 class Predicate(TermContainer):

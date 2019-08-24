@@ -1,5 +1,6 @@
 from __future__ import annotations
-from ast.term import Term
+
+from .term import Term
 
 
 class Variable(Term):

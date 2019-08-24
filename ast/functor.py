@@ -2,8 +2,8 @@ from __future__ import annotations
 
 from typing import List
 
-from ast.containers import TermContainer
-from ast.term import Term
+from .containers import TermContainer
+from .term import Term
 
 
 class Functor(Term, TermContainer):
@@ -17,3 +17,12 @@ class Functor(Term, TermContainer):
             return f'{self.name}({", ".join(str(t) for t in self.terms)})'
         else:
             return f'{self.name}'
+
+    def arity(self):
+        return len(self.items)
+
+    def is_recursive(self):
+        return any(isinstance(t, Functor) for t in self.items)
+
+    def is_constant(self):
+        return len(self.items) == 0

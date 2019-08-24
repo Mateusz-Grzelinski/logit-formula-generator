@@ -1,7 +1,7 @@
 from typing import List
 
-from ast.cnf_clause import CNFClause
-from ast.containers import CNFClauseContainer
+from .cnf_clause import CNFClause
+from .containers import CNFClauseContainer
 
 
 class CNFFormula(CNFClauseContainer):
