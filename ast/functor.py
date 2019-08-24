@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import List
 
-from ast.containers.term_container import TermContainer
+from ast.containers import TermContainer
 from ast.term import Term
 
 

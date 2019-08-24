@@ -1,12 +1,11 @@
-from typing import List, Union
+from typing import List
 
 from ast.containers import TermContainer
-from ast.functor import Functor
-from ast.variable import Variable
+from ast.term import Term
 
 
 class Predicate(TermContainer):
-    def __init__(self, name: str, terms: List[Union[Variable, Functor]] = None):
+    def __init__(self, name: str, terms: List[Term] = None):
         self.name = name
         super().__init__(additional_containers=[], items=terms)
 

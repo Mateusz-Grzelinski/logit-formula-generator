@@ -7,7 +7,7 @@ from common.container import Container
 
 class VariableContainer(Container):
     @staticmethod
-    def _type_check(obj):
+    def _item_type_check(obj):
         from ast.variable import Variable
         return isinstance(obj, Variable)
 
@@ -20,4 +20,5 @@ class VariableContainer(Container):
     def number_of_variables(self):
         # todo count variables per scope (clause, quantifier)
         return len(set(self.variables)) + \
-               sum(len(set(v_cont.variables)) for v_cont in self._other_containers if isinstance(v_cont, VariableContainer))
+               sum(len(set(v_cont.variables)) for v_cont in self._all_containers if
+                   isinstance(v_cont, VariableContainer))

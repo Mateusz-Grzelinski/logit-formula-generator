@@ -5,7 +5,7 @@ from common.container import Container
 
 class FunctorContainer(Container):
     @staticmethod
-    def _type_check(obj):
+    def _item_type_check(obj):
         from ast.functor import Functor
         return isinstance(obj, Functor)
 
@@ -17,4 +17,4 @@ class FunctorContainer(Container):
     @property
     def number_of_functors(self):
         return len(set(self.functors)) + \
-               sum(len(set(f_cont.functors)) for f_cont in self._other_containers if isinstance(f_cont,FunctorContainer))
+               sum(len(set(f_cont.functors)) for f_cont in self._all_containers if isinstance(f_cont, FunctorContainer))

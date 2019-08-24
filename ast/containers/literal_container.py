@@ -4,7 +4,7 @@ from ast.containers import AtomContainer
 class LiteralContainer(AtomContainer):
 
     @staticmethod
-    def _type_check(obj):
+    def _item_type_check(obj):
         from ast.literal import Literal
         return isinstance(obj, Literal)
 

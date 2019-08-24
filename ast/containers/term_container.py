@@ -1,12 +1,12 @@
 from __future__ import annotations
 
-from ast.containers import FunctorContainer
-from ast.containers import VariableContainer
+from .functor_container import FunctorContainer
+from .variable_container import VariableContainer
 
 
 class TermContainer(VariableContainer, FunctorContainer):
     @staticmethod
-    def _type_check(obj):
+    def _item_type_check(obj):
         from ast.term import Term
         return isinstance(obj, Term)
 

@@ -1,13 +1,13 @@
 from typing import Generator
 
-from ast.containers import PredicateContainer
-from ast.containers import TermContainer
+from .predicate_container import PredicateContainer
+from .term_container import TermContainer
 
 
 class AtomContainer(TermContainer, PredicateContainer):
 
     @staticmethod
-    def _type_check(obj):
+    def _item_type_check(obj):
         from ast.atom import Atom
         return isinstance(obj, Atom)
 

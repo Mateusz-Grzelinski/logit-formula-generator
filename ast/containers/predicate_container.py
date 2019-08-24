@@ -7,7 +7,7 @@ from common.container import Container
 
 class PredicateContainer(Container):
     @staticmethod
-    def _type_check(obj):
+    def _item_type_check(obj):
         from ast.predicate import Predicate
         return isinstance(obj, Predicate)
 
@@ -22,5 +22,5 @@ class PredicateContainer(Container):
     @property
     def number_of_predicates(self):
         return len(list(self.predicates)) + \
-               sum(len(list(p_cont.predicates)) for p_cont in self._other_containers if
+               sum(len(list(p_cont.predicates)) for p_cont in self._all_containers if
                    isinstance(p_cont, PredicateContainer))

@@ -1,9 +1,9 @@
-from ast.containers import LiteralContainer
+from .literal_container import LiteralContainer
 
 
 class CNFClauseContainer(LiteralContainer):
     @staticmethod
-    def _type_check(obj):
+    def _item_type_check(obj):
         from ast.cnf_clause import CNFClause
         return isinstance(obj, CNFClause)
 
