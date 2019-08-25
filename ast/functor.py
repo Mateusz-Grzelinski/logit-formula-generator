@@ -13,7 +13,7 @@ class Functor(Term, TermContainer):
         TermContainer.__init__(self, additional_containers=[], items=terms)
 
     def __str__(self):
-        if self.terms:
+        if len(self.items) != 0:
             return f'{self.name}({", ".join(str(t) for t in self.terms)})'
         else:
             return f'{self.name}'
