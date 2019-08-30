@@ -22,5 +22,5 @@ class PredicateContainer(Container):
     @property
     def number_of_predicates(self):
         return len(list(self.predicates)) + \
-               sum(len(list(p_cont.predicates)) for p_cont in self._all_containers if
+               sum(len(list(p_cont.predicates)) for p_cont in self._nested_containers if
                    isinstance(p_cont, PredicateContainer))

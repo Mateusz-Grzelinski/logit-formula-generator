@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import itertools
-from typing import List, Any
+from typing import List, Any, Iterable
 
 
 class Container:
@@ -24,12 +24,12 @@ class Container:
         return isinstance(cont, Container)
 
     @property
-    def _all_containers(self):
+    def _nested_containers(self) -> Iterable:
         """iterate over all nested containers. Item can be a container"""
         return itertools.chain((i for i in self.additional_containers),
                                (i for i in self._items if isinstance(i, Container))
                                )
 
     @property
-    def items(self):
+    def items(self) -> List[Any]:
         return self._items

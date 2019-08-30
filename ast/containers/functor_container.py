@@ -17,4 +17,9 @@ class FunctorContainer(Container):
     @property
     def number_of_functors(self):
         return len(set(self.functors)) + \
-               sum(len(set(f_cont.functors)) for f_cont in self._all_containers if isinstance(f_cont, FunctorContainer))
+               sum(len(set(f_cont.functors)) for f_cont in self._nested_containers if
+                   isinstance(f_cont, FunctorContainer))
+
+    @property
+    def max_recursion_depth(self):
+        return max(f.recursion_depth for f in self.functors)

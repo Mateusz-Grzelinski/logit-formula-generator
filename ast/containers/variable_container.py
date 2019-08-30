@@ -20,5 +20,5 @@ class VariableContainer(Container):
     def number_of_variables(self):
         # todo count variables per scope (clause, quantifier)
         return len(set(self.variables)) + \
-               sum(len(set(v_cont.variables)) for v_cont in self._all_containers if
+               sum(len(set(v_cont.variables)) for v_cont in self._nested_containers if
                    isinstance(v_cont, VariableContainer))
