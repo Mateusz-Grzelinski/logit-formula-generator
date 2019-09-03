@@ -6,7 +6,7 @@ from typing import List, Any, Iterable
 
 class Container:
     def __init__(self, additional_containers: List[Container], items: List[Any] = None):
-        self.additional_containers = additional_containers
+        self.additional_containers = additional_containers if additional_containers is not None else []
         """For containers, that are not items"""
         self._items = items if items is not None else []
         """Item can be also a container"""
