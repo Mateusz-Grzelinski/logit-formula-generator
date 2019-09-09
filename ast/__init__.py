@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from .ast_element import AstElement
 from .atom import Atom
 from .cnf_clause import CNFClause
 from .cnf_formula import CNFFormula
@@ -19,5 +20,6 @@ __all__ = [
     'Quantifier',
     'Literal',
     'CNFClause',
-    'CNFFormula'
+    'CNFFormula',
+    'AstElement'
 ]

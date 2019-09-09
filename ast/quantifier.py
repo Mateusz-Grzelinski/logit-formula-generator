@@ -2,12 +2,13 @@ from __future__ import annotations
 
 from typing import List
 
+from .ast_element import AstElement
 from .atom import Atom
 from .containers import QuantifierContainer
 from .variable import Variable
 
 
-class Quantifier(QuantifierContainer):
+class Quantifier(QuantifierContainer, AstElement):
     """Stores first variables declared in this quantifier,
     and then formula?
     """

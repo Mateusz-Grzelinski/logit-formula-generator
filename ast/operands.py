@@ -2,6 +2,8 @@ from dataclasses import dataclass
 from enum import Enum
 from typing import ClassVar, Union
 
+from .ast_element import AstElement
+
 
 class LogicalOperand(Enum):
     """Operand and arity"""
@@ -17,7 +19,7 @@ class MathOperand(Enum):
 
 
 @dataclass
-class Connective:
+class Connective(AstElement):
     operand: Union[MathOperand, LogicalOperand]
     allowed_symbols: ClassVar[str] = set()
 

@@ -2,8 +2,10 @@ from __future__ import annotations
 
 from abc import ABC
 
+from .ast_element import AstElement
 
-class Term(ABC):
+
+class Term(ABC, AstElement):
     """Term is element of language
 
     """

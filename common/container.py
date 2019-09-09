@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import itertools
-from typing import List, Any, Iterable
+from typing import List, Any, Iterable, NoReturn
 
 
 class Container:
@@ -30,6 +30,32 @@ class Container:
                                (i for i in self._items if isinstance(i, Container))
                                )
 
-    @property
-    def items(self) -> List[Any]:
-        return self._items
+    def pop(self, index: int = -1):
+        return self._items.pop(index)
+
+    def items(self, enum: bool = False):
+        if enum:
+            for i, item in enumerate(self._items):
+                yield self, i, item
+            for nested_container in self._nested_containers:
+                yield from nested_container.items(enum=True)
+        else:
+            for item in self._items:
+                yield item
+            for nested_container in self._nested_containers:
+                yield from nested_container.items()
+
+    def __setitem__(self, key, value):
+        self._items[key] = value
+
+    def set_items(self, value: List[Any]) -> NoReturn:
+        self._items = list(value)
+
+
+if __name__ == '__main__':
+    c = Container([], items=[1, 2, 3, 4, 5])
+    c2 = Container([], items=[c, 7, 8, 9, 10])
+    for container, i, item in c2.items(enum=True):
+        # container[i] = item + 1
+        print(f'{container=}, {i=}, {item=}')
+    print(f'{c2._items=}')

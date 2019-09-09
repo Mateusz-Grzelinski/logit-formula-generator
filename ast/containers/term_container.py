@@ -11,6 +11,9 @@ class TermContainer(VariableContainer, FunctorContainer):
         return isinstance(obj, Term)
 
     @property
-    def terms(self):
+    def terms(self, enum: bool = False):
         from ast.term import Term
-        return (t for t in self._items if isinstance(t, Term))
+        if enum:
+            return ((container, i, t) for container, i, t in self.items(enum=True) if isinstance(t, Term))
+        else:
+            return (t for t in self.items() if isinstance(t, Term))

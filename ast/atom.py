@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from typing import List, Optional, Union, Dict
 
+from .ast_element import AstElement
 from .containers import PredicateContainer
 from .containers import TermContainer
 from .operands import MathOperand
@@ -9,7 +10,7 @@ from .predicate import Predicate
 from .term import Term
 
 
-class Atom(TermContainer, PredicateContainer):
+class Atom(TermContainer, PredicateContainer, AstElement):
     """Atom is every propositional statement (statement that can be assigned true or false):
     atom is logical statement - it evaluates to true of false
     Examples:
@@ -52,7 +53,7 @@ class Atom(TermContainer, PredicateContainer):
     def __str__(self):
         # handle incorrect arity vs len(self._items)
         if self.connective is None or self.connective.value == 1:
-            return str(self._items[0])
+            return str(self._items[0]) if self._items else ''
 
         # default visualization
         if self.connective == MathOperand.EQUAL:

@@ -1,10 +1,11 @@
 from typing import List
 
+from .ast_element import AstElement
 from .containers import TermContainer
 from .term import Term
 
 
-class Predicate(TermContainer):
+class Predicate(TermContainer, AstElement):
     def __init__(self, name: str, terms: List[Term] = None):
         self.name = name
         super().__init__(additional_containers=[], items=terms)

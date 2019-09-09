@@ -15,51 +15,47 @@ class Template(ABC):
         """:return all items from population that match template"""
         pass
 
-    @abstractmethod
-    def generate(self, *args, **kwargs) -> Template:
-        """Randomly generate concrete item from this template"""
-        pass
-
 
 class TermTemplate(Template):
     def match(self, population):
         return population
 
-    def generate(self, *args, **kwargs):
-        raise Exception()
-
 
 class VariableTemplate(Variable, TermTemplate):
 
     def __init__(self):
-        super().__init__('v')
+        super().__init__('')
 
     def match(self, population: List[Variable]) -> List[Variable]:
         return population
 
-    def generate(self, name='v') -> Variable:
-        return Variable(name=name)
-
 
 class FunctorTemplate(Functor, TermTemplate, TermTemplateContainer):
-    def __init__(self, terms: List[TermTemplate, Term] = None, name: str = None,
-                 names: str = 'f',
-                 # is_recursive: bool
+    @property
+    def is_recursive(self):
+        return super().is_recursive or any(
+            isinstance(i, TermTemplate) or isinstance(i, FunctorTemplate) for i in self.items)
+
+    def __init__(self, terms: List[TermTemplate, Term] = None,
+                 name: str = None,
                  ):
-        # self.max_recursion_depth = max_recursion_depth
         super().__init__(name, terms)
 
     @staticmethod
     def term_template_generator(arities: List[int],
-                                recursion_depths: List[int],
                                 terms: List[TermTemplate] = None
                                 ):
-        terms = TermTemplate() if terms is None else terms
+        templates = []
         for arity in arities:
-            terms = random.choices(terms, k=arity) if isinstance(terms, list) else [TermTemplate()] * arity
+            if terms is not None:
+                yield random.choices(terms, k=arity)
+            else:
+                yield [TermTemplate()] * arity
 
     def match(self, population: Iterable[Functor]) -> Iterable[Functor]:
         for functor in population:
+            if len(functor.items) != len(self.items):
+                continue
             for nested_template, nested_functor in zip(self.items, functor.items):
                 if not nested_functor == self:
                     continue
@@ -82,19 +78,24 @@ class Generator:
         # start generating from the least recursive structure
         templates.sort(key=lambda x: x.recursion_depth)
         assert templates[0].recursion_depth == 0  # ??
+
+        # f(FT)
         for t in templates:
             if not t.items:
                 functors.append(Functor(name=t.name, terms=[]))
                 continue
-            terms = []
-            for nested_templates in t.items:
-                if isinstance(nested_templates, Variable):
-                    terms.append([nested_templates])
-                elif isinstance(nested_templates, FunctorTemplate):
-                    terms.append(list(nested_templates.match(functors)))
 
-            if not terms:
-                functors.append(Functor(name=t.name, terms=[]))
+            terms: List[Iterable] = []
+            for nested_template in t.items:
+                if isinstance(nested_template, Variable):
+                    terms.append([VariableTemplate()])
+                    continue
+                if isinstance(nested_template, FunctorTemplate):
+                    if nested_template.is_recursive:
+                        print('not supp')
+                    else:
+                        terms.append(list(nested_template.match(functors)))
+
             for term_match in itertools.product(*terms):
                 functors.append(Functor(name=t.name, terms=list(term_match)))
         return functors
@@ -102,15 +103,15 @@ class Generator:
 
 if __name__ == '__main__':
     vt = VariableTemplate()
-    ft = FunctorTemplate(name='f1')
-    ft1 = FunctorTemplate(name='f2')
-    ft2 = FunctorTemplate(name='f3', terms=[
-        FunctorTemplate(name='f4', terms=[])
-    ])
+    ft1 = FunctorTemplate(name='f1')
+    ft2 = FunctorTemplate(name='f2')
+    ft3 = FunctorTemplate(name='f3',
+                          terms=list(FunctorTemplate.term_template_generator(list(range(5))))
+                          )
+    print(ft3)
     g = Generator.generate_functors([
-        ft,
-        ft1,
         ft2,
+        ft3,
     ])
     print(g)
 

@@ -15,12 +15,17 @@ class PredicateContainer(Container):
     #     super().__init__(predicates)
 
     @property
-    def predicates(self) -> Generator:
+    def predicates(self, enum: bool = False) -> Generator:
         from ast.predicate import Predicate
-        return (p for p in self._items if isinstance(p, Predicate))
+        if enum:
+            return ((container, i, p) for container, i, p in self.items(enum=True) if isinstance(p, Predicate))
+        else:
+            return (p for p in self.items() if isinstance(p, Predicate))
 
     @property
     def number_of_predicates(self):
-        return len(list(self.predicates)) + \
-               sum(len(list(p_cont.predicates)) for p_cont in self._nested_containers if
-                   isinstance(p_cont, PredicateContainer))
+        return len(set(self.predicates))
+
+    @property
+    def number_of_predicate_instances(self):
+        return len(list(self.predicates))

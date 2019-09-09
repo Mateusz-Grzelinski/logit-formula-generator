@@ -11,14 +11,19 @@ class VariableContainer(Container):
         from ast.variable import Variable
         return isinstance(obj, Variable)
 
-    @property
-    def variables(self) -> Generator:
+    def variables(self, enum: bool = False) -> Generator:
         from ast.variable import Variable
-        return (v for v in self._items if isinstance(v, Variable))
+        if enum:
+            return ((container, i, v) for container, i, v in self.items(enum=True) if isinstance(v, Variable))
+        else:
+            return (v for v in self.items() if isinstance(v, Variable))
 
     @property
-    def number_of_variables(self):
+    def number_of_variables(self) -> int:
         # todo count variables per scope (clause, quantifier)
-        return len(set(self.variables)) + \
-               sum(len(set(v_cont.variables)) for v_cont in self._nested_containers if
-                   isinstance(v_cont, VariableContainer))
+        return len(set(self.variables()))
+
+    @property
+    def number_of_variable_instances(self) -> int:
+        # todo count variables per scope (clause, quantifier)
+        return len(list(self.variables()))
