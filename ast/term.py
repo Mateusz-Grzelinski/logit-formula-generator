@@ -19,7 +19,7 @@ class Term(ABC, AstElement):
     def __eq__(self, other):
         if isinstance(other, Term):
             return self.name == other.name
-        raise NotImplemented
+        return False
 
     def __str__(self):
         return self.name

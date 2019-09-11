@@ -15,6 +15,21 @@ class Container:
             if not Container._item_type_check(i):
                 raise TypeError(f'Container can not store this object: {i}')
 
+    def __hash__(self):
+        if self.is_mutable:
+            return hash(len(self._items))
+        else:
+            return hash(self._items)
+
+    def __eq__(self, other):
+        if isinstance(other, Container):
+            return len(self._items) == len(other._items) and all(
+                item == other_item for item, other_item in zip(self._items, other._items))
+        raise NotImplemented
+
+    def __setitem__(self, key, value):
+        self._items[key] = value
+
     @property
     def is_mutable(self):
         return isinstance(self._items, list)
@@ -54,9 +69,6 @@ class Container:
                     yield from nested_container.items(enum=enum, include_nested=include_nested)
             for item in self._items:
                 yield item
-
-    def __setitem__(self, key, value):
-        self._items[key] = value
 
     def set_items(self, value: List[Any]) -> NoReturn:
         self._items = list(value)

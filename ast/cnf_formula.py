@@ -1,4 +1,3 @@
-from statistics import mean
 from typing import List
 
 from .ast_element import AstElement
@@ -13,22 +12,10 @@ class CNFFormula(CNFClauseContainer, AstElement):
     def __str__(self):
         return '\n'.join(str(c) for c in self.clauses())
 
-    @property
-    def number_of_variables(self) -> int:
-        return sum(clause.number_of_variables for clause in self.clauses())
+    def __hash__(self):
+        return super().__hash__()
 
-    @property
-    def number_of_variable_instances(self) -> int:
-        return sum(clause.number_of_variable_instances for clause in self.clauses())
-
-    @property
-    def max_clause_size(self):
-        return max(clause.length for clause in self.clauses())
-
-    @property
-    def average_clause_size(self):
-        return mean(clause.length for clause in self.clauses())
-
-    @property
-    def number_of_unit_clauses(self):
-        return len(list(c for c in self.clauses() if c.is_unit))
+    def __eq__(self, other):
+        if isinstance(other, CNFFormula):
+            return super().__eq__(other)
+        return False

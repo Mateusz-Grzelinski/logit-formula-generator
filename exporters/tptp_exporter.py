@@ -91,7 +91,7 @@ class TPTPHeader:
 
             self.number_of_variables = object.number_of_variables
             self.number_of_variable_instances = object.number_of_variable_instances
-            # self.number_of_singleton_variables = object.number_of_singleton_variables
+            self.number_of_singleton_variables = object.number_of_singleton_variables
 
             # self.functor_arities = set(object.functor_arities.keys())
             self.number_of_functors = object.number_of_functors

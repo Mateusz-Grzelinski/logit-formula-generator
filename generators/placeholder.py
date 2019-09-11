@@ -18,7 +18,7 @@ class TermPlaceholder(Placeholder, Term, ABC):
 
 
 class VariablePlaceholder(TermPlaceholder, Variable):
-    def __init__(self, name: str = 'v'):
+    def __init__(self, name: str = '_v'):
         super().__init__(name)
 
     def instantiate(self) -> Variable:
@@ -26,7 +26,7 @@ class VariablePlaceholder(TermPlaceholder, Variable):
 
 
 class FunctorPlaceholder(TermPlaceholder, Functor):
-    def __init__(self, name: str = 'f', terms: List[Term] = None):
+    def __init__(self, name: str = '_f', terms: List[Term] = None):
         super().__init__(name, terms)
 
     def __hash__(self):
@@ -34,7 +34,7 @@ class FunctorPlaceholder(TermPlaceholder, Functor):
 
     def instantiate(self) -> Functor:
         terms = []
-        for item in self.items():
+        for item in self._items:
             if isinstance(item, Placeholder):
                 terms.append(item.instantiate())
             else:
@@ -43,12 +43,12 @@ class FunctorPlaceholder(TermPlaceholder, Functor):
 
 
 class PredicatePlaceholder(Placeholder, Predicate):
-    def __init__(self, name: str = 'p', terms: List[Term] = None):
+    def __init__(self, name: str = '_p', terms: List[Term] = None):
         super().__init__(name, terms)
 
     def instantiate(self) -> Predicate:
         terms = []
-        for item in self.items():
+        for item in self._items:
             if isinstance(item, Placeholder):
                 terms.append(item.instantiate())
             else:
@@ -64,7 +64,7 @@ class AtomPlaceholder(Placeholder, Atom):
 
     def instantiate(self) -> Atom:
         arguments = []
-        for item in self.items():
+        for item in self._items:
             if isinstance(item, Placeholder):
                 arguments.append(item.instantiate())
             else:
@@ -74,6 +74,7 @@ class AtomPlaceholder(Placeholder, Atom):
 
 class LiteralPlaceholder(Placeholder, Literal):
     def __init__(self, atom: Atom = None, negated: bool = False):
+        atom = AtomPlaceholder() if atom is None else atom
         super().__init__(atom, negated)
 
     def instantiate(self) -> Literal:
@@ -86,7 +87,7 @@ class LiteralPlaceholder(Placeholder, Literal):
 class CNFClausePlaceholder(Placeholder, CNFClause):
     def instantiate(self) -> CNFClause:
         literals = []
-        for item in self.items():
+        for item in self._items:
             if isinstance(item, Placeholder):
                 literals.append(item.instantiate())
             else:

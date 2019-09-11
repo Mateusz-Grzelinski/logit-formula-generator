@@ -53,6 +53,15 @@ class Atom(TermContainer, PredicateContainer, AstElement):
         # todo check number of arguments
         super().__init__(additional_containers=[], items=arguments, mutable=mutable)
 
+    def __hash__(self):
+        return hash(self.connective) + hash(i for i in self._items)
+
+    def __eq__(self, other):
+        if isinstance(other, Atom):
+            return self.connective == other.connective and len(self._items) == len(other._items) and \
+                   all(i == j for i, j in zip(self._items, other._items))
+        return False
+
     def __str__(self):
         # handle incorrect arity vs len(self._items)
         if self.connective is None or self.connective.value == 1:

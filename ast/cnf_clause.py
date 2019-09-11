@@ -17,6 +17,14 @@ class CNFClause(LiteralContainer, AstElement):
     def __str__(self):
         return 'cnf(' + ' | '.join(str(l) for l in self.literals()) + ').'
 
+    def __hash__(self):
+        return hash(i for i in self._items)
+
+    def __eq__(self, other):
+        if isinstance(other, CNFClause):
+            return len(self._items) == len(other._items) and all(i == j for i, j in zip(self._items, other._items))
+        return False
+
     @property
     def length(self):
         return len(self._items)
@@ -24,3 +32,9 @@ class CNFClause(LiteralContainer, AstElement):
     @property
     def is_unit(self):
         return len(self._items) == 1
+
+    @property
+    def number_of_singleton_variables(self) -> int:
+        variables = list(self.variables())
+        singleton_vars = set([x for x in variables if variables.count(x) == 1])
+        return len(singleton_vars)

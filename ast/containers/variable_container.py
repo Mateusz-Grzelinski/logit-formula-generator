@@ -20,10 +20,8 @@ class VariableContainer(Container):
 
     @property
     def number_of_variables(self) -> int:
-        # todo count variables per scope (clause, quantifier)
         return len(set(self.variables()))
 
     @property
     def number_of_variable_instances(self) -> int:
-        # todo count variables per scope (clause, quantifier)
         return len(list(self.variables()))

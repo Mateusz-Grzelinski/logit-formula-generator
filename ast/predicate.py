@@ -19,4 +19,10 @@ class Predicate(TermContainer, AstElement):
     def __repr__(self) -> str:
         return str(self)
 
-    # arguments: List[Term]
+    def __hash__(self):
+        return hash(self.name) + hash(len(self._items))
+
+    def __eq__(self, other):
+        if isinstance(other, Predicate):
+            return self.name == other.name and len(self._items) == len(other._items)
+        return False

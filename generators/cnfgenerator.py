@@ -113,7 +113,7 @@ if __name__ == '__main__':
     print(f'{g.clauses=}')
 
     formula = g.generate_cnf_formula(
-        number_of_clauses=1,
+        number_of_clauses=2,
     )
     t = TPTPHeader()
     t.read_from(formula)

@@ -8,6 +8,14 @@ class Literal(AtomContainer, AstElement):
         self.is_negated = negated
         super().__init__(additional_containers=[], items=[atom], mutable=mutable)
 
+    def __hash__(self):
+        return hash(self.is_negated) + hash(self.atom)
+
+    def __eq__(self, other):
+        if isinstance(other, Literal):
+            return self.is_negated == other.is_negated and self.atom == other.atom
+        return False
+
     @property
     def atom(self):
         assert len(self._items) == 1, 'literal can have only one atom'
