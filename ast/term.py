@@ -13,6 +13,14 @@ class Term(ABC, AstElement):
     def __init__(self, name: str):
         self.name = name
 
+    def __hash__(self):
+        return hash(self.name)
+
+    def __eq__(self, other):
+        if isinstance(other, Term):
+            return self.name == other.name
+        raise NotImplemented
+
     def __str__(self):
         return self.name
 

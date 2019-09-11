@@ -25,5 +25,16 @@ class FunctorContainer(Container):
         return len(list(self.functors()))
 
     @property
+    def number_of_constant_functors(self):
+        return len(set(f for f in self.functors() if f.is_constant))
+
+    @property
+    def number_of_constant_functors_instances(self):
+        return len(list(f for f in self.functors() if f.is_constant))
+
+    @property
     def max_recursion_depth(self):
-        return max(f.recursion_depth for f in self.functors())
+        if self.number_of_functors != 0:
+            return max(f.recursion_depth for f in self.functors())
+        else:
+            return 0

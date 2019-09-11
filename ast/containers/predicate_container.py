@@ -11,10 +11,6 @@ class PredicateContainer(Container):
         from ast.predicate import Predicate
         return isinstance(obj, Predicate)
 
-    # def __init__(self, predicates: List[Predicate] = None):
-    #     super().__init__(predicates)
-
-    @property
     def predicates(self, enum: bool = False) -> Generator:
         from ast.predicate import Predicate
         if enum:
@@ -24,8 +20,8 @@ class PredicateContainer(Container):
 
     @property
     def number_of_predicates(self):
-        return len(set(self.predicates))
+        return len(set(self.predicates()))
 
     @property
     def number_of_predicate_instances(self):
-        return len(list(self.predicates))
+        return len(list(self.predicates()))

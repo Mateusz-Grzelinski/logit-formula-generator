@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import List
+from typing import Iterable
 
 from .ast_element import AstElement
 from .containers import TermContainer
@@ -8,18 +8,21 @@ from .term import Term
 
 
 class Functor(Term, TermContainer, AstElement):
-    def __init__(self, name: str, terms: List[Term] = None):
+    def __init__(self, name: str, terms: Iterable[Term] = None, mutable=True):
         Term.__init__(self, name)
-        TermContainer.__init__(self, additional_containers=[], items=terms)
+        TermContainer.__init__(self, additional_containers=[], items=terms, mutable=mutable)
 
     def __hash__(self):
-        return hash(self.name) + hash(tuple(self.items()))
+        if self.is_mutable:
+            return hash(self.name) + hash(len(self._items))
+        else:
+            return hash(self.name) + hash(self._items)
 
     def __eq__(self, other):
         if not isinstance(other, Functor):
             raise NotImplemented
-        return self.name == other.name and all(
-            item == other_item for item, other_item in zip(self.items(), other.items()))
+        return self.name == other.name and len(self._items) == len(other._items) and \
+               all(item == other_item for item, other_item in zip(self._items, other._items))
 
     def __str__(self):
         if len(list(self.items())) != 0:
@@ -44,4 +47,4 @@ class Functor(Term, TermContainer, AstElement):
 
     @property
     def is_constant(self):
-        return len(self.items()) == 0
+        return len(self._items) == 0

@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import List, Optional, Union, Dict
+from typing import Optional, Union, Dict, Iterable
 
 from .ast_element import AstElement
 from .containers import PredicateContainer
@@ -35,8 +35,11 @@ class Atom(TermContainer, PredicateContainer, AstElement):
     }
     """key: operation symbol, value: arity"""
 
-    def __init__(self, connective: Optional[Union[str, MathOperand]], arguments: List[Union[Term, Predicate]]):
-        if isinstance(connective, str):
+    def __init__(self, connective: Optional[Union[str, MathOperand]], arguments: Iterable[Term, Predicate],
+                 mutable=True):
+        if connective is None:
+            self.connective = None
+        elif isinstance(connective, str):
             try:
                 self.connective = Atom.allowed_connective[connective]
             except KeyError:
@@ -48,7 +51,7 @@ class Atom(TermContainer, PredicateContainer, AstElement):
 
         # todo arguments should be the same type? have the same return type
         # todo check number of arguments
-        super().__init__(additional_containers=[], items=arguments)
+        super().__init__(additional_containers=[], items=arguments, mutable=mutable)
 
     def __str__(self):
         # handle incorrect arity vs len(self._items)

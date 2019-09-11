@@ -5,14 +5,19 @@ from typing import List, Any, Iterable, NoReturn
 
 
 class Container:
-    def __init__(self, additional_containers: List[Container], items: List[Any] = None):
-        self.additional_containers = additional_containers if additional_containers is not None else []
-        """For containers, that are not items"""
-        self._items = items if items is not None else []
-        """Item can be also a container"""
+    def __init__(self, additional_containers: Iterable[Container], items: Iterable[Any] = None, mutable: bool = True):
+        self.additional_containers = list(additional_containers) if additional_containers is not None else []
+        if mutable:
+            self._items = list(items) if items is not None else []
+        else:
+            self._items = tuple(items) if items is not None else ()
         for i in self._items:
             if not Container._item_type_check(i):
                 raise TypeError(f'Container can not store this object: {i}')
+
+    @property
+    def is_mutable(self):
+        return isinstance(self._items, list)
 
     @staticmethod
     def _item_type_check(obj) -> bool:
@@ -33,29 +38,25 @@ class Container:
     def pop(self, index: int = -1):
         return self._items.pop(index)
 
-    def items(self, enum: bool = False):
+    def items(self, enum: bool = False, include_nested: bool = True):
         if enum:
+            # the order of 2 following loops is important
+            # nested containers should be called first to fix with setting item to container
+            # but it is not optimal solution in terms of performance (recursion depth)
+            if include_nested:
+                for nested_container in self._nested_containers:
+                    yield from nested_container.items(enum=True, include_nested=include_nested)
             for i, item in enumerate(self._items):
                 yield self, i, item
-            for nested_container in self._nested_containers:
-                yield from nested_container.items(enum=True)
         else:
+            if include_nested:
+                for nested_container in self._nested_containers:
+                    yield from nested_container.items(enum=enum, include_nested=include_nested)
             for item in self._items:
                 yield item
-            for nested_container in self._nested_containers:
-                yield from nested_container.items()
 
     def __setitem__(self, key, value):
         self._items[key] = value
 
     def set_items(self, value: List[Any]) -> NoReturn:
         self._items = list(value)
-
-
-if __name__ == '__main__':
-    c = Container([], items=[1, 2, 3, 4, 5])
-    c2 = Container([], items=[c, 7, 8, 9, 10])
-    for container, i, item in c2.items(enum=True):
-        # container[i] = item + 1
-        print(f'{container=}, {i=}, {item=}')
-    print(f'{c2._items=}')

@@ -1,13 +1,12 @@
 from .ast_element import AstElement
 from .atom import Atom
 from .containers import AtomContainer
-from .operands import LogicalOperand
 
 
 class Literal(AtomContainer, AstElement):
-    def __init__(self, atom: Atom, negated: bool):
-        self.operand = LogicalOperand.NOT if negated else None
-        super().__init__(additional_containers=[], items=[atom])
+    def __init__(self, atom: Atom, negated: bool, mutable: bool = True):
+        self.is_negated = negated
+        super().__init__(additional_containers=[], items=[atom], mutable=mutable)
 
     @property
     def atom(self):
@@ -15,7 +14,7 @@ class Literal(AtomContainer, AstElement):
         return self._items[0]
 
     def __str__(self):
-        if self.operand:
+        if self.is_negated:
             return '~' + str(self.atom)
 
         return str(self.atom)
