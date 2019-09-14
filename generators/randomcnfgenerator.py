@@ -6,35 +6,33 @@ from typing import Iterable
 from ast import CNFFormula, Variable
 from ast.containers import CNFClauseContainer, LiteralContainer, AtomContainer, VariableContainer, FunctorContainer, \
     PredicateContainer
-from exporters.tptp_exporter import TPTPHeader
-from generators.factories import FunctorFactory, PredicateFactory, AtomFactory, LiteralFactory, CNFClauseFactory
+from generators import Weight
 from generators.placeholder import FunctorPlaceholder, PredicatePlaceholder, AtomPlaceholder, LiteralPlaceholder, \
     CNFClausePlaceholder
 
 
-class GenerationException(Exception):
-    repair_policy = None
-    problematic_element: AstElement = None
-    problematic_attribute: str = None
-    min_value: int = None
-    max_value: int = None
-
-
-class CNFGenerator:
+class RandomCNFGenerator:
     def __init__(self, functors: Iterable[FunctorPlaceholder],
                  predicates: Iterable[PredicatePlaceholder],
                  atoms: Iterable[AtomPlaceholder],
                  literals: Iterable[LiteralPlaceholder],
                  clauses: Iterable[CNFClausePlaceholder],
-                 threshold: float = 0.05,
-                 max_retries=5):
+                 functor_weights: Iterable[Weight] = None,
+                 predicate_weights: Iterable[Weight] = None,
+                 atom_weights: Iterable[Weight] = None,
+                 literal_weights: Iterable[Weight] = None,
+                 clause_weights: Iterable[Weight] = None,
+                 ):
         self.functors = list(functors)
         self.predicates = list(predicates)
         self.atoms = list(atoms)
         self.literals = list(literals)
         self.clauses = list(clauses)
-        self.max_retries = max_retries
-        self.threshold = threshold
+        self.functor_weights = list(functor_weights) if functor_weights is not None else None
+        self.predicate_weights = list(predicate_weights) if predicate_weights is not None else None
+        self.atom_weights = list(atom_weights) if atom_weights is not None else None
+        self.literal_weights = list(literal_weights) if literal_weights is not None else None
+        self.clause_weights = list(clause_weights) if clause_weights is not None else None
 
     def generate_cnf_formula(self, number_of_clauses: int) -> CNFFormula:
         """
@@ -72,50 +70,34 @@ class CNFGenerator:
 
     def generate_cnf_clauses(self, number_of_clauses: int) -> CNFClauseContainer:
         return CNFClauseContainer(additional_containers=[],
-                                  items=(r.instantiate() for r in random.choices(self.clauses, k=number_of_clauses)))
+                                  items=(r.instantiate() for r in
+                                         random.choices(self.clauses, weights=self.clause_weights,
+                                                        k=number_of_clauses)))
 
     def generate_literals(self, number_of_literals: int) -> LiteralContainer:
         return LiteralContainer(additional_containers=[],
-                                items=(r.instantiate() for r in random.choices(self.literals, k=number_of_literals)))
+                                items=(r.instantiate() for r in
+                                       random.choices(self.literals, weights=self.literal_weights,
+                                                      k=number_of_literals)))
 
     def generate_predicates(self, number_of_predicates: int) -> PredicateContainer:
         return PredicateContainer(additional_containers=[],
                                   items=(r.instantiate() for r in
-                                         random.choices(self.predicates, k=number_of_predicates)))
+                                         random.choices(self.predicates, weights=self.predicate_weights,
+                                                        k=number_of_predicates)))
 
     def generate_atoms(self, number_of_atoms: int) -> AtomContainer:
         return AtomContainer(additional_containers=[],
-                             items=(r.instantiate() for r in random.choices(self.atoms, k=number_of_atoms)))
+                             items=(r.instantiate() for r in
+                                    random.choices(self.atoms, weights=self.atom_weights, k=number_of_atoms)))
 
     def generate_functors(self, number_of_functors: int) -> FunctorContainer:
         return FunctorContainer(additional_containers=[],
-                                items=(r.instantiate() for r in random.choices(self.functors, k=number_of_functors)))
+                                items=(r.instantiate() for r in
+                                       random.choices(self.functors, weights=self.functor_weights,
+                                                      k=number_of_functors)))
 
     def generate_variables(self, number_of_variables: int) -> VariableContainer:
         return VariableContainer(additional_containers=[],
                                  items=random.choices([Variable(name=f'v{i}') for i in range(number_of_variables)],
                                                       k=number_of_variables))
-
-
-if __name__ == '__main__':
-    g = CNFGenerator(
-        functors=FunctorFactory.generate_functors(names=['f'], arities=[0, 1], max_recursion_depth=1),
-        predicates=PredicateFactory.generate_predicates(names=['p'], arities=[1, 2]),
-        atoms=AtomFactory.generate_atoms({''}),
-        literals=LiteralFactory.generate_literals(allow_negated=True),
-        clauses=CNFClauseFactory.generate_clauses(lengths=[1, 2, 3, 4]),
-    )
-
-    print(f'{g.functors=}')
-    print(f'{g.predicates=}')
-    print(f'{g.atoms=}')
-    print(f'{g.literals=}')
-    print(f'{g.clauses=}')
-
-    formula = g.generate_cnf_formula(
-        number_of_clauses=2,
-    )
-    t = TPTPHeader()
-    t.read_from(formula)
-    print(t.get_header())
-    print(formula)

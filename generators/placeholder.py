@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from abc import abstractmethod, ABC
-from typing import List, Optional, Union
+from typing import List, Optional, Union, Iterable
 
 from ast import Term, Variable, Functor, Predicate, Atom, CNFClause, CNFFormula, Literal, AstElement
 from ast.operands import MathOperand
@@ -12,13 +12,17 @@ class Placeholder:
     def instantiate(self) -> AstElement:
         pass
 
+    def __str__(self):
+        super_str = super().__str__()
+        return super_str if super_str.startswith('_') else '_' + super_str
+
 
 class TermPlaceholder(Placeholder, Term, ABC):
     pass
 
 
 class VariablePlaceholder(TermPlaceholder, Variable):
-    def __init__(self, name: str = '_v'):
+    def __init__(self, name: str = 'v'):
         super().__init__(name)
 
     def instantiate(self) -> Variable:
@@ -26,7 +30,7 @@ class VariablePlaceholder(TermPlaceholder, Variable):
 
 
 class FunctorPlaceholder(TermPlaceholder, Functor):
-    def __init__(self, name: str = '_f', terms: List[Term] = None):
+    def __init__(self, name: str = '_f', terms: Iterable[Term] = None):
         super().__init__(name, terms)
 
     def __hash__(self):
@@ -43,7 +47,7 @@ class FunctorPlaceholder(TermPlaceholder, Functor):
 
 
 class PredicatePlaceholder(Placeholder, Predicate):
-    def __init__(self, name: str = '_p', terms: List[Term] = None):
+    def __init__(self, name: str = 'p', terms: Iterable[Term] = None):
         super().__init__(name, terms)
 
     def instantiate(self) -> Predicate:
