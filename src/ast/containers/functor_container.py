@@ -1,16 +1,16 @@
 from __future__ import annotations
 
-from common.container import Container
+from src.common.container import Container
 
 
 class FunctorContainer(Container):
     @staticmethod
     def _item_type_check(obj):
-        from ast.functor import Functor
+        from src.ast import Functor
         return isinstance(obj, Functor)
 
     def functors(self, enum: bool = False):
-        from ast.functor import Functor
+        from src.ast import Functor
         if enum:
             return ((container, i, f) for container, i, f in self.items(enum=True) if isinstance(f, Functor))
         else:

@@ -8,9 +8,11 @@ from .term import Term
 
 
 class Functor(Term, TermContainer, AstElement):
-    def __init__(self, name: str, terms: Iterable[Term] = None, mutable=True):
+    def __init__(self, name: str, terms: Iterable[Term] = None, mutable=True,
+                 related_placeholder: FunctorPlaceholder = None):
         Term.__init__(self, name)
         TermContainer.__init__(self, additional_containers=[], items=terms, mutable=mutable)
+        AstElement.__init__(self, related_placeholder=related_placeholder)
 
     def __hash__(self):
         return hash(self.name) + hash(len(self._items))

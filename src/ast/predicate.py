@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from typing import Iterable
 
 from .ast_element import AstElement
@@ -6,9 +8,11 @@ from .term import Term
 
 
 class Predicate(TermContainer, AstElement):
-    def __init__(self, name: str, terms: Iterable[Term] = None, mutable=True):
+    def __init__(self, name: str, terms: Iterable[Term] = None, mutable=True,
+                 related_placeholder: PredicatePlaceholder = None):
         self.name = name
         super().__init__(additional_containers=[], items=terms, mutable=mutable)
+        AstElement.__init__(self, related_placeholder=related_placeholder)
 
     def __str__(self):
         if len(list(self.terms)) != 0:

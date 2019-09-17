@@ -1,12 +1,15 @@
+from __future__ import annotations
+
 from .ast_element import AstElement
 from .atom import Atom
 from .containers import AtomContainer
 
 
 class Literal(AtomContainer, AstElement):
-    def __init__(self, atom: Atom, negated: bool, mutable: bool = True):
+    def __init__(self, atom: Atom, negated: bool, mutable: bool = True, related_placeholder: LiteralPlaceholder = None):
         self.is_negated = negated
         super().__init__(additional_containers=[], items=[atom], mutable=mutable)
+        AstElement.__init__(self, related_placeholder=related_placeholder)
 
     def __hash__(self):
         return hash(self.is_negated) + hash(self.atom)

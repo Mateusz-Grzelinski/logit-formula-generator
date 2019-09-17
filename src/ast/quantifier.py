@@ -13,11 +13,12 @@ class Quantifier(QuantifierContainer, AstElement):
     and then formula?
     """
 
-    def __init__(self, variables: List[Variable], atoms: List[Atom]):
+    def __init__(self, variables: List[Variable], atoms: List[Atom], related_placeholder: QuantifierPlaceholder = None):
         self.is_existential: bool = False
         self.is_universal: bool = False
         # todo
         super().__init__(items=variables + atoms)
+        AstElement.__init__(self, related_placeholder=related_placeholder)
 
     # def __str__(self):
     #     return '[' + ','.join(self.declared_variables.variables) + ']' + \

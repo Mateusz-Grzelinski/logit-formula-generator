@@ -10,11 +10,11 @@ class AtomContainer(TermContainer, PredicateContainer):
 
     @staticmethod
     def _item_type_check(obj):
-        from ast.atom import Atom
+        from src.ast.atom import Atom
         return isinstance(obj, Atom)
 
     def atoms(self, enum: bool = False) -> Generator:
-        from ast.atom import Atom
+        from src.ast.atom import Atom
         if enum:
             return ((container, i, a) for container, i, a in self.items(enum=True) if isinstance(a, Atom))
         else:

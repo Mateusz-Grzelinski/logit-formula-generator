@@ -4,9 +4,9 @@ import itertools
 from collections import OrderedDict, defaultdict
 from typing import Iterable, Set, List, Dict, Tuple, Union, Callable
 
-from ast import Functor
-from generators import Weight, WeightedValue
-from generators.placeholder import PredicatePlaceholder, VariablePlaceholder, TermPlaceholder, FunctorPlaceholder, \
+from src.ast import Functor
+from src.generators import Weight, WeightedValue
+from src.generators.placeholder import PredicatePlaceholder, VariablePlaceholder, TermPlaceholder, FunctorPlaceholder, \
     AtomPlaceholder, LiteralPlaceholder, CNFClausePlaceholder
 
 

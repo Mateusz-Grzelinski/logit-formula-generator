@@ -10,8 +10,9 @@ class Term(ABC, AstElement):
 
     """
 
-    def __init__(self, name: str):
+    def __init__(self, name: str, related_placeholder: TermPlaceholder = None):
         self.name = name
+        AstElement.__init__(self, related_placeholder=related_placeholder)
 
     def __hash__(self):
         return hash(self.name)
@@ -26,4 +27,3 @@ class Term(ABC, AstElement):
 
     def __repr__(self) -> str:
         return str(self)
-

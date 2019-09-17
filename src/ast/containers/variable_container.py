@@ -2,17 +2,17 @@ from __future__ import annotations
 
 from typing import Generator
 
-from common.container import Container
+from src.common.container import Container
 
 
 class VariableContainer(Container):
     @staticmethod
     def _item_type_check(obj):
-        from ast.variable import Variable
+        from src.ast.variable import Variable
         return isinstance(obj, Variable)
 
     def variables(self, enum: bool = False) -> Generator:
-        from ast.variable import Variable
+        from src.ast.variable import Variable
         if enum:
             return ((container, i, v) for container, i, v in self.items(enum=True) if isinstance(v, Variable))
         else:

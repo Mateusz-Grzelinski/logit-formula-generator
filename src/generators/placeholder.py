@@ -3,8 +3,8 @@ from __future__ import annotations
 from abc import abstractmethod, ABC
 from typing import List, Optional, Union, Iterable
 
-from ast import Term, Variable, Functor, Predicate, Atom, CNFClause, CNFFormula, Literal, AstElement
-from ast.operands import MathOperand
+from src.ast import Term, Variable, Functor, Predicate, Atom, CNFClause, CNFFormula, Literal, AstElement
+from src.ast.operands import MathOperand
 
 
 class Placeholder:

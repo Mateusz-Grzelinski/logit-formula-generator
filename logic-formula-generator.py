@@ -1,12 +1,12 @@
 from __future__ import annotations
 
-from ast.atom import Atom
-from ast.cnf_clause import CNFClause
-from ast.cnf_formula import CNFFormula
-from ast.functor import Functor
-from ast.literal import Literal
-from ast.predicate import Predicate
-from ast.variable import Variable
+from src.ast import Functor
+from src.ast.atom import Atom
+from src.ast.cnf_clause import CNFClause
+from src.ast.cnf_formula import CNFFormula
+from src.ast.literal import Literal
+from src.ast.predicate import Predicate
+from src.ast.variable import Variable
 
 if __name__ == '__main__':
     v = Variable(name='V')

@@ -4,12 +4,12 @@ import textwrap
 from dataclasses import field, dataclass
 from typing import Union, Optional, Set, List
 
-from ast import Atom
-from ast import CNFClause
-from ast import Functor
-from ast import Predicate
-from ast import Variable
-from ast.cnf_formula import CNFFormula
+from src.ast import Atom
+from src.ast import CNFClause
+from src.ast import Functor
+from src.ast import Predicate
+from src.ast import Variable
+from src.ast.cnf_formula import CNFFormula
 
 
 def _print_arity(arities: Set[int]):

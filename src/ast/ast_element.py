@@ -1,7 +1,12 @@
+from __future__ import annotations
+
 from abc import abstractmethod
 
 
 class AstElement:
+    def __init__(self, related_placeholder: Placeholder = None):
+        self.related_placeholder = related_placeholder
+
     def __repr__(self):
         return str(self)
 

@@ -2,18 +2,18 @@ from __future__ import annotations
 
 from typing import Iterable
 
-from ast.containers import AtomContainer
+from src.ast.containers import AtomContainer
 
 
 class LiteralContainer(AtomContainer):
 
     @staticmethod
     def _item_type_check(obj):
-        from ast.literal import Literal
+        from src.ast.literal import Literal
         return isinstance(obj, Literal)
 
     def literals(self, enum: bool = False) -> Iterable[Literal]:
-        from ast.literal import Literal
+        from src.ast.literal import Literal
         if enum:
             return ((container, i, l) for container, i, l in self.items(enum=True) if isinstance(l, Literal))
         else:

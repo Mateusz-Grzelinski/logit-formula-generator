@@ -3,11 +3,11 @@ from __future__ import annotations
 import random
 from typing import Iterable
 
-from ast import CNFFormula, Variable
-from ast.containers import CNFClauseContainer, LiteralContainer, AtomContainer, VariableContainer, FunctorContainer, \
+from src.ast import CNFFormula, Variable
+from src.ast.containers import CNFClauseContainer, LiteralContainer, AtomContainer, VariableContainer, FunctorContainer, \
     PredicateContainer
-from generators import Weight
-from generators.placeholder import FunctorPlaceholder, PredicatePlaceholder, AtomPlaceholder, LiteralPlaceholder, \
+from src.generators import Weight
+from src.generators.placeholder import FunctorPlaceholder, PredicatePlaceholder, AtomPlaceholder, LiteralPlaceholder, \
     CNFClausePlaceholder
 
 
@@ -35,15 +35,6 @@ class RandomCNFGenerator:
         self.clause_weights = list(clause_weights) if clause_weights is not None else None
 
     def generate_cnf_formula(self, number_of_clauses: int) -> CNFFormula:
-        """
-% Syntax   : Number of clauses     :    3 (   0 non-Horn;   3 unit;   1 RR)
-%            Number of atoms       :    3 (   3 equality)
-%            Maximal clause size   :    1 (   1 average)
-%            Number of predicates  :    1 (   0 propositional; 2-2 arity)
-%            Number of functors    :    4 (   2 constant; 0-2 arity)
-%            Number of variables   :    6 (   0 singleton)
-%            Maximal term depth    :    4 (   3 average)
-"""
         clause_cont = self.generate_cnf_clauses(number_of_clauses=number_of_clauses)
 
         literal_cont = self.generate_literals(number_of_literals=clause_cont.number_of_literal_instances)

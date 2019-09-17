@@ -7,12 +7,12 @@ from .variable_container import VariableContainer
 class TermContainer(VariableContainer, FunctorContainer):
     @staticmethod
     def _item_type_check(obj):
-        from ast.term import Term
+        from src.ast.term import Term
         return isinstance(obj, Term)
 
     @property
     def terms(self, enum: bool = False):
-        from ast.term import Term
+        from src.ast.term import Term
         if enum:
             return ((container, i, t) for container, i, t in self.items(enum=True) if isinstance(t, Term))
         else:

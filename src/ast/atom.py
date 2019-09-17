@@ -36,7 +36,7 @@ class Atom(TermContainer, PredicateContainer, AstElement):
     """key: operation symbol, value: arity"""
 
     def __init__(self, connective: Optional[Union[str, MathOperand]], arguments: Iterable[Term, Predicate],
-                 mutable=True):
+                 mutable=True, related_placeholder: AtomPlaceholder = None):
         if connective is None:
             self.connective = None
         elif isinstance(connective, str):
@@ -52,6 +52,7 @@ class Atom(TermContainer, PredicateContainer, AstElement):
         # todo arguments should be the same type? have the same return type
         # todo check number of arguments
         super().__init__(additional_containers=[], items=arguments, mutable=mutable)
+        AstElement.__init__(self, related_placeholder=related_placeholder)
 
     def __hash__(self):
         return hash(self.connective) + hash(i for i in self._items)
