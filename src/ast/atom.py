@@ -78,3 +78,7 @@ class Atom(TermContainer, PredicateContainer, AstElement):
 
     def __repr__(self) -> str:
         return str(self)
+
+    @property
+    def arity(self):
+        return len(self._items)

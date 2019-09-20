@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from src.common.container import Container
+from src.container import Container
 
 
 class FunctorContainer(Container):

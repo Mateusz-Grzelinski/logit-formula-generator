@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import Generator
 
-from src.common.container import Container
+from src.container import Container
 
 
 class VariableContainer(Container):

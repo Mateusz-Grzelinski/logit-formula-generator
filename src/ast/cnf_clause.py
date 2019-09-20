@@ -12,7 +12,7 @@ class CNFClause(LiteralContainer, AstElement):
     operand = LogicalOperand.AND
 
     def __init__(self, literals: List[Literal] = None, mutable=True, related_placeholder: CNFClausePlaceholder = None):
-        super().__init__(additional_containers=[], items=literals, mutable=mutable)
+        LiteralContainer.__init__(self, additional_containers=[], items=literals, mutable=mutable)
         AstElement.__init__(self, related_placeholder=related_placeholder)
 
     def __str__(self):

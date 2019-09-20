@@ -29,7 +29,7 @@ class FunctorFactory:
                           max_recursion_depth: int,
                           default_weight: float = 1,
                           weight_mix: Callable[[Weight, Weight], Weight] = max
-                          ) -> Set[WeightedValue[Functor]]:
+                          ) -> Set[WeightedValue[FunctorPlaceholder]]:
         names = unify_representation(values=names, default_weight=default_weight)
         arities = unify_representation(values=arities, default_weight=default_weight)
 
@@ -61,7 +61,7 @@ class FunctorFactory:
 
     @staticmethod
     def generate_liveness_functors(names: Iterable[Union[str, Tuple[str, Weight]]],
-                                   default_weight: float = 1) -> Set[WeightedValue[Functor]]:
+                                   default_weight: float = 1) -> Set[WeightedValue[FunctorPlaceholder]]:
         functors = set()
         functor_names = unify_representation(values=names, default_weight=default_weight)
         for name, name_weight in functor_names:

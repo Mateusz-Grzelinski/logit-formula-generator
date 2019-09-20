@@ -27,13 +27,16 @@ class WeightedSequence(Generic[ValueType]):
         return cls(values, weights)
 
 
-@dataclass(repr=False, frozen=True)
+@dataclass(repr=False, frozen=False)
 class WeightedValue(Generic[ValueType]):
-    value: ValueType = field(compare=True, hash=True)
-    weight: Weight = field(compare=False, hash=False)
+    value: ValueType = field(compare=True)
+    weight: Weight = field(compare=False)
 
     def __str__(self):
         return str((self.value, self.weight))
 
     def __repr__(self):
         return str(self)
+
+    def __hash__(self):
+        return hash(self.value)

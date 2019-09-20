@@ -6,33 +6,23 @@ from typing import Iterable
 from src.ast import CNFFormula, Variable
 from src.ast.containers import CNFClauseContainer, LiteralContainer, AtomContainer, VariableContainer, FunctorContainer, \
     PredicateContainer
-from src.generators import Weight
+from src.generators import WeightedValue
 from src.generators.placeholder import FunctorPlaceholder, PredicatePlaceholder, AtomPlaceholder, LiteralPlaceholder, \
     CNFClausePlaceholder
 
 
 class RandomCNFGenerator:
-    def __init__(self, functors: Iterable[FunctorPlaceholder],
-                 predicates: Iterable[PredicatePlaceholder],
-                 atoms: Iterable[AtomPlaceholder],
-                 literals: Iterable[LiteralPlaceholder],
-                 clauses: Iterable[CNFClausePlaceholder],
-                 functor_weights: Iterable[Weight] = None,
-                 predicate_weights: Iterable[Weight] = None,
-                 atom_weights: Iterable[Weight] = None,
-                 literal_weights: Iterable[Weight] = None,
-                 clause_weights: Iterable[Weight] = None,
+    def __init__(self, functors: Iterable[WeightedValue[FunctorPlaceholder]],
+                 predicates: Iterable[WeightedValue[PredicatePlaceholder]],
+                 atoms: Iterable[WeightedValue[AtomPlaceholder]],
+                 literals: Iterable[WeightedValue[LiteralPlaceholder]],
+                 clauses: Iterable[WeightedValue[CNFClausePlaceholder]],
                  ):
-        self.functors = list(functors)
-        self.predicates = list(predicates)
-        self.atoms = list(atoms)
-        self.literals = list(literals)
-        self.clauses = list(clauses)
-        self.functor_weights = list(functor_weights) if functor_weights is not None else None
-        self.predicate_weights = list(predicate_weights) if predicate_weights is not None else None
-        self.atom_weights = list(atom_weights) if atom_weights is not None else None
-        self.literal_weights = list(literal_weights) if literal_weights is not None else None
-        self.clause_weights = list(clause_weights) if clause_weights is not None else None
+        self.functors = {f.value: f.weight for f in functors}
+        self.predicates = {p.value: p.weight for p in predicates}
+        self.atoms = {a.value: a.weight for a in atoms}
+        self.literals = {l.value: l.weight for l in literals}
+        self.clauses = {c.value: c.weight for c in clauses}
 
     def generate_cnf_formula(self, number_of_clauses: int) -> CNFFormula:
         clause_cont = self.generate_cnf_clauses(number_of_clauses=number_of_clauses)
@@ -59,36 +49,46 @@ class RandomCNFGenerator:
 
         return CNFFormula(clauses=clause_cont._items)
 
+    def number_of_functors_that_can_be_generated(self, number_of_variables: int, number_of_functors: int) -> int:
+        return len(self.functors)
+
     def generate_cnf_clauses(self, number_of_clauses: int) -> CNFClauseContainer:
         return CNFClauseContainer(additional_containers=[],
                                   items=(r.instantiate() for r in
-                                         random.choices(self.clauses, weights=self.clause_weights,
+                                         random.choices(population=list(self.clauses.keys()),
+                                                        weights=list(self.clauses.values()),
                                                         k=number_of_clauses)))
 
     def generate_literals(self, number_of_literals: int) -> LiteralContainer:
         return LiteralContainer(additional_containers=[],
                                 items=(r.instantiate() for r in
-                                       random.choices(self.literals, weights=self.literal_weights,
+                                       random.choices(population=list(self.literals.keys()),
+                                                      weights=list(self.literals.values()),
                                                       k=number_of_literals)))
 
     def generate_predicates(self, number_of_predicates: int) -> PredicateContainer:
         return PredicateContainer(additional_containers=[],
                                   items=(r.instantiate() for r in
-                                         random.choices(self.predicates, weights=self.predicate_weights,
+                                         random.choices(population=list(self.predicates.keys()),
+                                                        weights=list(self.predicates.values()),
                                                         k=number_of_predicates)))
 
     def generate_atoms(self, number_of_atoms: int) -> AtomContainer:
         return AtomContainer(additional_containers=[],
                              items=(r.instantiate() for r in
-                                    random.choices(self.atoms, weights=self.atom_weights, k=number_of_atoms)))
+                                    random.choices(population=list(self.atoms.keys()),
+                                                   weights=list(self.atoms.values()),
+                                                   k=number_of_atoms)))
 
     def generate_functors(self, number_of_functors: int) -> FunctorContainer:
         return FunctorContainer(additional_containers=[],
                                 items=(r.instantiate() for r in
-                                       random.choices(self.functors, weights=self.functor_weights,
+                                       random.choices(population=list(self.functors.keys()),
+                                                      weights=list(self.functors.values()),
                                                       k=number_of_functors)))
 
     def generate_variables(self, number_of_variables: int) -> VariableContainer:
         return VariableContainer(additional_containers=[],
-                                 items=random.choices([Variable(name=f'v{i}') for i in range(number_of_variables)],
-                                                      k=number_of_variables))
+                                 items=random.choices(
+                                     population=[Variable(name=f'v{i}') for i in range(number_of_variables)],
+                                     k=number_of_variables))
