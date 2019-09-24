@@ -1,6 +1,7 @@
 from typing import Iterable, List
 
-from src.ast import CNFFormula, CNFClause
+from src.ast import CNFFormula
+from src.generators.placeholder import CNFClausePlaceholder
 from src.generators.randomcnfgenerator import RandomCNFGenerator
 
 
@@ -60,16 +61,13 @@ class ThresholdRegulator:
     def _fix_number_of_literals(self, generator: RandomCNFGenerator, formula: CNFFormula):
         min_allowed_number_of_literals = min(self.allowed_number_of_literals)
         max_allowed_number_of_literals = max(self.allowed_number_of_literals)
-        needs_less_literals = max_allowed_number_of_literals < formula.number_of_literal_instances
-        needs_more_literals = formula.number_of_literal_instances < min_allowed_number_of_literals
 
         last_iteration_changed_clause = False
-        sorted_placeholder_clauses = sorted(generator.clauses.keys(), key=len)
-        max_placeholder_length = max(
-            placeholder.number_of_literal_instances for placeholder in sorted_placeholder_clauses)
-        while True:
+        sorted_placeholder_clauses = sorted(generator.clause_placeholders.keys(), key=len)
+        max_placeholder_length = len(sorted_placeholder_clauses[-1])
+        exit_loop = False
+        while not exit_loop:
             for cont, i, clause in formula.clauses(enum=True):
-                clause: CNFClause
                 needs_less_literals = max_allowed_number_of_literals < formula.number_of_literal_instances
                 needs_more_literals = formula.number_of_literal_instances < min_allowed_number_of_literals
                 if needs_less_literals:
@@ -81,23 +79,23 @@ class ThresholdRegulator:
                     literals_low_range = clause.number_of_literal_instances
                     literals_high_range = literals_low_range + literal_difference
                 else:
-                    return
-                assert literals_high_range > literals_low_range
+                    exit_loop = True
+                    break
 
-                for clause_placeholder in sorted_placeholder_clauses:
-                    if literals_low_range < clause_placeholder.number_of_literal_instances < literals_high_range:
-                        last_iteration_changed_clause = True
-                        cont[i] = clause_placeholder.instantiate()
-                        break
-                else:
-                    if all(clause.number_of_literal_instances == max_placeholder_length for clause in
-                           formula.clauses()):
-                        raise Exception(
-                            f'You requested too many literals. You want minimum {min_allowed_number_of_literals}, '
-                            f'but I can provide max {formula.number_of_literal_instances}')
-            # if literal_difference and not last_iteration_changed_clause:
-            #     raise Exception(f'You requested too many literals. You want minimum {min_allowed_number_of_literals}, '
-            #                     f'but I can provide max {formula.number_of_literal_instances}')
+                first_matching_placeholder = next(
+                    (clause_placeholder for clause_placeholder in sorted_placeholder_clauses if
+                     literals_low_range < clause_placeholder.number_of_literal_instances < literals_high_range),
+                    None)
+
+                if first_matching_placeholder is not None:
+                    cont[i] = first_matching_placeholder
+                elif all(clause.number_of_literal_instances == max_placeholder_length for clause in formula.clauses()):
+                    raise Exception(f'You requested too many literals. '
+                                    f'You want minimum {min_allowed_number_of_literals}, '
+                                    f'but I can provide max {formula.number_of_literal_instances}')
+        for cont, i, clause in formula.clauses(enum=True):
+            if isinstance(clause, CNFClausePlaceholder):
+                cont[i] = generator.recursive_generate(clause.instantiate())
 
     def _fix_number_of_clauses(self, generator: RandomCNFGenerator, initial_cnf_formula: CNFFormula):
         pass

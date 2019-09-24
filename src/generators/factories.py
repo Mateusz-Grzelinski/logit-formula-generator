@@ -5,7 +5,7 @@ from collections import OrderedDict, defaultdict
 from typing import Iterable, Set, List, Dict, Tuple, Union, Callable
 
 from src.ast import Functor
-from src.generators import Weight, WeightedValue
+from src.generators import WeightedValue
 from src.generators.placeholder import PredicatePlaceholder, VariablePlaceholder, TermPlaceholder, FunctorPlaceholder, \
     AtomPlaceholder, LiteralPlaceholder, CNFClausePlaceholder
 
@@ -24,11 +24,11 @@ class FunctorFactory:
     var_placeholder = VariablePlaceholder()
 
     @staticmethod
-    def generate_functors(names: Iterable[Union[str, Tuple[str, Weight]]],
-                          arities: Iterable[Union[int, Tuple[int, Weight]]],
+    def generate_functors(names: Iterable[Union[str, Tuple[str, float]]],
+                          arities: Iterable[Union[int, Tuple[int, float]]],
                           max_recursion_depth: int,
                           default_weight: float = 1,
-                          weight_mix: Callable[[Weight, Weight], Weight] = max
+                          weight_mix: Callable[[float, float], float] = max
                           ) -> Set[WeightedValue[FunctorPlaceholder]]:
         names = unify_representation(values=names, default_weight=default_weight)
         arities = unify_representation(values=arities, default_weight=default_weight)
@@ -60,7 +60,7 @@ class FunctorFactory:
         return functors
 
     @staticmethod
-    def generate_liveness_functors(names: Iterable[Union[str, Tuple[str, Weight]]],
+    def generate_liveness_functors(names: Iterable[Union[str, Tuple[str, float]]],
                                    default_weight: float = 1) -> Set[WeightedValue[FunctorPlaceholder]]:
         functors = set()
         functor_names = unify_representation(values=names, default_weight=default_weight)
@@ -70,10 +70,10 @@ class FunctorFactory:
         return functors
 
     @staticmethod
-    def generate_safety_functors(names: Iterable[Union[str, Tuple[str, Weight]]],
-                                 constant_functors: Iterable[Union[Functor, Tuple[Functor, Weight]]],
+    def generate_safety_functors(names: Iterable[Union[str, Tuple[str, float]]],
+                                 constant_functors: Iterable[Union[Functor, Tuple[Functor, float]]],
                                  default_weight: float = 1,
-                                 weight_mix: Callable[[Weight, Weight], Weight] = max
+                                 weight_mix: Callable[[float, float], float] = max
                                  ) -> Set[WeightedValue[FunctorPlaceholder]]:
         functors = set()
         functor_names = unify_representation(values=names, default_weight=default_weight)
@@ -89,10 +89,10 @@ class PredicateFactory:
     func_placeholder = FunctorPlaceholder()
 
     @staticmethod
-    def generate_predicates(names: Iterable[Union[str, Tuple[str, Weight]]],
-                            arities: Iterable[Union[int, Tuple[int, Weight]]],
+    def generate_predicates(names: Iterable[Union[str, Tuple[str, float]]],
+                            arities: Iterable[Union[int, Tuple[int, float]]],
                             default_weight: float = 1,
-                            weight_mix: Callable[[Weight, Weight], Weight] = max
+                            weight_mix: Callable[[float, float], float] = max
                             ) -> Set[WeightedValue[PredicatePlaceholder]]:
 
         names = unify_representation(values=names, default_weight=default_weight)
@@ -120,9 +120,9 @@ class AtomFactory:
     pred_placeholder = PredicatePlaceholder()
 
     @staticmethod
-    def generate_atoms(operands: Iterable[str, Tuple[str, Weight]],
+    def generate_atoms(operands: Iterable[str, Tuple[str, float]],
                        default_weights: float = 1) -> Set[WeightedValue[AtomPlaceholder]]:
-        operands = unify_representation(operands, default_weight=1)
+        operands = unify_representation(operands, default_weight=default_weights)
         atoms = set()
         for connective, weight in operands:
             arguments: Dict[int, List[TermPlaceholder]] = OrderedDict()
@@ -146,10 +146,9 @@ class LiteralFactory:
     atom_placeholder = AtomPlaceholder()
 
     @staticmethod
-    def generate_literals(allow_positive: Union[bool, Tuple[bool, Weight]] = True,
-                          allow_negated: Union[bool, Tuple[bool, Weight]] = True,
-                          default_weight: float = 1,
-                          ) -> Set[WeightedValue[LiteralPlaceholder]]:
+    def generate_literals(allow_positive: Union[bool, Tuple[bool, float]] = True,
+                          allow_negated: Union[bool, Tuple[bool, float]] = True,
+                          default_weight: float = 1) -> Set[WeightedValue[LiteralPlaceholder]]:
         literals = set()
         positive_literal = LiteralPlaceholder(atom=LiteralFactory.atom_placeholder, negated=False)
         if isinstance(allow_positive, tuple) and allow_positive[0]:
@@ -169,7 +168,7 @@ class CNFClauseFactory:
     literal_placeholder = LiteralPlaceholder()
 
     @staticmethod
-    def generate_clauses(lengths: Iterable[int, Tuple[int, Weight]],
+    def generate_clauses(lengths: Iterable[int, Tuple[int, float]],
                          default_weight: float = 1) -> Set[WeightedValue[CNFClausePlaceholder]]:
         lengths = unify_representation(lengths, default_weight)
         clauses = set()
