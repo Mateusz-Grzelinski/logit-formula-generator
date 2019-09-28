@@ -1,30 +1,31 @@
 from __future__ import annotations
 
-from typing import List
+from collections import Iterable
 
+from src.container import ConstantLengthContainer
 from .ast_element import AstElement
 from .containers import LiteralContainer
 from .literal import Literal
 from .operands import LogicalOperand
 
 
-class CNFClause(LiteralContainer, AstElement):
+class CNFClause(LiteralContainer, AstElement, container_implementation=ConstantLengthContainer):
     operand = LogicalOperand.AND
 
-    def __init__(self, literals: List[Literal] = None, mutable=True, related_placeholder: CNFClausePlaceholder = None):
-        LiteralContainer.__init__(self, additional_containers=[], items=literals, mutable=mutable)
-        AstElement.__init__(self, related_placeholder=related_placeholder)
+    def __init__(self, items: Iterable[Literal] = None, related_placeholder: CNFClausePlaceholder = None, *args,
+                 **kwagrs):
+        super().__init__(items=items, related_placeholder=related_placeholder, *args, **kwagrs)
 
     def __str__(self):
         return 'cnf(' + ' | '.join(str(l) for l in self.literals()) + ').'
 
     def __hash__(self):
-        return hash(i for i in self._items)
+        return super().__hash__()
 
     def __eq__(self, other):
         if isinstance(other, CNFClause):
-            return len(self._items) == len(other._items) and all(i == j for i, j in zip(self._items, other._items))
-        return False
+            return super().__eq__(other)
+        raise NotImplementedError
 
     @property
     def length(self):

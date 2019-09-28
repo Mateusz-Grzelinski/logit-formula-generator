@@ -1,15 +1,18 @@
 from __future__ import annotations
 
-from typing import Generator
+from typing import Generator, overload, Iterable, Tuple
 
-from src.container import Container
+from src.container import Container, MutableContainer
 
 
-class PredicateContainer(Container):
-    @staticmethod
-    def _item_type_check(obj):
-        from src.ast.predicate import Predicate
-        return isinstance(obj, Predicate)
+class PredicateContainer(Container, container_implementation=MutableContainer):
+    @overload
+    def predicates(self, enum: bool = True) -> Iterable[Tuple[Container, int, Predicate]]:
+        ...
+
+    @overload
+    def predicates(self, enum: bool = False) -> Iterable[Predicate]:
+        ...
 
     def predicates(self, enum: bool = False) -> Generator:
         from src.ast.predicate import Predicate

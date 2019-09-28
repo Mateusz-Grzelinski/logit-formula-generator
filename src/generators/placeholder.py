@@ -1,10 +1,11 @@
 from __future__ import annotations
 
 from abc import abstractmethod, ABC
-from typing import List, Optional, Union, Iterable
+from typing import Optional, Union, Iterable
 
 from src.ast import Term, Variable, Functor, Predicate, Atom, CNFClause, CNFFormula, Literal, AstElement
 from src.ast.operands import MathOperand
+from src.container import ImmutableContainer
 
 
 class Placeholder:
@@ -29,9 +30,9 @@ class VariablePlaceholder(TermPlaceholder, Variable):
         return Variable(name=self.name, related_placeholder=self)
 
 
-class FunctorPlaceholder(TermPlaceholder, Functor):
-    def __init__(self, name: str = '_f', terms: Iterable[Term] = None):
-        super().__init__(name=name, terms=terms, mutable=False)
+class FunctorPlaceholder(TermPlaceholder, Functor, container_implementation=ImmutableContainer):
+    def __init__(self, name: str = '_f', items: Iterable[Term] = None):
+        super().__init__(name=name, items=items)
 
     def __hash__(self):
         return hash(self.name) + hash(tuple(self.items()))
@@ -43,12 +44,12 @@ class FunctorPlaceholder(TermPlaceholder, Functor):
                 terms.append(item.instantiate())
             else:
                 terms.append(item)
-        return Functor(name=self.name, terms=terms, related_placeholder=self)
+        return Functor(name=self.name, items=terms, related_placeholder=self)
 
 
-class PredicatePlaceholder(Placeholder, Predicate):
-    def __init__(self, name: str = 'p', terms: Iterable[Term] = None):
-        super().__init__(name=name, terms=terms, mutable=False)
+class PredicatePlaceholder(Placeholder, Predicate, container_implementation=ImmutableContainer):
+    def __init__(self, name: str = 'p', items: Iterable[Term] = None):
+        super().__init__(name=name, items=items, mutable=False)
 
     def instantiate(self) -> Predicate:
         terms = []
@@ -57,13 +58,13 @@ class PredicatePlaceholder(Placeholder, Predicate):
                 terms.append(item.instantiate())
             else:
                 terms.append(item)
-        return Predicate(name=self.name, terms=terms, related_placeholder=self)
+        return Predicate(name=self.name, items=terms, related_placeholder=self)
 
 
-class AtomPlaceholder(Placeholder, Atom):
+class AtomPlaceholder(Placeholder, Atom, container_implementation=ImmutableContainer):
     def __init__(self, connective: Optional[Union[str, MathOperand]] = '',
-                 arguments: List[Union[Term, Predicate]] = None):
-        super().__init__(connective=connective, arguments=arguments, mutable=False)
+                 items: Iterable[Union[Term, Predicate]] = None):
+        super().__init__(connective=connective, items=items, mutable=False)
 
     def instantiate(self) -> Atom:
         arguments = []
@@ -72,24 +73,24 @@ class AtomPlaceholder(Placeholder, Atom):
                 arguments.append(item.instantiate())
             else:
                 arguments.append(item)
-        return Atom(connective=self.connective, arguments=arguments, related_placeholder=self)
+        return Atom(connective=self.connective, items=arguments, related_placeholder=self)
 
 
-class LiteralPlaceholder(Placeholder, Literal):
-    def __init__(self, atom: Atom = None, negated: bool = False):
-        atom = AtomPlaceholder() if atom is None else atom
-        super().__init__(atom, negated, mutable=False)
+class LiteralPlaceholder(Placeholder, Literal, container_implementation=ImmutableContainer):
+    def __init__(self, item: Atom = None, negated: bool = False):
+        item = AtomPlaceholder() if item is None else item
+        super().__init__(item, negated, mutable=False)
 
     def instantiate(self) -> Literal:
         if isinstance(self.atom, AtomPlaceholder):
-            return Literal(atom=self.atom.instantiate(), negated=self.is_negated, related_placeholder=self)
+            return Literal(item=self.atom.instantiate(), negated=self.is_negated, related_placeholder=self)
         else:
-            return Literal(atom=self.atom, negated=self.is_negated, related_placeholder=self)
+            return Literal(item=self.atom, negated=self.is_negated, related_placeholder=self)
 
 
-class CNFClausePlaceholder(Placeholder, CNFClause):
-    def __init__(self, literals: List[Literal] = None):
-        super().__init__(literals, mutable=False)
+class CNFClausePlaceholder(Placeholder, CNFClause, container_implementation=ImmutableContainer):
+    def __init__(self, items: Iterable[Literal] = None):
+        super().__init__(items, mutable=False)
 
     def instantiate(self) -> CNFClause:
         literals = []
@@ -98,8 +99,8 @@ class CNFClausePlaceholder(Placeholder, CNFClause):
                 literals.append(item.instantiate())
             else:
                 literals.append(item)
-        return CNFClause(literals=literals, related_placeholder=self)
+        return CNFClause(items=literals, related_placeholder=self)
 
 
-class CNFFormulaPlaceholder(Placeholder, CNFFormula):
+class CNFFormulaPlaceholder(Placeholder, CNFFormula, container_implementation=ImmutableContainer):
     pass

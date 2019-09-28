@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from typing import Optional, Union, Dict, Iterable
 
+from src.container import ConstantLengthContainer
 from .ast_element import AstElement
 from .containers import PredicateContainer
 from .containers import TermContainer
@@ -10,7 +11,7 @@ from .predicate import Predicate
 from .term import Term
 
 
-class Atom(TermContainer, PredicateContainer, AstElement):
+class Atom(TermContainer, PredicateContainer, AstElement, container_implementation=ConstantLengthContainer):
     """Atom is every propositional statement (statement that can be assigned true or false):
     atom is logical statement - it evaluates to true of false
     Examples:
@@ -35,8 +36,10 @@ class Atom(TermContainer, PredicateContainer, AstElement):
     }
     """key: operation symbol, value: arity"""
 
-    def __init__(self, connective: Optional[Union[str, MathOperand]], arguments: Iterable[Term, Predicate],
-                 mutable=True, related_placeholder: AtomPlaceholder = None):
+    def __init__(self, items: Iterable[Term, Predicate], connective: Optional[Union[str, MathOperand]],
+                 related_placeholder: AtomPlaceholder = None, *args, **kwargs):
+        super().__init__(connective=connective, items=items, related_placeholder=related_placeholder, *args, **kwargs)
+
         if connective is None:
             self.connective = None
         elif isinstance(connective, str):
@@ -49,19 +52,13 @@ class Atom(TermContainer, PredicateContainer, AstElement):
         else:
             raise TypeError(f'invalid argument type for field connective: {connective}')
 
-        # todo arguments should be the same type? have the same return type
-        # todo check number of arguments
-        super().__init__(additional_containers=[], items=arguments, mutable=mutable)
-        AstElement.__init__(self, related_placeholder=related_placeholder)
-
     def __hash__(self):
-        return hash(self.connective) + hash(i for i in self._items)
+        return hash(self.connective) + super().__hash__()
 
     def __eq__(self, other):
         if isinstance(other, Atom):
-            return self.connective == other.connective and len(self._items) == len(other._items) and \
-                   all(i == j for i, j in zip(self._items, other._items))
-        return False
+            return self.connective == other.connective and super().__eq__(other)
+        raise NotImplementedError
 
     def __str__(self):
         # handle incorrect arity vs len(self._items)

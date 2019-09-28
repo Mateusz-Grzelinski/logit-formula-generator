@@ -1,16 +1,20 @@
 from __future__ import annotations
 
 from statistics import mean
-from typing import Iterable
+from typing import Iterable, overload, Tuple
 
+from src.container import MutableContainer
 from .literal_container import LiteralContainer
 
 
-class CNFClauseContainer(LiteralContainer):
-    @staticmethod
-    def _item_type_check(obj):
-        from src.ast.cnf_clause import CNFClause
-        return isinstance(obj, CNFClause)
+class CNFClauseContainer(LiteralContainer, container_implementation=MutableContainer):
+    @overload
+    def clauses(self, enum: bool = True) -> Iterable[Tuple[Container, int, CNFClause]]:
+        ...
+
+    @overload
+    def clauses(self, enum: bool = False) -> Iterable[CNFClause]:
+        ...
 
     def clauses(self, enum: bool = False) -> Iterable[CNFClause]:
         from src.ast.cnf_clause import CNFClause

@@ -36,7 +36,7 @@ class FunctorFactory:
         # first generate non-recursive structures
         functors = set()
         for (name, name_weight), (arity, arity_weight) in itertools.product(names, arities):
-            weighted_functor = FunctorPlaceholder(name=name, terms=[FunctorFactory.var_placeholder] * arity)
+            weighted_functor = FunctorPlaceholder(name=name, items=[FunctorFactory.var_placeholder] * arity)
             functors.add(WeightedValue(weighted_functor, weight_mix(name_weight, arity_weight)))
 
         # now generate nested structures
@@ -55,7 +55,7 @@ class FunctorFactory:
                         terms[argument_index].append(weighted_functor.value)
 
                     for n_args in itertools.product(*terms.values()):
-                        weighted_functor = FunctorPlaceholder(name=name, terms=n_args)
+                        weighted_functor = FunctorPlaceholder(name=name, items=n_args)
                         functors.add(WeightedValue(weighted_functor, weight_mix(name_weight, arity_weight)))
         return functors
 
@@ -65,7 +65,7 @@ class FunctorFactory:
         functors = set()
         functor_names = unify_representation(values=names, default_weight=default_weight)
         for name, name_weight in functor_names:
-            f = FunctorPlaceholder(name=name, terms=[FunctorFactory.var_placeholder])
+            f = FunctorPlaceholder(name=name, items=[FunctorFactory.var_placeholder])
             functors.add(WeightedValue(f, name_weight))
         return functors
 
@@ -79,7 +79,7 @@ class FunctorFactory:
         functor_names = unify_representation(values=names, default_weight=default_weight)
         constant_functors = unify_representation(values=constant_functors, default_weight=default_weight)
         for (name, name_weight), (functor, functor_weight) in itertools.product(functor_names, constant_functors):
-            f = FunctorPlaceholder(name=name, terms=[functor])
+            f = FunctorPlaceholder(name=name, items=[functor])
             functors.add(WeightedValue(f, weight_mix(name_weight, functor_weight)))
         return functors
 
@@ -107,7 +107,7 @@ class PredicateFactory:
                 terms[argument_index] = [PredicateFactory.var_placeholder, PredicateFactory.func_placeholder]
 
             for n_args in itertools.product(*terms.values()):
-                p = WeightedValue(PredicatePlaceholder(name=name, terms=list(n_args)),
+                p = WeightedValue(PredicatePlaceholder(name=name, items=list(n_args)),
                                   weight_mix(name_weight, arity_weight))
                 predicates.add(p)
 
@@ -136,7 +136,7 @@ class AtomFactory:
                                                  AtomFactory.pred_placeholder]
 
             for n_args in itertools.product(*arguments.values()):
-                a = WeightedValue(AtomPlaceholder(connective=connective, arguments=list(n_args)), weight)
+                a = WeightedValue(AtomPlaceholder(connective=connective, items=list(n_args)), weight)
                 atoms.add(a)
 
         return atoms
@@ -150,13 +150,13 @@ class LiteralFactory:
                           allow_negated: Union[bool, Tuple[bool, float]] = True,
                           default_weight: float = 1) -> Set[WeightedValue[LiteralPlaceholder]]:
         literals = set()
-        positive_literal = LiteralPlaceholder(atom=LiteralFactory.atom_placeholder, negated=False)
+        positive_literal = LiteralPlaceholder(item=LiteralFactory.atom_placeholder, negated=False)
         if isinstance(allow_positive, tuple) and allow_positive[0]:
             literals.add(WeightedValue(positive_literal, allow_positive[1]))
         elif isinstance(allow_positive, bool) and allow_positive:
             literals.add(WeightedValue(positive_literal, default_weight))
 
-        negative_literal = LiteralPlaceholder(atom=LiteralFactory.atom_placeholder, negated=True)
+        negative_literal = LiteralPlaceholder(item=LiteralFactory.atom_placeholder, negated=True)
         if isinstance(allow_negated, tuple) and allow_positive[0]:
             literals.add(WeightedValue(negative_literal, allow_negated[1]))
         elif isinstance(allow_negated, bool) and allow_negated:
@@ -174,7 +174,7 @@ class CNFClauseFactory:
         clauses = set()
         for length, weight in lengths:
             literals = [CNFClauseFactory.literal_placeholder] * length
-            clauses.add(WeightedValue(CNFClausePlaceholder(literals=literals), weight))
+            clauses.add(WeightedValue(CNFClausePlaceholder(items=literals), weight))
         return clauses
 
 

@@ -4,7 +4,7 @@ from abc import abstractmethod
 
 
 class AstElement:
-    def __init__(self, related_placeholder: Placeholder = None):
+    def __init__(self, related_placeholder: Placeholder = None, *args, **kwargs):
         self.related_placeholder = related_placeholder
 
     def __repr__(self):

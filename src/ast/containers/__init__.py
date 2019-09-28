@@ -5,7 +5,6 @@ from .cnf_clause_container import CNFClauseContainer
 from .functor_container import FunctorContainer
 from .literal_container import LiteralContainer
 from .predicate_container import PredicateContainer
-from .quantifier_container import QuantifierContainer
 from .term_container import TermContainer
 from .variable_container import VariableContainer
 
@@ -16,6 +15,5 @@ __all__ = [
     'PredicateContainer',
     'AtomContainer',
     'LiteralContainer',
-    'QuantifierContainer',
     'CNFClauseContainer'
 ]

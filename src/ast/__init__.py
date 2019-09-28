@@ -7,7 +7,6 @@ from .cnf_formula import CNFFormula
 from .functor import Functor
 from .literal import Literal
 from .predicate import Predicate
-from .quantifier import Quantifier
 from .term import Term
 from .variable import Variable
 
@@ -17,7 +16,6 @@ __all__ = [
     'Functor',
     'Predicate',
     'Atom',
-    'Quantifier',
     'Literal',
     'CNFClause',
     'CNFFormula',

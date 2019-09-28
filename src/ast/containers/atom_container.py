@@ -1,19 +1,22 @@
 from __future__ import annotations
 
-from typing import Generator
+from typing import overload, Iterable, Tuple
 
+from src.container import MutableContainer
 from .predicate_container import PredicateContainer
 from .term_container import TermContainer
 
 
-class AtomContainer(TermContainer, PredicateContainer):
+class AtomContainer(TermContainer, PredicateContainer, container_implementation=MutableContainer):
+    @overload
+    def atoms(self, enum: bool = True) -> Iterable[Tuple[Container, int, Atom]]:
+        ...
 
-    @staticmethod
-    def _item_type_check(obj):
-        from src.ast.atom import Atom
-        return isinstance(obj, Atom)
+    @overload
+    def atoms(self, enum: bool = False) -> Iterable[Atom]:
+        ...
 
-    def atoms(self, enum: bool = False) -> Generator:
+    def atoms(self, enum: bool = False) -> Iterable:
         from src.ast.atom import Atom
         if enum:
             return ((container, i, a) for container, i, a in self.items(enum=True) if isinstance(a, Atom))

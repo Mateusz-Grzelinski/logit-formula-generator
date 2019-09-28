@@ -30,23 +30,11 @@ class ThresholdRegulator:
             delta_from_threshold = number * threshold
             return [i for i in range(int(number - delta_from_threshold), int(number + delta_from_threshold)) if i >= 0]
         else:
-            # threshold is not None and delata is not None
             delta_from_threshold = number * threshold
             return [i for i in range(min(int(number - delta_from_threshold), number + delta),
                                      max(int(number + delta_from_threshold), number + delta)) if i >= 0]
 
     def tune_cnf_formula(self, generator: RandomCNFGenerator, initial_cnf_formula: CNFFormula):
-        # if self.allowed_number_of_clauses and initial_cnf_formula.number_of_clauses not in self.allowed_number_of_clauses:
-        #     self._fix_number_of_clauses(generator, initial_cnf_formula)
-        # now number of clauses is ok
-        # for cont, i, clause in initial_cnf_formula.clauses(enum=True):
-        #     clause: CNFClause
-        #     if clause.related_placeholder is not None:
-        #         print(f'gen.cl: {list(generator.clauses.keys())}')
-        #         generator.clauses[clause.related_placeholder] /= 2
-        #     else:
-        #         generator.clauses[clause] /= 2
-        #
         self._fix_number_of_literals(generator, initial_cnf_formula)
 
         if self.allowed_number_of_atoms and initial_cnf_formula.number_of_atoms not in self.allowed_number_of_atoms:
@@ -62,7 +50,6 @@ class ThresholdRegulator:
         min_allowed_number_of_literals = min(self.allowed_number_of_literals)
         max_allowed_number_of_literals = max(self.allowed_number_of_literals)
 
-        last_iteration_changed_clause = False
         sorted_placeholder_clauses = sorted(generator.clause_placeholders.keys(), key=len)
         max_placeholder_length = len(sorted_placeholder_clauses[-1])
         exit_loop = False
@@ -93,6 +80,7 @@ class ThresholdRegulator:
                     raise Exception(f'You requested too many literals. '
                                     f'You want minimum {min_allowed_number_of_literals}, '
                                     f'but I can provide max {formula.number_of_literal_instances}')
+
         for cont, i, clause in formula.clauses(enum=True):
             if isinstance(clause, CNFClausePlaceholder):
                 cont[i] = generator.recursive_generate(clause.instantiate())

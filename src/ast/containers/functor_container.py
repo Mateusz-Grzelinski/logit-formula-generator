@@ -1,13 +1,18 @@
 from __future__ import annotations
 
-from src.container import Container
+from typing import overload, Tuple, Iterable
+
+from src.container import Container, MutableContainer
 
 
-class FunctorContainer(Container):
-    @staticmethod
-    def _item_type_check(obj):
-        from src.ast import Functor
-        return isinstance(obj, Functor)
+class FunctorContainer(Container, container_implementation=MutableContainer):
+    @overload
+    def functors(self, enum: bool = True) -> Iterable[Tuple[Container, int, Functor]]:
+        ...
+
+    @overload
+    def functors(self, enum: bool = False) -> Iterable[Functor]:
+        ...
 
     def functors(self, enum: bool = False):
         from src.ast import Functor

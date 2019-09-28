@@ -24,7 +24,7 @@ class RandomCNFGenerator:
         self.clause_placeholders = {c.value: c.weight for c in clauses}
 
     def cnf_formula(self, number_of_clauses: int) -> CNFFormula:
-        return CNFFormula(clauses=self.cnf_clauses(number_of_clauses=number_of_clauses))
+        return CNFFormula(items=self.cnf_clauses(number_of_clauses=number_of_clauses))
 
     def cnf_clauses(self, number_of_clauses: int) -> CNFClauseContainer:
         return CNFClauseContainer(additional_containers=[],
@@ -106,26 +106,26 @@ class RandomCNFGenerator:
             do_variables = True
 
         if do_literals:
-            literal_cont = self.literals(number_of_literals=ast_element.number_of_literal_instances)
+            literal_cont = self.literals(number_of_literals=ast_element.number_of_literal_instances).literals()
             for container, i, literal in ast_element.literals(enum=True):
-                container[i] = literal_cont.pop()
+                container[i] = next(literal_cont)
 
         if do_atoms:
-            atom_cont = self.atoms(number_of_atoms=ast_element.number_of_atom_instances)
+            atom_cont = self.atoms(number_of_atoms=ast_element.number_of_atom_instances).atoms()
             for container, i, atom in ast_element.atoms(enum=True):
-                container[i] = atom_cont.pop()
+                container[i] = next(atom_cont)
 
         if do_predicates:
-            pred_cont = self.predicates(number_of_predicates=ast_element.number_of_predicate_instances)
+            pred_cont = self.predicates(number_of_predicates=ast_element.number_of_predicate_instances).predicates()
             for container, i, pred in ast_element.predicates(enum=True):
-                container[i] = pred_cont.pop()
+                container[i] = next(pred_cont)
 
         if do_functors:
-            functor_cont = self.functors(number_of_functors=ast_element.number_of_functor_instances)
+            functor_cont = self.functors(number_of_functors=ast_element.number_of_functor_instances).functors()
             for container, i, functor in ast_element.functors(enum=True):
-                container[i] = functor_cont.pop()
+                container[i] = next(functor_cont)
 
         if do_variables:
-            variable_cont = self.variables(number_of_variables=ast_element.number_of_variable_instances)
+            variable_cont = self.variables(number_of_variables=ast_element.number_of_variable_instances).variables()
             for container, i, variable in ast_element.variables(enum=True):
-                container[i] = variable_cont.pop()
+                container[i] = next(variable_cont)

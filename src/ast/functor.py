@@ -2,25 +2,24 @@ from __future__ import annotations
 
 from typing import Iterable
 
+from src.container import ConstantLengthContainer
 from .ast_element import AstElement
 from .containers import TermContainer
 from .term import Term
 
 
-class Functor(Term, TermContainer, AstElement):
-    def __init__(self, name: str, terms: Iterable[Term] = None, mutable=True,
-                 related_placeholder: FunctorPlaceholder = None):
-        Term.__init__(self, name)
-        TermContainer.__init__(self, additional_containers=[], items=terms, mutable=mutable)
-        AstElement.__init__(self, related_placeholder=related_placeholder)
+class Functor(Term, TermContainer, AstElement, container_implementation=ConstantLengthContainer):
+    def __init__(self, name: str, items: Iterable[Term] = None, related_placeholder: FunctorPlaceholder = None, *args,
+                 **kwargs):
+        super().__init__(name=name, items=items, related_placeholder=related_placeholder, *args, **kwargs)
 
     def __hash__(self):
-        return hash(self.name) + hash(len(self._items))
+        return hash(self.name) + super().__hash__()
 
     def __eq__(self, other):
         if isinstance(other, Functor):
-            return self.name == other.name and len(self._items) == len(other._items)
-        return False
+            return self.name == other.name and super().__eq__(other)
+        raise NotImplementedError
 
     def __str__(self):
         if len(list(self._items)) != 0:
