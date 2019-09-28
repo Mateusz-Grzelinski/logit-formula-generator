@@ -10,6 +10,7 @@ from ...containers import MutableContainer
 class CNFClauseContainer(LiteralContainer, container_implementation=MutableContainer):
     def __init__(self, items: Iterable[CNFClause], *args, **kwargs):
         super().__init__(items=items, *args, **kwargs)
+        assert len(self._items) != 0
 
     @overload
     def clauses(self, enum: bool = True) -> Iterable[Tuple[Container, int, CNFClause]]:
@@ -28,7 +29,7 @@ class CNFClauseContainer(LiteralContainer, container_implementation=MutableConta
 
     @property
     def number_of_clause_instances(self) -> int:
-        return len(list(self.clauses()))
+        return len(self._items)
 
     @property
     def number_of_singleton_variables(self) -> int:

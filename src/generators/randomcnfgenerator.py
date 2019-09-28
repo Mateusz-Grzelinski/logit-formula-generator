@@ -9,12 +9,15 @@ from src.containers.fol import CNFClauseContainer, AtomContainer, VariableContai
 
 
 class RandomCNFGenerator:
-    def __init__(self, functors: Dict[Functor, float],
+    def __init__(self,
+                 variables: Dict[Variable, float],
+                 functors: Dict[Functor, float],
                  predicates: Dict[Predicate, float],
                  atoms: Dict[Atom, float],
                  literals: Dict[Literal, float],
                  clauses: Dict[CNFClause, float]):
         self.ast_elements = {
+            Variable: variables,
             Functor: functors,
             Predicate: predicates,
             Atom: atoms,
@@ -53,39 +56,23 @@ class RandomCNFGenerator:
                                                         weights=list(self.ast_elements[Functor].values()),
                                                         k=number_of_functors))
 
-    def random_variables(self, number_of_variables: int) -> Generator[Variable, None, None]:
-        return (r for r in random.choices(population=[Variable(name=f'v{i}') for i in range(number_of_variables)],
+    def random_variables(self, number_of_variables: int,
+                         variable_scope: CNFClause = None) -> Generator[Variable, None, None]:
+        if variable_scope:
+            variable_population = [var for var, _weight in self.ast_elements[Variable].items() if
+                                   var.scope == variable_scope]
+            variable_weights = [weight for var, weight in self.ast_elements[Variable].items() if
+                                var.scope == variable_scope]
+        else:
+            variable_population = list(self.ast_elements[Variable].keys())
+            variable_weights = list(self.ast_elements[Variable].values())
+        return (r for r in random.choices(population=variable_population,
+                                          weights=variable_weights,
                                           k=number_of_variables))
 
-    def recursive_generate(self, ast_element):
+    def replace_inner_placeholders(self, ast_element):
         # todo mixed placeholders with ast_elements are not supported
-        do_literals = False
-        do_atoms = False
-        do_predicates = False
-        do_functors = False
-        do_variables = False
         if isinstance(ast_element, CNFClauseContainer):
-            do_literals = True
-            do_atoms = True
-            do_predicates = True
-            do_functors = True
-            do_variables = True
-        elif isinstance(ast_element, AtomContainer):
-            do_atoms = True
-            do_predicates = True
-            do_functors = True
-            do_variables = True
-        elif isinstance(ast_element, PredicateContainer):
-            do_predicates = True
-            do_functors = True
-            do_variables = True
-        elif isinstance(ast_element, FunctorContainer):
-            do_functors = True
-            do_variables = True
-        elif isinstance(ast_element, VariableContainer):
-            do_variables = True
-
-        if do_literals:
             literal_cont = self.random_literals(number_of_literals=ast_element.number_of_literal_instances)
             for container, i, literal in ast_element.literals(enum=True):
                 item = next(literal_cont)
@@ -93,7 +80,7 @@ class RandomCNFGenerator:
                 container[i] = item
                 container[i].update_scope()
 
-        if do_atoms:
+        if isinstance(ast_element, AtomContainer):
             atom_cont = self.random_atoms(number_of_atoms=ast_element.number_of_atom_instances)
             for container, i, atom in ast_element.atoms(enum=True):
                 item = next(atom_cont)
@@ -101,7 +88,7 @@ class RandomCNFGenerator:
                 container[i] = item
                 container[i].update_scope()
 
-        if do_predicates:
+        if isinstance(ast_element, PredicateContainer):
             pred_cont = self.random_predicates(number_of_predicates=ast_element.number_of_predicate_instances)
             for container, i, pred in ast_element.predicates(enum=True):
                 item = next(pred_cont)
@@ -109,7 +96,7 @@ class RandomCNFGenerator:
                 container[i] = item
                 container[i].update_scope()
 
-        if do_functors:
+        if isinstance(ast_element, FunctorContainer):
             functor_cont = self.random_functors(number_of_functors=ast_element.number_of_functor_instances)
             for container, i, functor in ast_element.functors(enum=True):
                 item = next(functor_cont)
@@ -117,7 +104,7 @@ class RandomCNFGenerator:
                 container[i] = item
                 container[i].update_scope()
 
-        if do_variables:
+        if isinstance(ast_element, VariableContainer):
             variable_cont = self.random_variables(number_of_variables=ast_element.number_of_variable_instances)
             for container, i, variable in ast_element.variables(enum=True):
                 item = next(variable_cont)

@@ -30,7 +30,7 @@ class Functor(Term, TermContainer, AstElement, container_implementation=Constant
 
     @property
     def arity(self):
-        return len(self.items())
+        return len(self._items)
 
     @property
     def is_recursive(self):

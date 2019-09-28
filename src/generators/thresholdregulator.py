@@ -2,7 +2,6 @@ from typing import Iterable, List
 
 from src.ast.fol import CNFFormula, CNFClause
 from src.generators.randomcnfgenerator import RandomCNFGenerator
-from src.placeholders.fol import CNFClausePlaceholder
 
 
 class ThresholdRegulator:
@@ -76,40 +75,13 @@ class ThresholdRegulator:
                     None)
 
                 if first_matching_placeholder is not None:
-                    cont[i] = first_matching_placeholder
+                    cont[i] = first_matching_placeholder.instantiate()
                 elif all(clause.number_of_literal_instances == max_placeholder_length for clause in formula.clauses()):
                     raise Exception(f'You requested too many literals. '
                                     f'You want minimum {min_allowed_number_of_literals}, '
                                     f'but I can provide max {formula.number_of_literal_instances}')
 
-        for cont, i, clause in formula.clauses(enum=True):
-            if isinstance(clause, CNFClausePlaceholder):
-                cont[i] = generator.recursive_generate(clause.instantiate())
+        generator.replace_inner_placeholders(formula)
 
     def _fix_number_of_clauses(self, generator: RandomCNFGenerator, initial_cnf_formula: CNFFormula):
         pass
-
-    """
-    Fixing strategies: (number of items outside threshold)
-    a) literals
-    - change clause weights
-    b) atoms
-    - change clause weights
-    c) predicates
-    - change clause weights
-    - change atom weights (ex. less equality atoms)
-    - reduce variability of predicates (p1, p2, p3 -> p)
-    - exchange p -> v or vice versa
-    ...
-    
-    c) use case: too little predicates
-    
-    1) remember state of generator
-    2a) check if it is possible to reach required number of predicates with current clauses
-    2b) if not exchange short clause for longer (within threshold)
-    2b) change atoms weights to favor ones containing more predicates
-    3) generate formula again? reset all atoms?
-    4) if predicates still too low, go back to 1) Repeat until ?
-    5) now we know that changing atoms is not enough. 
-    6) change clause weights to favor longer ones
-    """

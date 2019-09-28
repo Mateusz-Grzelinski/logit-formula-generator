@@ -6,7 +6,7 @@ from src.ast import AstElement
 class Placeholder:
     @abstractmethod
     def instantiate(self) -> AstElement:
-        pass
+        raise NotImplementedError
 
     def __str__(self):
         super_str = super().__str__()
