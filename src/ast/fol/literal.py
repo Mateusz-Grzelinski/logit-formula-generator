@@ -26,6 +26,6 @@ class Literal(AtomContainer, AstElement, container_implementation=ConstantLength
 
     def __str__(self):
         if self.is_negated:
-            return '~' + str(self.atom[0])
+            return '~' + str(self.atom)
 
         return str(self.atom)

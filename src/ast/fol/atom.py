@@ -73,9 +73,6 @@ class Atom(TermContainer, PredicateContainer, AstElement, container_implementati
 
         raise Exception(f'{self.connective} does not have default visualization')
 
-    def __repr__(self) -> str:
-        return str(self)
-
     @property
     def arity(self):
         return len(self._items)

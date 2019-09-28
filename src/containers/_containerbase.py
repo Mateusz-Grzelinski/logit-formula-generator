@@ -34,7 +34,7 @@ class _ContainerBase(Generic[ItemType], Sequence, ABC):
     def __len__(self) -> int:
         return len(self._items)
 
-    def __repr__(self):
+    def __str__(self):
         return str(self._items)
 
     @abstractmethod

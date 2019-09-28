@@ -20,9 +20,6 @@ class Predicate(TermContainer, AstElement, container_implementation=ConstantLeng
         else:
             return f'{self.name}'
 
-    def __repr__(self) -> str:
-        return str(self)
-
     def __hash__(self):
         return hash(self.name) + super().__hash__()
 

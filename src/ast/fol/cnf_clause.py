@@ -17,7 +17,7 @@ class CNFClause(LiteralContainer, AstElement, container_implementation=ConstantL
         super().__init__(items=items, related_placeholder=related_placeholder, *args, **kwagrs)
 
     def __str__(self):
-        return 'cnf(' + ' | '.join(str(l) for l in self.literals()) + ').'
+        return 'cnf(' + '|'.join(str(l) for l in self.literals()) + ').'
 
     def __hash__(self):
         return super().__hash__()
