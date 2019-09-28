@@ -25,6 +25,7 @@ class AtomContainer(TermContainer, PredicateContainer, container_implementation=
 
     @property
     def number_of_atoms(self):
+        # todo fix hash
         return len(set(self.atoms()))
 
     @property

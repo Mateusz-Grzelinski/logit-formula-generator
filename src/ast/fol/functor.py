@@ -9,9 +9,10 @@ from .term import Term
 
 
 class Functor(Term, TermContainer, AstElement, container_implementation=ConstantLengthContainer):
-    def __init__(self, name: str, items: Iterable[Term] = None, related_placeholder: FunctorPlaceholder = None, *args,
-                 **kwargs):
-        super().__init__(name=name, items=items, related_placeholder=related_placeholder, *args, **kwargs)
+    def __init__(self, name: str, items: Iterable[Term] = None, related_placeholder: FunctorPlaceholder = None,
+                 parent: CNFFormula = None, scope: CNFFormula = None, *args, **kwargs):
+        super().__init__(name=name, items=items, related_placeholder=related_placeholder, parent=parent, scope=scope,
+                         *args, **kwargs)
 
     def __hash__(self):
         return hash(self.name) + super().__hash__()
@@ -45,3 +46,12 @@ class Functor(Term, TermContainer, AstElement, container_implementation=Constant
     @property
     def is_constant(self):
         return len(self._items) == 0
+
+    def update_scope(self):
+        from src.ast.fol import CNFFormula
+        parent = self.parent
+        while parent is not None:
+            if isinstance(parent, CNFFormula):
+                self.scope = parent
+                break
+            parent = parent.parent

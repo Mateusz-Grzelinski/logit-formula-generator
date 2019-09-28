@@ -12,9 +12,12 @@ from .literal import Literal
 class CNFClause(LiteralContainer, AstElement, container_implementation=ConstantLengthContainer):
     operand = LogicalOperand.AND
 
-    def __init__(self, items: Iterable[Literal] = None, related_placeholder: CNFClausePlaceholder = None, *args,
-                 **kwagrs):
-        super().__init__(items=items, related_placeholder=related_placeholder, *args, **kwagrs)
+    def __init__(self, items: Iterable[Literal] = None, related_placeholder: CNFClausePlaceholder = None,
+                 parent: CNFFormula = None, scope: CNFFormula = None, *args, **kwagrs):
+        super().__init__(items=items, related_placeholder=related_placeholder, parent=parent, scope=scope, *args,
+                         **kwagrs)
+        # todo figure out how multi based inheritance works
+        AstElement.__init__(self, related_placeholder=related_placeholder, parent=parent, scope=scope)
 
     def __str__(self):
         return 'cnf(' + '|'.join(str(l) for l in self.literals()) + ').'
@@ -40,3 +43,12 @@ class CNFClause(LiteralContainer, AstElement, container_implementation=ConstantL
         variables = list(self.variables())
         singleton_vars = set([x for x in variables if variables.count(x) == 1])
         return len(singleton_vars)
+
+    def update_scope(self):
+        from src.ast.fol import CNFFormula
+        parent = self.parent
+        while parent is not None:
+            if isinstance(parent, CNFFormula):
+                self.scope = parent
+                break
+            parent = parent.parent

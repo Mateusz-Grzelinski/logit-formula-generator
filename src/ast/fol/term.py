@@ -10,9 +10,11 @@ class Term(ABC, AstElement):
 
     """
 
-    def __init__(self, name: str, related_placeholder: TermPlaceholder = None, *args, **kwargs):
+    def __init__(self, name: str, related_placeholder: Placeholder = None, parent: AstElement = None,
+                 scope: AstElement = None, *args, **kwargs):
         self.name = name
-        super().__init__(name=name, related_placeholder=related_placeholder, *args, **kwargs)
+        super().__init__(name=name, related_placeholder=related_placeholder, parent=parent, scope=scope, *args,
+                         **kwargs)
 
     def __hash__(self):
         return hash(self.name)
@@ -25,3 +27,11 @@ class Term(ABC, AstElement):
     def __str__(self):
         return self.name
 
+    def update_scope(self):
+        from src.ast.fol import CNFFormula
+        parent = self.parent
+        while parent is not None:
+            if isinstance(parent, CNFFormula):
+                self.scope = parent
+                break
+            parent = parent.parent

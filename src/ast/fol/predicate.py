@@ -9,9 +9,10 @@ from .term import Term
 
 
 class Predicate(TermContainer, AstElement, container_implementation=ConstantLengthContainer):
-    def __init__(self, name: str, items: Iterable[Term] = None, related_placeholder: PredicatePlaceholder = None, *args,
-                 **kwargs):
-        super().__init__(name=name, items=items, related_placeholder=related_placeholder, *args, **kwargs)
+    def __init__(self, name: str, items: Iterable[Term] = None, related_placeholder: PredicatePlaceholder = None,
+                 parent: CNFFormula = None, scope: CNFFormula = None, *args, **kwargs):
+        super().__init__(name=name, items=items, related_placeholder=related_placeholder, parent=parent, scope=scope,
+                         *args, **kwargs)
         self.name = name
 
     def __str__(self):
@@ -27,3 +28,12 @@ class Predicate(TermContainer, AstElement, container_implementation=ConstantLeng
         if isinstance(other, Predicate):
             return self.name == other.name and super().__eq__(other)
         raise NotImplementedError
+
+    def update_scope(self):
+        from src.ast.fol import CNFFormula
+        parent = self.parent
+        while parent is not None:
+            if isinstance(parent, CNFFormula):
+                self.scope = parent
+                break
+            parent = parent.parent

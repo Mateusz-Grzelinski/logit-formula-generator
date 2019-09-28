@@ -101,24 +101,39 @@ class RandomCNFGenerator:
         if do_literals:
             literal_cont = self.literals(number_of_literals=ast_element.number_of_literal_instances).literals()
             for container, i, literal in ast_element.literals(enum=True):
-                container[i] = next(literal_cont)
+                item = next(literal_cont)
+                item.parent = container
+                container[i] = item
+                container[i].update_scope()
 
         if do_atoms:
             atom_cont = self.atoms(number_of_atoms=ast_element.number_of_atom_instances).atoms()
             for container, i, atom in ast_element.atoms(enum=True):
-                container[i] = next(atom_cont)
+                item = next(atom_cont)
+                item.parent = container
+                container[i] = item
+                container[i].update_scope()
 
         if do_predicates:
             pred_cont = self.predicates(number_of_predicates=ast_element.number_of_predicate_instances).predicates()
             for container, i, pred in ast_element.predicates(enum=True):
-                container[i] = next(pred_cont)
+                item = next(pred_cont)
+                item.parent = container
+                container[i] = item
+                container[i].update_scope()
 
         if do_functors:
             functor_cont = self.functors(number_of_functors=ast_element.number_of_functor_instances).functors()
             for container, i, functor in ast_element.functors(enum=True):
-                container[i] = next(functor_cont)
+                item = next(functor_cont)
+                item.parent = container
+                container[i] = item
+                container[i].update_scope()
 
         if do_variables:
             variable_cont = self.variables(number_of_variables=ast_element.number_of_variable_instances).variables()
             for container, i, variable in ast_element.variables(enum=True):
-                container[i] = next(variable_cont)
+                item = next(variable_cont)
+                item.parent = container
+                container[i] = item
+                container[i].update_scope()

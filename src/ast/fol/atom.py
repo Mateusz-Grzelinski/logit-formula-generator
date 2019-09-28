@@ -37,8 +37,10 @@ class Atom(TermContainer, PredicateContainer, AstElement, container_implementati
     """key: operation symbol, value: arity"""
 
     def __init__(self, items: Iterable[Term, Predicate], connective: Optional[Union[str, MathOperand]],
-                 related_placeholder: AtomPlaceholder = None, *args, **kwargs):
-        super().__init__(connective=connective, items=items, related_placeholder=related_placeholder, *args, **kwargs)
+                 related_placeholder: AtomPlaceholder = None, parent: CNFFormula = None, scope: CNFFormula = None,
+                 *args, **kwargs):
+        super().__init__(connective=connective, items=items, related_placeholder=related_placeholder, parent=parent,
+                         scope=scope, *args, **kwargs)
 
         if connective is None:
             self.connective = None
@@ -76,3 +78,12 @@ class Atom(TermContainer, PredicateContainer, AstElement, container_implementati
     @property
     def arity(self):
         return len(self._items)
+
+    def update_scope(self):
+        from src.ast.fol import CNFFormula
+        parent = self.parent
+        while parent is not None:
+            if isinstance(parent, CNFFormula):
+                self.scope = parent
+                break
+            parent = parent.parent

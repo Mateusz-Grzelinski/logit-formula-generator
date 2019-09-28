@@ -63,7 +63,6 @@ class TPTPHeader:
     number_of_functors_instances: Optional[int] = None
 
     number_of_variables: Optional[int] = None
-    number_of_variable_instances: Optional[int] = None
     number_of_singleton_variables: Optional[int] = None
 
     max_term_depth: Optional[int] = None
@@ -71,7 +70,7 @@ class TPTPHeader:
 
     def read_from(self, object: CNFFormula):
         if isinstance(object, CNFFormula):
-            self.number_of_clause_instances = object.number_of_clauses
+            self.number_of_clause_instances = object.number_of_clause_instances
             self.max_clause_size = object.max_clause_size
             self.average_clause_size = object.average_clause_size
             self.number_of_unit_clauses = object.number_of_unit_clauses
@@ -79,13 +78,12 @@ class TPTPHeader:
             self.number_of_literal_instances = object.number_of_literal_instances
             # self.total_number_of_negated_literals = object.total_number_of_negated_literals
 
-            self.number_of_atom_instances = object.number_of_atoms
+            self.number_of_atom_instances = object.number_of_atom_instances
 
             # self.predicate_arities = set(object.predicate_arities.keys())
             self.number_of_predicates = object.number_of_predicates
 
-            self.number_of_variables = object.number_of_variables
-            self.number_of_variable_instances = object.number_of_variable_instances
+            self.number_of_variables = object.number_of_variable_instances
             self.number_of_singleton_variables = object.number_of_singleton_variables
 
             # self.functor_arities = set(object.functor_arities.keys())

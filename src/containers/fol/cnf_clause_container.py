@@ -24,7 +24,7 @@ class CNFClauseContainer(LiteralContainer, container_implementation=MutableConta
             return (c for c in self.items() if isinstance(c, CNFClause))
 
     @property
-    def number_of_clauses(self) -> int:
+    def number_of_clause_instances(self) -> int:
         return len(list(self.clauses()))
 
     @property

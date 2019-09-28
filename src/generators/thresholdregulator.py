@@ -45,6 +45,7 @@ class ThresholdRegulator:
             pass
         if self.allowed_number_of_variables and initial_cnf_formula.number_of_variables not in self.allowed_number_of_variables:
             pass
+        # todo check for duplicated clauses
 
     def _fix_number_of_literals(self, generator: RandomCNFGenerator, formula: CNFFormula):
         min_allowed_number_of_literals = min(self.allowed_number_of_literals)
