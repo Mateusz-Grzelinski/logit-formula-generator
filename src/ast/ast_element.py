@@ -9,6 +9,7 @@ class AstElement:
         self.scope = scope
         self.parent = parent
         self.related_placeholder = related_placeholder
+        super().__init__(*args, **kwargs)
 
     def __repr__(self):
         return str(self)

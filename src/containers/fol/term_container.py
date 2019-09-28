@@ -8,6 +8,9 @@ from ...containers import MutableContainer
 
 
 class TermContainer(VariableContainer, FunctorContainer, container_implementation=MutableContainer):
+    def __init__(self, items: Iterable[Term], *args, **kwargs):
+        super().__init__(items=items, *args, **kwargs)
+
     @overload
     def terms(self, enum: bool = True) -> Iterable[Tuple[Container, int, Term]]:
         ...

@@ -11,9 +11,9 @@ from .term import Term
 class Predicate(TermContainer, AstElement, container_implementation=ConstantLengthContainer):
     def __init__(self, name: str, items: Iterable[Term] = None, related_placeholder: PredicatePlaceholder = None,
                  parent: CNFFormula = None, scope: CNFFormula = None, *args, **kwargs):
-        super().__init__(name=name, items=items, related_placeholder=related_placeholder, parent=parent, scope=scope,
-                         *args, **kwargs)
         self.name = name
+        super().__init__(items=items, related_placeholder=related_placeholder, parent=parent, scope=scope,
+                         *args, **kwargs)
 
     def __str__(self):
         if len(list(self.terms())) != 0:

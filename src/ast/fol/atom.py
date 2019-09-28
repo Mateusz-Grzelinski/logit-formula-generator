@@ -39,7 +39,7 @@ class Atom(TermContainer, PredicateContainer, AstElement, container_implementati
     def __init__(self, items: Iterable[Term, Predicate], connective: Optional[Union[str, MathOperand]],
                  related_placeholder: AtomPlaceholder = None, parent: CNFFormula = None, scope: CNFFormula = None,
                  *args, **kwargs):
-        super().__init__(connective=connective, items=items, related_placeholder=related_placeholder, parent=parent,
+        super().__init__(items=items, related_placeholder=related_placeholder, parent=parent,
                          scope=scope, *args, **kwargs)
 
         if connective is None:

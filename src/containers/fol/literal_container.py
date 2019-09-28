@@ -7,6 +7,9 @@ from ...containers import MutableContainer
 
 
 class LiteralContainer(AtomContainer, container_implementation=MutableContainer):
+    def __init__(self, items: Iterable[Literal], *args, **kwargs):
+        super().__init__(items=items, *args, **kwargs)
+
     @overload
     def literals(self, enum: bool = True) -> Iterable[Tuple[Container, int, Literal]]:
         ...

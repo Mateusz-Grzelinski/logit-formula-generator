@@ -8,6 +8,9 @@ from ...containers import MutableContainer
 
 
 class AtomContainer(TermContainer, PredicateContainer, container_implementation=MutableContainer):
+    def __init__(self, items: Iterable[Atom], *args, **kwargs):
+        super().__init__(items=items, *args, **kwargs)
+
     @overload
     def atoms(self, enum: bool = True) -> Iterable[Tuple[Container, int, Atom]]:
         ...

@@ -6,6 +6,9 @@ from ...containers import Container, MutableContainer
 
 
 class FunctorContainer(Container, container_implementation=MutableContainer):
+    def __init__(self, items: Iterable[Functor], *args, **kwargs):
+        super().__init__(items=items, *args, **kwargs)
+
     @overload
     def functors(self, enum: bool = True) -> Iterable[Tuple[Container, int, Functor]]:
         ...

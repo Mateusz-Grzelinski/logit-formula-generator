@@ -1,12 +1,15 @@
 from __future__ import annotations
 
-from typing import Iterable, Type
+from typing import Iterable, Type, Sequence
 
 from ._containerbase import _ContainerBase, ItemType
 
 
 class Container(_ContainerBase):
     """Public interface for containers"""
+
+    def __init__(self, items: Sequence[ItemType], *args, **kwargs):
+        super().__init__(items, *args, **kwargs)
 
     def _init_items(self, items: Iterable[ItemType]):
         return super()._init_items(items=items)

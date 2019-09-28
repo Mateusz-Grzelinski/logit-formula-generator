@@ -16,8 +16,6 @@ class CNFClause(LiteralContainer, AstElement, container_implementation=ConstantL
                  parent: CNFFormula = None, scope: CNFFormula = None, *args, **kwagrs):
         super().__init__(items=items, related_placeholder=related_placeholder, parent=parent, scope=scope, *args,
                          **kwagrs)
-        # todo figure out how multi based inheritance works
-        AstElement.__init__(self, related_placeholder=related_placeholder, parent=parent, scope=scope)
 
     def __str__(self):
         return 'cnf(' + '|'.join(str(l) for l in self.literals()) + ').'

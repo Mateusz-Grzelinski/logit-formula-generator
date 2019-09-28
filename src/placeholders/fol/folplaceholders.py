@@ -38,7 +38,7 @@ class FunctorPlaceholder(TermPlaceholder, Functor, container_implementation=Immu
 
 class PredicatePlaceholder(Placeholder, Predicate, container_implementation=ImmutableContainer):
     def __init__(self, name: str = 'p', items: Iterable[Term] = None):
-        super().__init__(name=name, items=items, mutable=False)
+        super().__init__(name=name, items=items)
 
     def instantiate(self) -> Predicate:
         terms = []
@@ -53,7 +53,7 @@ class PredicatePlaceholder(Placeholder, Predicate, container_implementation=Immu
 class AtomPlaceholder(Placeholder, Atom, container_implementation=ImmutableContainer):
     def __init__(self, connective: Optional[Union[str, MathOperand]] = '',
                  items: Iterable[Union[Term, Predicate]] = None):
-        super().__init__(connective=connective, items=items, mutable=False)
+        super().__init__(connective=connective, items=items)
 
     def instantiate(self) -> Atom:
         arguments = []
@@ -68,7 +68,7 @@ class AtomPlaceholder(Placeholder, Atom, container_implementation=ImmutableConta
 class LiteralPlaceholder(Placeholder, Literal, container_implementation=ImmutableContainer):
     def __init__(self, item: Atom = None, negated: bool = False):
         item = AtomPlaceholder() if item is None else item
-        super().__init__(item, negated, mutable=False)
+        super().__init__(item, negated)
 
     def instantiate(self) -> Literal:
         if isinstance(self.atom, AtomPlaceholder):
@@ -79,7 +79,7 @@ class LiteralPlaceholder(Placeholder, Literal, container_implementation=Immutabl
 
 class CNFClausePlaceholder(Placeholder, CNFClause, container_implementation=ImmutableContainer):
     def __init__(self, items: Iterable[Literal] = None):
-        super().__init__(items, mutable=False)
+        super().__init__(items)
 
     def instantiate(self) -> CNFClause:
         literals = []

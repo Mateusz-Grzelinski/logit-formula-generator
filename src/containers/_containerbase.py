@@ -18,6 +18,7 @@ class _ContainerBase(Generic[ItemType], Sequence, ABC):
 
     def __init__(self, items: Sequence[ItemType], *args, **kwargs):
         self._items = self._init_items(items)
+        super().__init__(*args, **kwargs)
 
     @abstractmethod
     def _init_items(self, items: Iterable[ItemType]) -> List[ItemType]:

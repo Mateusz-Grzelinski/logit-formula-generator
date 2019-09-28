@@ -13,7 +13,7 @@ class Term(ABC, AstElement):
     def __init__(self, name: str, related_placeholder: Placeholder = None, parent: AstElement = None,
                  scope: AstElement = None, *args, **kwargs):
         self.name = name
-        super().__init__(name=name, related_placeholder=related_placeholder, parent=parent, scope=scope, *args,
+        super().__init__(related_placeholder=related_placeholder, parent=parent, scope=scope, *args,
                          **kwargs)
 
     def __hash__(self):
