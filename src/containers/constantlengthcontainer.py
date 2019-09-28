@@ -1,7 +1,7 @@
 from collections import Hashable
 from typing import Iterable, List
 
-from src.container.container import _ContainerBase, ItemType, Container
+from .container import _ContainerBase, ItemType, Container
 
 
 class ConstantLengthContainer(_ContainerBase, Hashable):
@@ -15,7 +15,7 @@ class ConstantLengthContainer(_ContainerBase, Hashable):
         return hash(len(self._items))
 
     def __eq__(self, other):
-        from src.container.immutablecontainer import ImmutableContainer
+        from .immutablecontainer import ImmutableContainer
         if isinstance(other, Container):
             if issubclass(other.implementation(), ConstantLengthContainer):
                 return len(self._items) == len(other._items)
@@ -30,4 +30,4 @@ class ConstantLengthContainer(_ContainerBase, Hashable):
         return list(items) if items is not None else []
 
     def insert(self, index: int, object: ItemType) -> None:
-        raise NotImplementedError('Can not inser to constant length container')
+        raise NotImplementedError('Can not inser to constant length containers')

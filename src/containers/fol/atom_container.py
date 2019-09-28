@@ -2,9 +2,9 @@ from __future__ import annotations
 
 from typing import overload, Iterable, Tuple
 
-from src.container import MutableContainer
 from .predicate_container import PredicateContainer
 from .term_container import TermContainer
+from ...containers import MutableContainer
 
 
 class AtomContainer(TermContainer, PredicateContainer, container_implementation=MutableContainer):
@@ -17,7 +17,7 @@ class AtomContainer(TermContainer, PredicateContainer, container_implementation=
         ...
 
     def atoms(self, enum: bool = False) -> Iterable:
-        from src.ast.atom import Atom
+        from src.ast.fol.atom import Atom
         if enum:
             return ((container, i, a) for container, i, a in self.items(enum=True) if isinstance(a, Atom))
         else:

@@ -1,9 +1,9 @@
 from __future__ import annotations
 
-from src.container import ConstantLengthContainer
-from .ast_element import AstElement
+from src.ast.ast_element import AstElement
+from src.containers import ConstantLengthContainer
+from src.containers.fol import AtomContainer
 from .atom import Atom
-from .containers import AtomContainer
 
 
 class Literal(AtomContainer, AstElement, container_implementation=ConstantLengthContainer):

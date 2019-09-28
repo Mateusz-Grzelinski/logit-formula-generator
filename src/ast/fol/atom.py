@@ -2,11 +2,11 @@ from __future__ import annotations
 
 from typing import Optional, Union, Dict, Iterable
 
-from src.container import ConstantLengthContainer
-from .ast_element import AstElement
-from .containers import PredicateContainer
-from .containers import TermContainer
-from .operands import MathOperand
+from src.ast.ast_element import AstElement
+from src.ast.operands import MathOperand
+from src.containers import ConstantLengthContainer
+from src.containers.fol import PredicateContainer
+from src.containers.fol import TermContainer
 from .predicate import Predicate
 from .term import Term
 

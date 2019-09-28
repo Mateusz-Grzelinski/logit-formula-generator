@@ -1,21 +1,10 @@
-from __future__ import annotations
-
-from abc import abstractmethod, ABC
+from abc import ABC
 from typing import Optional, Union, Iterable
 
-from src.ast import Term, Variable, Functor, Predicate, Atom, CNFClause, CNFFormula, Literal, AstElement
+from src.ast.fol import Term, Variable, Functor, Predicate, Atom, CNFClause, CNFFormula, Literal
 from src.ast.operands import MathOperand
-from src.container import ImmutableContainer
-
-
-class Placeholder:
-    @abstractmethod
-    def instantiate(self) -> AstElement:
-        pass
-
-    def __str__(self):
-        super_str = super().__str__()
-        return super_str if super_str.startswith('_') else '_' + super_str
+from src.containers import ImmutableContainer
+from ...placeholders import Placeholder
 
 
 class TermPlaceholder(Placeholder, Term, ABC):

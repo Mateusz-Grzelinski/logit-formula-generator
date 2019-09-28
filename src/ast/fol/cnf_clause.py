@@ -2,11 +2,11 @@ from __future__ import annotations
 
 from collections import Iterable
 
-from src.container import ConstantLengthContainer
-from .ast_element import AstElement
-from .containers import LiteralContainer
+from src.ast.ast_element import AstElement
+from src.ast.operands import LogicalOperand
+from src.containers import ConstantLengthContainer
+from src.containers.fol import LiteralContainer
 from .literal import Literal
-from .operands import LogicalOperand
 
 
 class CNFClause(LiteralContainer, AstElement, container_implementation=ConstantLengthContainer):

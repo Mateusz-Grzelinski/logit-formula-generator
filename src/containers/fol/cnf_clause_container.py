@@ -3,8 +3,8 @@ from __future__ import annotations
 from statistics import mean
 from typing import Iterable, overload, Tuple
 
-from src.container import MutableContainer
 from .literal_container import LiteralContainer
+from ...containers import MutableContainer
 
 
 class CNFClauseContainer(LiteralContainer, container_implementation=MutableContainer):
@@ -17,7 +17,7 @@ class CNFClauseContainer(LiteralContainer, container_implementation=MutableConta
         ...
 
     def clauses(self, enum: bool = False) -> Iterable[CNFClause]:
-        from src.ast.cnf_clause import CNFClause
+        from src.ast.fol.cnf_clause import CNFClause
         if enum:
             return ((container, i, c) for container, i, c in self.items(enum=True) if isinstance(c, CNFClause))
         else:

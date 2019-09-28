@@ -1,8 +1,8 @@
 from typing import Iterable, List
 
-from src.ast import CNFFormula
-from src.generators.placeholder import CNFClausePlaceholder
+from src.ast.fol import CNFFormula, CNFClause
 from src.generators.randomcnfgenerator import RandomCNFGenerator
+from src.placeholders.fol import CNFClausePlaceholder
 
 
 class ThresholdRegulator:
@@ -50,7 +50,7 @@ class ThresholdRegulator:
         min_allowed_number_of_literals = min(self.allowed_number_of_literals)
         max_allowed_number_of_literals = max(self.allowed_number_of_literals)
 
-        sorted_placeholder_clauses = sorted(generator.clause_placeholders.keys(), key=len)
+        sorted_placeholder_clauses = sorted(generator.ast_elements[CNFClause].keys(), key=len)
         max_placeholder_length = len(sorted_placeholder_clauses[-1])
         exit_loop = False
         while not exit_loop:

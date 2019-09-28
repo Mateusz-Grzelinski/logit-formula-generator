@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from .ast_element import AstElement
+from src.ast.ast_element import AstElement
 from .term import Term
 
 

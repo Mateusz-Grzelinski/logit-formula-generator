@@ -1,7 +1,7 @@
 from collections import MutableSequence
 from typing import Iterable, overload
 
-from src.container.container import _ContainerBase, ItemType
+from .container import _ContainerBase, ItemType
 
 
 class MutableContainer(_ContainerBase, MutableSequence):
@@ -29,10 +29,10 @@ class MutableContainer(_ContainerBase, MutableSequence):
         del self._items[i]
 
     def __hash__(self):
-        raise NotImplemented('Can not hash mutable container')
+        raise NotImplemented('Can not hash mutable containers')
 
     def __eq__(self, other):
-        raise NotImplemented('Can not compare mutable container')
+        raise NotImplemented('Can not compare mutable containers')
 
     def _init_items(self, items: Iterable[ItemType]):
         return list(items) if items is not None else []

@@ -2,15 +2,14 @@ from __future__ import annotations
 
 import itertools
 from collections import OrderedDict, defaultdict
-from typing import Iterable, Set, List, Dict, Tuple, Union, Callable
+from typing import Iterable, List, Dict, Tuple, Union, Callable
 
-from src.ast import Functor
-from src.generators import WeightedValue
-from src.generators.placeholder import PredicatePlaceholder, VariablePlaceholder, TermPlaceholder, FunctorPlaceholder, \
+from src.ast.fol import Functor
+from src.placeholders.fol import PredicatePlaceholder, VariablePlaceholder, TermPlaceholder, FunctorPlaceholder, \
     AtomPlaceholder, LiteralPlaceholder, CNFClausePlaceholder
 
 
-def unify_representation(values: Iterable, default_weight: float):
+def unify_representation(values: Iterable, default_weight: float) -> List[Tuple, float]:
     unified_values = []
     for value in values:
         if isinstance(value, tuple):
@@ -29,15 +28,15 @@ class FunctorFactory:
                           max_recursion_depth: int,
                           default_weight: float = 1,
                           weight_mix: Callable[[float, float], float] = max
-                          ) -> Set[WeightedValue[FunctorPlaceholder]]:
+                          ) -> Dict[FunctorPlaceholder, float]:
         names = unify_representation(values=names, default_weight=default_weight)
         arities = unify_representation(values=arities, default_weight=default_weight)
 
         # first generate non-recursive structures
-        functors = set()
+        functors = dict()
         for (name, name_weight), (arity, arity_weight) in itertools.product(names, arities):
-            weighted_functor = FunctorPlaceholder(name=name, items=[FunctorFactory.var_placeholder] * arity)
-            functors.add(WeightedValue(weighted_functor, weight_mix(name_weight, arity_weight)))
+            functor = FunctorPlaceholder(name=name, items=[FunctorFactory.var_placeholder] * arity)
+            functors[functor] = weight_mix(name_weight, arity_weight)
 
         # now generate nested structures
         for (name, name_weight), (arity, arity_weight) in itertools.product(names, arities):
@@ -49,24 +48,24 @@ class FunctorFactory:
                 terms: Dict[int, List[TermPlaceholder]] = defaultdict(list)
                 for argument_index in range(arity):
                     terms[argument_index].append(FunctorFactory.var_placeholder)
-                    for weighted_functor in functors:
-                        if weighted_functor.value.recursion_depth >= max_recursion_depth:
+                    for functor in functors:
+                        if functor.recursion_depth >= max_recursion_depth:
                             continue
-                        terms[argument_index].append(weighted_functor.value)
+                        terms[argument_index].append(functor)
 
                     for n_args in itertools.product(*terms.values()):
-                        weighted_functor = FunctorPlaceholder(name=name, items=n_args)
-                        functors.add(WeightedValue(weighted_functor, weight_mix(name_weight, arity_weight)))
+                        functor = FunctorPlaceholder(name=name, items=n_args)
+                        functors[functor] = weight_mix(name_weight, arity_weight)
         return functors
 
     @staticmethod
     def generate_liveness_functors(names: Iterable[Union[str, Tuple[str, float]]],
-                                   default_weight: float = 1) -> Set[WeightedValue[FunctorPlaceholder]]:
-        functors = set()
+                                   default_weight: float = 1) -> Dict[FunctorPlaceholder, Any]:
+        functors = dict()
         functor_names = unify_representation(values=names, default_weight=default_weight)
         for name, name_weight in functor_names:
             f = FunctorPlaceholder(name=name, items=[FunctorFactory.var_placeholder])
-            functors.add(WeightedValue(f, name_weight))
+            functors[f] = name_weight
         return functors
 
     @staticmethod
@@ -74,13 +73,13 @@ class FunctorFactory:
                                  constant_functors: Iterable[Union[Functor, Tuple[Functor, float]]],
                                  default_weight: float = 1,
                                  weight_mix: Callable[[float, float], float] = max
-                                 ) -> Set[WeightedValue[FunctorPlaceholder]]:
-        functors = set()
+                                 ) -> Dict[FunctorPlaceholder, float]:
+        functors = dict()
         functor_names = unify_representation(values=names, default_weight=default_weight)
         constant_functors = unify_representation(values=constant_functors, default_weight=default_weight)
         for (name, name_weight), (functor, functor_weight) in itertools.product(functor_names, constant_functors):
             f = FunctorPlaceholder(name=name, items=[functor])
-            functors.add(WeightedValue(f, weight_mix(name_weight, functor_weight)))
+            functors[f] = weight_mix(name_weight, functor_weight)
         return functors
 
 
@@ -93,12 +92,12 @@ class PredicateFactory:
                             arities: Iterable[Union[int, Tuple[int, float]]],
                             default_weight: float = 1,
                             weight_mix: Callable[[float, float], float] = max
-                            ) -> Set[WeightedValue[PredicatePlaceholder]]:
+                            ) -> Dict[PredicatePlaceholder, float]:
 
         names = unify_representation(values=names, default_weight=default_weight)
         arities = unify_representation(values=arities, default_weight=default_weight)
 
-        predicates = set()
+        predicates = dict()
         for (name, name_weight), (arity, arity_weight) in itertools.product(names, arities):
             # Dict[argument_index, argument_candidates]
             terms: Dict[int, List[TermPlaceholder]] = OrderedDict()
@@ -107,9 +106,8 @@ class PredicateFactory:
                 terms[argument_index] = [PredicateFactory.var_placeholder, PredicateFactory.func_placeholder]
 
             for n_args in itertools.product(*terms.values()):
-                p = WeightedValue(PredicatePlaceholder(name=name, items=list(n_args)),
-                                  weight_mix(name_weight, arity_weight))
-                predicates.add(p)
+                p = PredicatePlaceholder(name=name, items=list(n_args))
+                predicates[p] = weight_mix(name_weight, arity_weight)
 
         return predicates
 
@@ -121,9 +119,9 @@ class AtomFactory:
 
     @staticmethod
     def generate_atoms(operands: Iterable[str, Tuple[str, float]],
-                       default_weights: float = 1) -> Set[WeightedValue[AtomPlaceholder]]:
+                       default_weights: float = 1) -> Dict[AtomPlaceholder, float]:
         operands = unify_representation(operands, default_weight=default_weights)
-        atoms = set()
+        atoms = dict()
         for connective, weight in operands:
             arguments: Dict[int, List[TermPlaceholder]] = OrderedDict()
             arity = 2 if connective in {'=', '!='} else 1
@@ -136,8 +134,8 @@ class AtomFactory:
                                                  AtomFactory.pred_placeholder]
 
             for n_args in itertools.product(*arguments.values()):
-                a = WeightedValue(AtomPlaceholder(connective=connective, items=list(n_args)), weight)
-                atoms.add(a)
+                a = AtomPlaceholder(connective=connective, items=list(n_args))
+                atoms[a] = weight
 
         return atoms
 
@@ -148,19 +146,19 @@ class LiteralFactory:
     @staticmethod
     def generate_literals(allow_positive: Union[bool, Tuple[bool, float]] = True,
                           allow_negated: Union[bool, Tuple[bool, float]] = True,
-                          default_weight: float = 1) -> Set[WeightedValue[LiteralPlaceholder]]:
-        literals = set()
+                          default_weight: float = 1) -> Dict[LiteralPlaceholder, Union[float]]:
+        literals = dict()
         positive_literal = LiteralPlaceholder(item=LiteralFactory.atom_placeholder, negated=False)
         if isinstance(allow_positive, tuple) and allow_positive[0]:
-            literals.add(WeightedValue(positive_literal, allow_positive[1]))
+            literals[positive_literal] = allow_positive[1]
         elif isinstance(allow_positive, bool) and allow_positive:
-            literals.add(WeightedValue(positive_literal, default_weight))
+            literals[positive_literal] = default_weight
 
         negative_literal = LiteralPlaceholder(item=LiteralFactory.atom_placeholder, negated=True)
         if isinstance(allow_negated, tuple) and allow_positive[0]:
-            literals.add(WeightedValue(negative_literal, allow_negated[1]))
+            literals[negative_literal] = allow_negated[1]
         elif isinstance(allow_negated, bool) and allow_negated:
-            literals.add(WeightedValue(negative_literal, default_weight))
+            literals[negative_literal] = default_weight
         return literals
 
 
@@ -169,12 +167,12 @@ class CNFClauseFactory:
 
     @staticmethod
     def generate_clauses(lengths: Iterable[int, Tuple[int, float]],
-                         default_weight: float = 1) -> Set[WeightedValue[CNFClausePlaceholder]]:
+                         default_weight: float = 1) -> Dict[CNFClausePlaceholder, float]:
         lengths = unify_representation(lengths, default_weight)
-        clauses = set()
+        clauses = dict()
         for length, weight in lengths:
             literals = [CNFClauseFactory.literal_placeholder] * length
-            clauses.add(WeightedValue(CNFClausePlaceholder(items=literals), weight))
+            clauses[CNFClausePlaceholder(items=literals)] = weight
         return clauses
 
 

@@ -2,13 +2,13 @@ from __future__ import annotations
 
 from abc import ABC, abstractmethod
 from collections import Sequence
-from typing import Iterable, TypeVar, Generic, Tuple, overload, Union, Type, List
+from typing import Iterable, TypeVar, Generic, Tuple, overload, Union, List
 
 ItemType = TypeVar('ItemType')
 
 
 class _ContainerBase(Generic[ItemType], Sequence, ABC):
-    """Private interface for container implementations
+    """Private interface for containers implementations
 
     Lists all methods that implementations can provide. Depending on implementation some functionality will be disabled
 
@@ -67,7 +67,7 @@ class _ContainerBase(Generic[ItemType], Sequence, ABC):
 
     def items(self, enum: bool = False, include_nested: bool = True):
         # the order of 2 following loops is important
-        # nested containers should be called first to fix with setting item to container
+        # nested fol should be called first to fix with setting item to containers
         # but it is not optimal solution in terms of performance (recursion depth)
         if include_nested:
             for nested_container in self.nested_containers:
@@ -81,41 +81,6 @@ class _ContainerBase(Generic[ItemType], Sequence, ABC):
 
     @property
     def nested_containers(self) -> Iterable[Container]:
-        """iterate over all nested containers. Item can be a container"""
+        """iterate over all nested fol. Item can be a containers"""
+        from .container import Container
         return (i for i in self._items if isinstance(i, Container))
-
-
-class Container(_ContainerBase):
-    """Public interface for container"""
-
-    def _init_items(self, items: Iterable[ItemType]):
-        return super()._init_items(items=items)
-
-    # def __init__(self, items: Sequence[ItemType] = None, *args, **kwargs):
-    #     self._implementation.__init__(self, items=items, *args, **kwargs)
-    #     do not call super, implementation will initialize everything
-
-    def __init_subclass__(cls, *, container_implementation: Type[_ContainerBase] = None, **kwargs):
-        assert issubclass(cls, Container)
-        assert container_implementation is not None, 'You must provide implementation'
-        assert issubclass(container_implementation, _ContainerBase), 'Implementation must derive _ContainerBase'
-        cls._implementation = container_implementation
-
-    def __hash__(self):
-        return super().__hash__()
-
-    def __eq__(self, other):
-        return super().__eq__(other)
-
-    def __setitem__(self, i: int, o: ItemType) -> None:
-        return super().__setitem__(i, o)
-
-    def __delitem__(self, i: int) -> None:
-        return super().__delitem__(i)
-
-    def insert(self, index: int, object: ItemType) -> None:
-        return super().insert(index, object)
-
-    @classmethod
-    def implementation(cls) -> Type:
-        return cls._implementation

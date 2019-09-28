@@ -2,9 +2,9 @@ from __future__ import annotations
 
 from typing import Iterable
 
-from src.container import ConstantLengthContainer
-from .ast_element import AstElement
-from .containers import TermContainer
+from src.ast.ast_element import AstElement
+from src.containers import ConstantLengthContainer
+from src.containers.fol import TermContainer
 from .term import Term
 
 
@@ -15,8 +15,8 @@ class Predicate(TermContainer, AstElement, container_implementation=ConstantLeng
         self.name = name
 
     def __str__(self):
-        if len(list(self.terms)) != 0:
-            return f'{self.name}({", ".join(str(t) for t in self.terms)})'
+        if len(list(self.terms())) != 0:
+            return f'{self.name}({", ".join(str(t) for t in self.terms())})'
         else:
             return f'{self.name}'
 

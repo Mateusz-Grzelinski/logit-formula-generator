@@ -1,71 +1,64 @@
 from __future__ import annotations
 
 import random
-from typing import Iterable
+from typing import Dict
 
-from src.ast import CNFFormula, Variable
-from src.ast.containers import CNFClauseContainer, LiteralContainer, AtomContainer, VariableContainer, FunctorContainer, \
+from src.ast.fol import CNFFormula, Variable, Functor, CNFClause, Literal, Atom, Predicate
+from src.containers.fol import CNFClauseContainer, LiteralContainer, AtomContainer, VariableContainer, FunctorContainer, \
     PredicateContainer
-from src.generators import WeightedValue
-from src.generators.placeholder import FunctorPlaceholder, PredicatePlaceholder, AtomPlaceholder, LiteralPlaceholder, \
-    CNFClausePlaceholder
 
 
 class RandomCNFGenerator:
-    def __init__(self, functors: Iterable[WeightedValue[FunctorPlaceholder]],
-                 predicates: Iterable[WeightedValue[PredicatePlaceholder]],
-                 atoms: Iterable[WeightedValue[AtomPlaceholder]],
-                 literals: Iterable[WeightedValue[LiteralPlaceholder]],
-                 clauses: Iterable[WeightedValue[CNFClausePlaceholder]]):
-        self.functor_placeholders = {f.value: f.weight for f in functors}
-        self.predicates_placeholders = {p.value: p.weight for p in predicates}
-        self.atom_placeholders = {a.value: a.weight for a in atoms}
-        self.literal_placeholders = {l.value: l.weight for l in literals}
-        self.clause_placeholders = {c.value: c.weight for c in clauses}
+    def __init__(self, functors: Dict[Functor, float],
+                 predicates: Dict[Predicate, float],
+                 atoms: Dict[Atom, float],
+                 literals: Dict[Literal, float],
+                 clauses: Dict[CNFClause, float]):
+        self.ast_elements = {
+            Functor: functors,
+            Predicate: predicates,
+            Atom: atoms,
+            Literal: literals,
+            CNFClause: clauses
+        }
 
     def cnf_formula(self, number_of_clauses: int) -> CNFFormula:
         return CNFFormula(items=self.cnf_clauses(number_of_clauses=number_of_clauses))
 
     def cnf_clauses(self, number_of_clauses: int) -> CNFClauseContainer:
-        return CNFClauseContainer(additional_containers=[],
-                                  items=(r.instantiate() for r in
-                                         random.choices(population=list(self.clause_placeholders.keys()),
-                                                        weights=list(self.clause_placeholders.values()),
+        return CNFClauseContainer(items=(r.instantiate() for r in
+                                         random.choices(population=list(self.ast_elements[CNFClause].keys()),
+                                                        weights=list(self.ast_elements[CNFClause].values()),
                                                         k=number_of_clauses)))
 
     def literals(self, number_of_literals: int) -> LiteralContainer:
-        return LiteralContainer(additional_containers=[],
-                                items=(r.instantiate() for r in
-                                       random.choices(population=list(self.literal_placeholders.keys()),
-                                                      weights=list(self.literal_placeholders.values()),
+        return LiteralContainer(items=(r.instantiate() for r in
+                                       random.choices(population=list(self.ast_elements[Literal].keys()),
+                                                      weights=list(self.ast_elements[Literal].values()),
                                                       k=number_of_literals)))
 
     def predicates(self, number_of_predicates: int) -> PredicateContainer:
-        return PredicateContainer(additional_containers=[],
-                                  items=(r.instantiate() for r in
-                                         random.choices(population=list(self.predicates_placeholders.keys()),
-                                                        weights=list(self.predicates_placeholders.values()),
+        return PredicateContainer(items=(r.instantiate() for r in
+                                         random.choices(population=list(self.ast_elements[Predicate].keys()),
+                                                        weights=list(self.ast_elements[Predicate].values()),
                                                         k=number_of_predicates)))
 
     def atoms(self, number_of_atoms: int) -> AtomContainer:
-        return AtomContainer(additional_containers=[],
-                             items=(r.instantiate() for r in
-                                    random.choices(population=list(self.atom_placeholders.keys()),
-                                                   weights=list(self.atom_placeholders.values()),
+        return AtomContainer(items=(r.instantiate() for r in
+                                    random.choices(population=list(self.ast_elements[Atom].keys()),
+                                                   weights=list(self.ast_elements[Atom].values()),
                                                    k=number_of_atoms)))
 
     def functors(self, number_of_functors: int) -> FunctorContainer:
-        return FunctorContainer(additional_containers=[],
-                                items=(r.instantiate() for r in
-                                       random.choices(population=list(self.functor_placeholders.keys()),
-                                                      weights=list(self.functor_placeholders.values()),
+        return FunctorContainer(items=(r.instantiate() for r in
+                                       random.choices(population=list(self.ast_elements[Functor].keys()),
+                                                      weights=list(self.ast_elements[Functor].values()),
                                                       k=number_of_functors)))
 
     def variables(self, number_of_variables: int) -> VariableContainer:
-        return VariableContainer(additional_containers=[],
-                                 items=random.choices(
-                                     population=[Variable(name=f'v{i}') for i in range(number_of_variables)],
-                                     k=number_of_variables))
+        return VariableContainer(items=random.choices(
+            population=[Variable(name=f'v{i}') for i in range(number_of_variables)],
+            k=number_of_variables))
 
     def recursive_generate(self, ast_element):
         # todo mixed placeholders with ast_elements are not supported

@@ -2,8 +2,8 @@ from __future__ import annotations
 
 from typing import Iterable, overload, Tuple
 
-from src.ast.containers import AtomContainer
-from src.container import MutableContainer
+from .atom_container import AtomContainer
+from ...containers import MutableContainer
 
 
 class LiteralContainer(AtomContainer, container_implementation=MutableContainer):
@@ -16,7 +16,7 @@ class LiteralContainer(AtomContainer, container_implementation=MutableContainer)
         ...
 
     def literals(self, enum: bool = False) -> Iterable:
-        from src.ast.literal import Literal
+        from src.ast.fol.literal import Literal
         if enum:
             return ((container, i, l) for container, i, l in self.items(enum=True) if isinstance(l, Literal))
         else:

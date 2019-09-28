@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import Generator, overload, Iterable, Tuple
 
-from src.container import Container, MutableContainer
+from ...containers import Container, MutableContainer
 
 
 class PredicateContainer(Container, container_implementation=MutableContainer):
@@ -15,7 +15,7 @@ class PredicateContainer(Container, container_implementation=MutableContainer):
         ...
 
     def predicates(self, enum: bool = False) -> Generator:
-        from src.ast.predicate import Predicate
+        from src.ast.fol.predicate import Predicate
         if enum:
             return ((container, i, p) for container, i, p in self.items(enum=True) if isinstance(p, Predicate))
         else:

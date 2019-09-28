@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import overload, Tuple, Iterable
 
-from src.container import Container, MutableContainer
+from ...containers import Container, MutableContainer
 
 
 class FunctorContainer(Container, container_implementation=MutableContainer):
@@ -15,7 +15,7 @@ class FunctorContainer(Container, container_implementation=MutableContainer):
         ...
 
     def functors(self, enum: bool = False):
-        from src.ast import Functor
+        from src.ast.fol import Functor
         if enum:
             return ((container, i, f) for container, i, f in self.items(enum=True) if isinstance(f, Functor))
         else:

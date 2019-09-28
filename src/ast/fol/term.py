@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from abc import ABC
 
-from .ast_element import AstElement
+from src.ast.ast_element import AstElement
 
 
 class Term(ABC, AstElement):

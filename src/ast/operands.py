@@ -2,7 +2,7 @@ from dataclasses import dataclass
 from enum import Enum
 from typing import ClassVar, Union
 
-from .ast_element import AstElement
+from src.ast.ast_element import AstElement
 
 
 class LogicalOperand(Enum):
