@@ -16,11 +16,11 @@ class AstElement:
 
     @abstractmethod
     def __hash__(self):
-        pass
+        raise NotImplementedError
 
     @abstractmethod
     def __eq__(self, other):
-        pass
+        raise NotImplementedError
 
     @abstractmethod
     def update_scope(self):

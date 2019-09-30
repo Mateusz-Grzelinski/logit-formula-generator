@@ -14,10 +14,6 @@ class Container(_ContainerBase):
     def _init_items(self, items: Iterable[ItemType]):
         return super()._init_items(items=items)
 
-    # def __init__(self, items: Sequence[ItemType] = None, *args, **kwargs):
-    #     self._implementation.__init__(self, items=items, *args, **kwargs)
-    #     do not call super, implementation will initialize everything
-
     def __init_subclass__(cls, *, container_implementation: Type[_ContainerBase] = None, **kwargs):
         assert issubclass(cls, Container)
         assert container_implementation is not None, 'You must provide implementation'

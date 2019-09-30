@@ -2,13 +2,13 @@ from __future__ import annotations
 
 from typing import Iterable
 
-from src.ast.ast_element import AstElement
 from src.containers import ConstantLengthContainer
 from src.containers.fol import CNFClauseContainer
 from .cnf_clause import CNFClause
+from .folelement import FolElement
 
 
-class CNFFormula(CNFClauseContainer, AstElement, container_implementation=ConstantLengthContainer):
+class CNFFormula(CNFClauseContainer, FolElement, container_implementation=ConstantLengthContainer):
     def __init__(self, items: Iterable[CNFClause], related_placeholder: Placeholder = None, parent: CNFFormula = None,
                  scope: CNFFormula = None, *args, **kwargs):
         super().__init__(items=items, related_placeholder=related_placeholder, parent=parent, scope=scope, *args,

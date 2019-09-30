@@ -2,16 +2,16 @@ from __future__ import annotations
 
 from typing import Optional, Union, Dict, Iterable
 
-from src.ast.ast_element import AstElement
 from src.ast.operands import MathOperand
 from src.containers import ConstantLengthContainer
 from src.containers.fol import PredicateContainer
 from src.containers.fol import TermContainer
+from .folelement import FolElement
 from .predicate import Predicate
 from .term import Term
 
 
-class Atom(TermContainer, PredicateContainer, AstElement, container_implementation=ConstantLengthContainer):
+class Atom(TermContainer, PredicateContainer, FolElement, container_implementation=ConstantLengthContainer):
     """Atom is every propositional statement (statement that can be assigned true or false):
     atom is logical statement - it evaluates to true of false
     Examples:

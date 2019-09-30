@@ -2,14 +2,14 @@ from __future__ import annotations
 
 from collections import Iterable
 
-from src.ast.ast_element import AstElement
 from src.ast.operands import LogicalOperand
 from src.containers import ConstantLengthContainer
 from src.containers.fol import LiteralContainer
+from .folelement import FolElement
 from .literal import Literal
 
 
-class CNFClause(LiteralContainer, AstElement, container_implementation=ConstantLengthContainer):
+class CNFClause(LiteralContainer, FolElement, container_implementation=ConstantLengthContainer):
     operand = LogicalOperand.AND
 
     def __init__(self, items: Iterable[Literal] = None, related_placeholder: CNFClausePlaceholder = None,

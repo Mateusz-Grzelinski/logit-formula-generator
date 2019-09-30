@@ -2,13 +2,13 @@ from __future__ import annotations
 
 from typing import Iterable
 
-from src.ast.ast_element import AstElement
 from src.containers import ConstantLengthContainer
 from src.containers.fol import TermContainer
+from .folelement import FolElement
 from .term import Term
 
 
-class Functor(Term, TermContainer, AstElement, container_implementation=ConstantLengthContainer):
+class Functor(Term, TermContainer, FolElement, container_implementation=ConstantLengthContainer):
     def __init__(self, name: str, items: Iterable[Term] = None, related_placeholder: FunctorPlaceholder = None,
                  parent: CNFFormula = None, scope: CNFFormula = None, *args, **kwargs):
         super().__init__(name=name, items=items, related_placeholder=related_placeholder, parent=parent, scope=scope,

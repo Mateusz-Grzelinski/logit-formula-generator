@@ -2,13 +2,13 @@ from __future__ import annotations
 
 from typing import Iterable
 
-from src.ast.ast_element import AstElement
 from src.containers import ConstantLengthContainer
 from src.containers.fol import TermContainer
+from .folelement import FolElement
 from .term import Term
 
 
-class Predicate(TermContainer, AstElement, container_implementation=ConstantLengthContainer):
+class Predicate(TermContainer, FolElement, container_implementation=ConstantLengthContainer):
     def __init__(self, name: str, items: Iterable[Term] = None, related_placeholder: PredicatePlaceholder = None,
                  parent: CNFFormula = None, scope: CNFFormula = None, *args, **kwargs):
         self.name = name

@@ -1,12 +1,12 @@
 from __future__ import annotations
 
-from src.ast.ast_element import AstElement
 from src.containers import ConstantLengthContainer
 from src.containers.fol import AtomContainer
 from .atom import Atom
+from .folelement import FolElement
 
 
-class Literal(AtomContainer, AstElement, container_implementation=ConstantLengthContainer):
+class Literal(AtomContainer, FolElement, container_implementation=ConstantLengthContainer):
     def __init__(self, item: Atom, negated: bool, related_placeholder: LiteralPlaceholder = None,
                  parent: CNFFormula = None, scope: CNFFormula = None, *args, **kwargs):
         self.is_negated = negated

@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from abc import ABC, abstractmethod
 from collections import Sequence
-from typing import Iterable, TypeVar, Generic, Tuple, overload, Union, List
+from typing import Iterable, TypeVar, Generic, Tuple, overload, Union, List, Type
 
 ItemType = TypeVar('ItemType')
 
@@ -59,26 +59,28 @@ class _ContainerBase(Generic[ItemType], Sequence, ABC):
         return self._implementation.insert(self, index, object)
 
     @overload
-    def items(self, enum: bool = False, include_nested: bool = True) -> Iterable[ItemType]:
+    def items(self, type: Type = object, enum: bool = False, include_nested: bool = True) -> Iterable[ItemType]:
         ...
 
     @overload
-    def items(self, enum: bool = False, include_nested: bool = True) -> Iterable[Tuple[Container, int, ItemType]]:
+    def items(self, type: Type = object, enum: bool = False, include_nested: bool = True) -> Iterable[
+        Tuple[Container, int, ItemType]]:
         ...
 
-    def items(self, enum: bool = False, include_nested: bool = True):
+    def items(self, type: Type = object, enum: bool = False, include_nested: bool = True):
         # the order of 2 following loops is important
         # nested fol should be called first to fix with setting item to containers
         # but it is not optimal solution in terms of performance (recursion depth)
         if include_nested:
             for nested_container in self.nested_containers:
-                yield from nested_container.items(enum=enum, include_nested=include_nested)
+                yield from nested_container.items(type=type, enum=enum, include_nested=include_nested)
         if enum:
-            for i, item in enumerate(self._items):
-                yield self, i, item
+            yield from ((self, i, item) for i, item in enumerate(self._items) if isinstance(item, type))
         else:
-            for item in self._items:
-                yield item
+            yield from (item for item in self._items if isinstance(item, type))
+
+    def number_of_instances(self, type: Type):
+        return len(list(self.items(type=type)))
 
     @property
     def nested_containers(self) -> Iterable[Container]:
