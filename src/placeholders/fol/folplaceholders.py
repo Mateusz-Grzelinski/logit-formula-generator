@@ -29,7 +29,7 @@ class FunctorPlaceholder(TermPlaceholder, Functor, container_implementation=Immu
     def instantiate(self) -> Functor:
         terms = []
         for item in self._items:
-            if isinstance(item, Placeholder):
+            if isinstance(item, FunctorPlaceholder):
                 terms.append(item.instantiate())
             else:
                 terms.append(item)
@@ -43,10 +43,7 @@ class PredicatePlaceholder(Placeholder, Predicate, container_implementation=Immu
     def instantiate(self) -> Predicate:
         terms = []
         for item in self._items:
-            if isinstance(item, Placeholder):
-                terms.append(item.instantiate())
-            else:
-                terms.append(item)
+            terms.append(item)
         return Predicate(name=self.name, items=terms, related_placeholder=self)
 
 
@@ -58,10 +55,7 @@ class AtomPlaceholder(Placeholder, Atom, container_implementation=ImmutableConta
     def instantiate(self) -> Atom:
         arguments = []
         for item in self._items:
-            if isinstance(item, Placeholder):
-                arguments.append(item.instantiate())
-            else:
-                arguments.append(item)
+            arguments.append(item)
         return Atom(connective=self.connective, items=arguments, related_placeholder=self)
 
 
@@ -72,8 +66,6 @@ class LiteralPlaceholder(Placeholder, Literal, container_implementation=Immutabl
 
     def instantiate(self) -> Literal:
         if isinstance(self.atom, AtomPlaceholder):
-            return Literal(item=self.atom.instantiate(), negated=self.is_negated, related_placeholder=self)
-        else:
             return Literal(item=self.atom, negated=self.is_negated, related_placeholder=self)
 
 
@@ -84,10 +76,7 @@ class CNFClausePlaceholder(Placeholder, CNFClause, container_implementation=Immu
     def instantiate(self) -> CNFClause:
         literals = []
         for item in self._items:
-            if isinstance(item, Placeholder):
-                literals.append(item.instantiate())
-            else:
-                literals.append(item)
+            literals.append(item)
         return CNFClause(items=literals, related_placeholder=self)
 
 

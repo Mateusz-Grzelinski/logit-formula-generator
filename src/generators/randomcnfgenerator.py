@@ -4,8 +4,10 @@ import random
 from typing import Dict, Generator
 
 from src.ast.fol import CNFFormula, Variable, Functor, CNFClause, Literal, Atom, Predicate
+from src.containers import Container
 from src.containers.fol import CNFClauseContainer, AtomContainer, VariableContainer, FunctorContainer, \
     PredicateContainer
+from src.placeholders.fol import FunctorPlaceholder, PredicatePlaceholder, AtomPlaceholder, LiteralPlaceholder
 
 
 class RandomCNFGenerator:
@@ -24,6 +26,26 @@ class RandomCNFGenerator:
             Literal: literals,
             CNFClause: clauses
         }
+        for key_type, ast_elements_with_weight in self.ast_elements.items():
+            if ast_elements_with_weight:
+                continue
+            if not issubclass(key_type, Container):
+                continue
+            types_that_can_contain_key_type = [t for t in self.ast_elements.keys() if
+                                               issubclass(t, Container) and key_type in t.contains()]
+            for t in types_that_can_contain_key_type:
+                keys_to_be_deleted = []
+                for key, ast_elements_with_weight in self.ast_elements[t].items():  # Functor: 1
+                    if any(isinstance(i, key_type) for i in key.items()):
+                        print(f'{key} can not be instantiated')
+                        keys_to_be_deleted.append(key)
+                for key in keys_to_be_deleted:
+                    del self.ast_elements[t][key]
+
+        assert self.ast_elements[CNFClause]
+        assert self.ast_elements[Literal]
+        assert self.ast_elements[Atom]
+        assert self.ast_elements[Predicate] or self.ast_elements[Variable]
 
     def random_cnf_formula(self, number_of_clauses: int) -> CNFFormula:
         return CNFFormula(items=self.random_cnf_clauses(number_of_clauses=number_of_clauses))
@@ -56,57 +78,54 @@ class RandomCNFGenerator:
                                                         weights=list(self.ast_elements[Functor].values()),
                                                         k=number_of_functors))
 
-    def random_variables(self, number_of_variables: int,
-                         variable_scope: CNFClause = None) -> Generator[Variable, None, None]:
-        if variable_scope:
-            variable_population = [var for var, _weight in self.ast_elements[Variable].items() if
-                                   var.scope == variable_scope]
-            variable_weights = [weight for var, weight in self.ast_elements[Variable].items() if
-                                var.scope == variable_scope]
-        else:
-            variable_population = list(self.ast_elements[Variable].keys())
-            variable_weights = list(self.ast_elements[Variable].values())
+    def random_variables(self, number_of_variables: int) -> Generator[Variable, None, None]:
+        variable_population = list(self.ast_elements[Variable].keys())
+        variable_weights = list(self.ast_elements[Variable].values())
         return (r for r in random.choices(population=variable_population,
                                           weights=variable_weights,
                                           k=number_of_variables))
 
     def replace_inner_placeholders(self, ast_element):
-        # todo mixed placeholders with ast_elements are not supported
         if isinstance(ast_element, CNFClauseContainer):
             literal_cont = self.random_literals(number_of_literals=ast_element.number_of_literal_instances)
             for container, i, literal in ast_element.literals(enum=True):
-                item = next(literal_cont)
-                item.parent = container
-                container[i] = item
-                container[i].update_scope()
+                if isinstance(literal, LiteralPlaceholder):
+                    item = next(literal_cont)
+                    item.parent = container
+                    container[i] = item
+                    container[i].update_scope()
 
         if isinstance(ast_element, AtomContainer):
             atom_cont = self.random_atoms(number_of_atoms=ast_element.number_of_atom_instances)
             for container, i, atom in ast_element.atoms(enum=True):
-                item = next(atom_cont)
-                item.parent = container
-                container[i] = item
-                container[i].update_scope()
+                if isinstance(atom, AtomPlaceholder):
+                    item = next(atom_cont)
+                    item.parent = container
+                    container[i] = item
+                    container[i].update_scope()
 
-        if isinstance(ast_element, PredicateContainer):
+        if isinstance(ast_element, PredicateContainer) and ast_element.number_of_predicate_instances != 0:
             pred_cont = self.random_predicates(number_of_predicates=ast_element.number_of_predicate_instances)
             for container, i, pred in ast_element.predicates(enum=True):
-                item = next(pred_cont)
-                item.parent = container
-                container[i] = item
-                container[i].update_scope()
+                if isinstance(pred, PredicatePlaceholder):
+                    item = next(pred_cont)
+                    item.parent = container
+                    container[i] = item
+                    container[i].update_scope()
 
         if isinstance(ast_element, FunctorContainer):
             functor_cont = self.random_functors(number_of_functors=ast_element.number_of_functor_instances)
             for container, i, functor in ast_element.functors(enum=True):
-                item = next(functor_cont)
-                item.parent = container
-                container[i] = item
-                container[i].update_scope()
+                if isinstance(functor, FunctorPlaceholder):
+                    item = next(functor_cont)
+                    item.parent = container
+                    container[i] = item
+                    container[i].update_scope()
 
         if isinstance(ast_element, VariableContainer):
             variable_cont = self.random_variables(number_of_variables=ast_element.number_of_variable_instances)
             for container, i, variable in ast_element.variables(enum=True):
+                # there is no placeholder for variable
                 item = next(variable_cont)
                 item.parent = container
                 container[i] = item
