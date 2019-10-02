@@ -5,7 +5,6 @@ from .container import _ContainerBase, ItemType
 
 
 class MutableContainer(_ContainerBase, MutableSequence):
-
     @overload
     def __setitem__(self, i: int, o: ItemType) -> None:
         ...

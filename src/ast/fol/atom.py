@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Optional, Union, Dict, Iterable
+from typing import Optional, Union, Dict, Iterable, Set, Type
 
 from src.ast.operands import MathOperand
 from src.containers import ConstantLengthContainer
@@ -55,7 +55,7 @@ class Atom(TermContainer, PredicateContainer, FolElement, container_implementati
             raise TypeError(f'invalid argument type for field connective: {connective}')
 
     def __hash__(self):
-        return hash(self.connective) + super().__hash__()
+        return hash(self.connective) + super().__hash__(TermContainer)
 
     def __eq__(self, other):
         if isinstance(other, Atom):
@@ -74,6 +74,10 @@ class Atom(TermContainer, PredicateContainer, FolElement, container_implementati
             return '(' + ' != '.join(str(i) for i in self._items) + ')'
 
         raise Exception(f'{self.connective} does not have default visualization')
+
+    @classmethod
+    def contains(cls) -> Set[Type]:
+        return PredicateContainer.contains().union()
 
     @property
     def arity(self):

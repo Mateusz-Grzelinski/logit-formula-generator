@@ -30,4 +30,4 @@ class ConstantLengthContainer(_ContainerBase, Hashable):
         return list(items) if items is not None else []
 
     def insert(self, index: int, object: ItemType) -> None:
-        raise NotImplementedError('Can not inser to constant length containers')
+        raise NotImplementedError('Can not insert to constant length containers')

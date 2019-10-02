@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import overload, Tuple, Iterable
+from typing import overload, Tuple, Iterable, Set, Type
 
 from .functor_container import FunctorContainer
 from .variable_container import VariableContainer
@@ -10,6 +10,10 @@ from ...containers import MutableContainer
 class TermContainer(VariableContainer, FunctorContainer, container_implementation=MutableContainer):
     def __init__(self, items: Iterable[Term], *args, **kwargs):
         super().__init__(items=items, *args, **kwargs)
+
+    @classmethod
+    def contains(cls) -> Set[Type]:
+        return VariableContainer.contains().union(FunctorContainer.contains())
 
     @overload
     def terms(self, enum: bool = True) -> Iterable[Tuple[Container, int, Term]]:

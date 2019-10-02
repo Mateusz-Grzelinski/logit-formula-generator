@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Generator, overload, Iterable, Tuple
+from typing import Generator, overload, Iterable, Tuple, Set, Type
 
 from ...containers import Container, MutableContainer
 
@@ -8,6 +8,11 @@ from ...containers import Container, MutableContainer
 class PredicateContainer(Container, container_implementation=MutableContainer):
     def __init__(self, items: Iterable[Literal], *args, **kwargs):
         super().__init__(items=items, *args, **kwargs)
+
+    @classmethod
+    def contains(cls) -> Set[Type]:
+        from src.ast.fol import Predicate
+        return {Predicate}
 
     @overload
     def predicates(self, enum: bool = True) -> Iterable[Tuple[Container, int, Predicate]]:

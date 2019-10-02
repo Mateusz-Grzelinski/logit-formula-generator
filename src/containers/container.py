@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from abc import abstractmethod
 from typing import Iterable, Type, Sequence
 
 from ._containerbase import _ContainerBase, ItemType
@@ -34,6 +35,11 @@ class Container(_ContainerBase):
 
     def insert(self, index: int, object: ItemType) -> None:
         return super().insert(index, object)
+
+    @classmethod
+    @abstractmethod
+    def contains(cls):
+        raise NotImplementedError
 
     @classmethod
     def implementation(cls) -> Type:

@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import overload, Tuple, Iterable
+from typing import overload, Tuple, Iterable, Set, Type
 
 from ...containers import Container, MutableContainer
 
@@ -8,6 +8,11 @@ from ...containers import Container, MutableContainer
 class FunctorContainer(Container, container_implementation=MutableContainer):
     def __init__(self, items: Iterable[Functor], *args, **kwargs):
         super().__init__(items=items, *args, **kwargs)
+
+    @classmethod
+    def contains(cls) -> Set[Type]:
+        from src.ast.fol import Functor
+        return {Functor}
 
     @overload
     def functors(self, enum: bool = True) -> Iterable[Tuple[Container, int, Functor]]:

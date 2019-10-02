@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from statistics import mean
-from typing import Iterable, overload, Tuple
+from typing import Iterable, overload, Tuple, Set, Type
 
 from .literal_container import LiteralContainer
 from ...containers import MutableContainer
@@ -11,6 +11,11 @@ class CNFClauseContainer(LiteralContainer, container_implementation=MutableConta
     def __init__(self, items: Iterable[CNFClause], *args, **kwargs):
         super().__init__(items=items, *args, **kwargs)
         assert len(self._items) != 0
+
+    @classmethod
+    def contains(cls) -> Set[Type]:
+        from src.ast.fol import CNFClause
+        return {CNFClause}
 
     @overload
     def clauses(self, enum: bool = True) -> Iterable[Tuple[Container, int, CNFClause]]:
