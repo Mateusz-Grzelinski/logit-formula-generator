@@ -1,10 +1,9 @@
 from __future__ import annotations
 
 import random
-from typing import Dict, Generator, Type, Iterable
+from typing import Dict, Generator
 
 from src.ast.fol import CNFFormula, Variable, Functor, CNFClause, Literal, Atom, Predicate
-from src.ast.fol.folelement import FolElement
 from src.containers.fol import CNFClauseContainer, AtomContainer, VariableContainer, FunctorContainer, \
     PredicateContainer
 
@@ -25,18 +24,6 @@ class RandomCNFGenerator:
             Literal: literals,
             CNFClause: clauses
         }
-
-    def random_element(self, ast_type: Type[FolElement], element_size: int) -> FolElement:
-        return ast_type(items=self.random_elements(ast_type=ast_type.direct_children_types,
-                                                   number_of_elements=element_size))
-
-    def random_elements(self, ast_types: Iterable[FolElement], number_of_elements: int) -> Iterable[FolElement]:
-        population = []
-        weights = []
-        for type in ast_types:
-            population.extend(self.ast_elements[type.direct_children_types].keys())
-            weights.extend(self.ast_elements[type.direct_children_types].values())
-        return (r.instantiate() for r in random.choices(population=population, weights=weights, k=number_of_elements))
 
     def random_cnf_formula(self, number_of_clauses: int) -> CNFFormula:
         return CNFFormula(items=self.random_cnf_clauses(number_of_clauses=number_of_clauses))

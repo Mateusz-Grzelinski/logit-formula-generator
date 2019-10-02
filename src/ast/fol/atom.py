@@ -55,7 +55,7 @@ class Atom(TermContainer, PredicateContainer, FolElement, container_implementati
             raise TypeError(f'invalid argument type for field connective: {connective}')
 
     def __hash__(self):
-        return hash(self.connective) + super().__hash__(TermContainer)
+        return hash(self.connective) + super().__hash__()
 
     def __eq__(self, other):
         if isinstance(other, Atom):
