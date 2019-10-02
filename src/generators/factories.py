@@ -9,7 +9,7 @@ from src.placeholders.fol import PredicatePlaceholder, VariablePlaceholder, Term
     AtomPlaceholder, LiteralPlaceholder, CNFClausePlaceholder
 
 
-def unify_representation(values: Iterable, default_weight: float) -> List[Tuple, float]:
+def _unify_representation(values: Iterable, default_weight: float) -> List[Tuple, float]:
     unified_values = []
     for value in values:
         if isinstance(value, tuple):
@@ -29,8 +29,8 @@ class FunctorFactory:
                           default_weight: float = 1,
                           weight_mix: Callable[[float, float], float] = max
                           ) -> Dict[FunctorPlaceholder, float]:
-        names = unify_representation(values=names, default_weight=default_weight)
-        arities = unify_representation(values=arities, default_weight=default_weight)
+        names = _unify_representation(values=names, default_weight=default_weight)
+        arities = _unify_representation(values=arities, default_weight=default_weight)
 
         # first generate non-recursive structures
         functors = dict()
@@ -62,7 +62,7 @@ class FunctorFactory:
     def generate_liveness_functors(names: Iterable[Union[str, Tuple[str, float]]],
                                    default_weight: float = 1) -> Dict[FunctorPlaceholder, Any]:
         functors = dict()
-        functor_names = unify_representation(values=names, default_weight=default_weight)
+        functor_names = _unify_representation(values=names, default_weight=default_weight)
         for name, name_weight in functor_names:
             f = FunctorPlaceholder(name=name, items=[FunctorFactory.var_placeholder])
             functors[f] = name_weight
@@ -75,8 +75,8 @@ class FunctorFactory:
                                  weight_mix: Callable[[float, float], float] = max
                                  ) -> Dict[FunctorPlaceholder, float]:
         functors = dict()
-        functor_names = unify_representation(values=names, default_weight=default_weight)
-        constant_functors = unify_representation(values=constant_functors, default_weight=default_weight)
+        functor_names = _unify_representation(values=names, default_weight=default_weight)
+        constant_functors = _unify_representation(values=constant_functors, default_weight=default_weight)
         for (name, name_weight), (functor, functor_weight) in itertools.product(functor_names, constant_functors):
             f = FunctorPlaceholder(name=name, items=[functor])
             functors[f] = weight_mix(name_weight, functor_weight)
@@ -94,8 +94,8 @@ class PredicateFactory:
                             weight_mix: Callable[[float, float], float] = max
                             ) -> Dict[PredicatePlaceholder, float]:
 
-        names = unify_representation(values=names, default_weight=default_weight)
-        arities = unify_representation(values=arities, default_weight=default_weight)
+        names = _unify_representation(values=names, default_weight=default_weight)
+        arities = _unify_representation(values=arities, default_weight=default_weight)
 
         predicates = dict()
         for (name, name_weight), (arity, arity_weight) in itertools.product(names, arities):
@@ -120,7 +120,7 @@ class AtomFactory:
     @staticmethod
     def generate_atoms(operands: Iterable[str, Tuple[str, float]],
                        default_weights: float = 1) -> Dict[AtomPlaceholder, float]:
-        operands = unify_representation(operands, default_weight=default_weights)
+        operands = _unify_representation(operands, default_weight=default_weights)
         atoms = dict()
         for connective, weight in operands:
             arguments: Dict[int, List[TermPlaceholder]] = OrderedDict()
@@ -168,24 +168,9 @@ class CNFClauseFactory:
     @staticmethod
     def generate_clauses(lengths: Iterable[int, Tuple[int, float]],
                          default_weight: float = 1) -> Dict[CNFClausePlaceholder, float]:
-        lengths = unify_representation(lengths, default_weight)
+        lengths = _unify_representation(lengths, default_weight)
         clauses = dict()
         for length, weight in lengths:
             literals = [CNFClauseFactory.literal_placeholder] * length
             clauses[CNFClausePlaceholder(items=literals)] = weight
         return clauses
-
-
-if __name__ == '__main__':
-    f = FunctorFactory.generate_functors(names=['f'], arities=[1, 2], max_recursion_depth=1)
-    fl = FunctorFactory.generate_liveness_functors(names=['fl', 'fll'])
-    fs = FunctorFactory.generate_safety_functors(names=['fs', 'fss'], constant_functors={Functor('f2'), Functor('f1')})
-    print(f)
-    print(fl)
-    print(fs)
-    # WeightedValue[int]
-    # w1 = WeightedValue(Functor('f'), 1.0)
-    # w2 = WeightedValue(Functor('f'), 2.0)
-    # w3 = WeightedValue(Functor('f2'), 1.0)
-    # for f in {w1, w2, w3}:
-    #     print(f.value)

@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import math
 from collections.abc import Sequence
 from typing import overload
@@ -30,3 +32,17 @@ class Range(Sequence):
 
     def __repr__(self):
         return f'({self.min}, {self.max})'
+
+    @classmethod
+    def compute(cls, number: int, threshold: float = None, min_delta: int = None) -> Range:
+        if threshold is None and min_delta is None:
+            raise AttributeError('one of threshold or delta must be defined')
+        elif threshold is None:
+            return cls(int(number - min_delta), int(number + min_delta))
+        elif min_delta is None:
+            delta_from_threshold = number * threshold
+            return cls(int(number - delta_from_threshold), int(number + delta_from_threshold))
+        else:
+            delta_from_threshold = number * threshold
+            return cls(min(int(number - delta_from_threshold), number + min_delta),
+                       max(int(number + delta_from_threshold), number + min_delta))
