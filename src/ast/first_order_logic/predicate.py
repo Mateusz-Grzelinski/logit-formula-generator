@@ -2,13 +2,12 @@ from __future__ import annotations
 
 from typing import Iterable
 
-from src.containers import ImmutableContainer
 from src.containers.fol import TermContainer
 from .folelement import FolElement
 from .term import Term
 
 
-class Predicate(TermContainer, FolElement, container_implementation=ImmutableContainer):
+class Predicate(TermContainer, FolElement):
     def __init__(self, name: str, items: Iterable[Term] = None, related_placeholder: PredicatePlaceholder = None,
                  parent: CNFFormula = None, scope: CNFFormula = None, *args, **kwargs):
         self.name = name
@@ -17,7 +16,7 @@ class Predicate(TermContainer, FolElement, container_implementation=ImmutableCon
 
     def __str__(self):
         if len(list(self.terms())) != 0:
-            return f'{self.name}({", ".join(str(t) for t in self.terms())})'
+            return f'{self.name}({", ".join(str(t) for t in self._items)})'
         else:
             return f'{self.name}'
 

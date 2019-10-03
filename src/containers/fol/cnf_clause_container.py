@@ -4,10 +4,9 @@ from statistics import mean
 from typing import Iterable, overload, Tuple, Set, Type
 
 from .literal_container import LiteralContainer
-from ...containers import MutableContainer
 
 
-class CNFClauseContainer(LiteralContainer, container_implementation=MutableContainer):
+class CNFClauseContainer(LiteralContainer):
     def __init__(self, items: Iterable[CNFClause], *args, **kwargs):
         super().__init__(items=items, *args, **kwargs)
         assert len(self._items) != 0

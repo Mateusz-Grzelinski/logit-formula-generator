@@ -1,32 +1,55 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from enum import Enum
-from typing import ClassVar, Union
+from typing import Union, Optional
 
-from src.ast.ast_element import AstElement
+
+@dataclass(frozen=True, eq=True)
+class OperandProperties:
+    operand: Optional[Enum]
+    arity: int = field(compare=False, hash=False)
+    commutative: bool = field(compare=False, hash=False)
 
 
 class LogicalOperand(Enum):
     """Operand and arity"""
-    AND = 2
-    OR = 2
-    NOT = 1
+    AND = 'and'
+    OR = 'or'
+    NOT = '~'
 
 
 class MathOperand(Enum):
     """Operand and arity"""
-    EQUAL = 2
-    NOT_EQUAL = 2
+    EQUAL = '='
+    NOT_EQUAL = '!='
 
 
-@dataclass
-class Connective(AstElement):
-    operand: Union[MathOperand, LogicalOperand]
-    allowed_symbols: ClassVar[str] = set()
+_no_operand = OperandProperties(operand=None, arity=1, commutative=False)
+_and = OperandProperties(operand=LogicalOperand.AND, arity=2, commutative=True)
+_or = OperandProperties(operand=LogicalOperand.OR, arity=2, commutative=True)
+_not = OperandProperties(operand=LogicalOperand.NOT, arity=2, commutative=False)
+_equal = OperandProperties(operand=MathOperand.EQUAL, arity=2, commutative=True)
+_not_equal = OperandProperties(operand=MathOperand.NOT_EQUAL, arity=2, commutative=True)
 
-    def __hash__(self) -> int:
-        return hash(self.operand.name)
+operand_lookup_table = {
+    '': _no_operand,
+    None: _no_operand,
+    LogicalOperand.AND: _and,
+    'and': _and,
+    '&': _and,
+    LogicalOperand.OR: _or,
+    'or': _or,
+    '|': _or,
+    LogicalOperand.NOT: _not,
+    '-': _not,
+    '~': _not,
+    'not': _not,
+    MathOperand.EQUAL: _equal,
+    '=': _equal,
+    '==': _equal,
+    MathOperand.NOT_EQUAL: _not_equal,
+    '!=': _not_equal
+}
 
 
-if __name__ == '__main__':
-    print(LogicalOperand.NOT)
-    print(MathOperand.NOT_EQUAL)
+def get_operand_properties(operand: Union[str, MathOperand, LogicalOperand]) -> OperandProperties:
+    return operand_lookup_table[operand]

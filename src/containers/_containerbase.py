@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from abc import ABC, abstractmethod
 from collections import Sequence
-from typing import Iterable, TypeVar, Generic, Tuple, overload, Union, List, Type
+from typing import Iterable, TypeVar, Generic, Tuple, overload, List, Type
 
 ItemType = TypeVar('ItemType')
 
@@ -14,7 +14,6 @@ class _ContainerBase(Generic[ItemType], Sequence, ABC):
 
     Possible implementations are: :class:`ImmutableContainer`, :class:`ConstantLengthContainer`, :class:`MutableContainer`
     """
-    _implementation: Union[MutableContainer, ImmutableContainer, ConstantLengthContainer] = None
 
     def __init__(self, items: Sequence[ItemType], *args, **kwargs):
         self._items = self._init_items(items)
@@ -22,7 +21,7 @@ class _ContainerBase(Generic[ItemType], Sequence, ABC):
 
     @abstractmethod
     def _init_items(self, items: Iterable[ItemType]) -> List[ItemType]:
-        return self._implementation._init_items(self, items=items)
+        raise NotImplementedError
 
     def __getitem__(self, i: int) -> ItemType:
         if isinstance(i, slice):
@@ -40,23 +39,23 @@ class _ContainerBase(Generic[ItemType], Sequence, ABC):
 
     @abstractmethod
     def __hash__(self):
-        return self._implementation.__hash__(self)
+        raise NotImplementedError
 
     @abstractmethod
     def __eq__(self, other):
-        return self._implementation.__eq__(self, other)
+        raise NotImplementedError
 
     @abstractmethod
     def __setitem__(self, i: int, o: ItemType) -> None:
-        return self._implementation.__setitem__(self, i, o)
+        raise NotImplementedError
 
     @abstractmethod
     def __delitem__(self, i: int) -> None:
-        return self._implementation.__delitem__(self, i)
+        raise NotImplementedError
 
     @abstractmethod
     def insert(self, index: int, object: ItemType) -> None:
-        return self._implementation.insert(self, index, object)
+        raise NotImplementedError
 
     @overload
     def items(self, type: Type = object, enum: bool = False, include_nested: bool = True) -> Iterable[ItemType]:

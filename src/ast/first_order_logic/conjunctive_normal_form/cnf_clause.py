@@ -5,11 +5,10 @@ from collections import Iterable
 from src.ast.first_order_logic.conjunctive_normal_form.literal import Literal
 from src.ast.first_order_logic.folelement import FolElement
 from src.ast.operands import LogicalOperand
-from src.containers import ImmutableContainer
 from src.containers.fol import LiteralContainer
 
 
-class CNFClause(LiteralContainer, FolElement, container_implementation=ImmutableContainer):
+class CNFClause(LiteralContainer, FolElement):
     operand = LogicalOperand.AND
 
     def __init__(self, items: Iterable[Literal] = None, related_placeholder: CNFClausePlaceholder = None,
@@ -18,7 +17,7 @@ class CNFClause(LiteralContainer, FolElement, container_implementation=Immutable
                          **kwagrs)
 
     def __str__(self):
-        return 'conjunctive_normal_form(' + '|'.join(str(l) for l in self.literals()) + ').'
+        return 'cnf(' + '|'.join(str(l) for l in self.literals()) + ').'
 
     def __hash__(self):
         return super().__hash__()

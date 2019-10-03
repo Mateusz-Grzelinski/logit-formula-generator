@@ -4,10 +4,9 @@ from typing import overload, Tuple, Iterable, Set, Type
 
 from .functor_container import FunctorContainer
 from .variable_container import VariableContainer
-from ...containers import MutableContainer
 
 
-class TermContainer(VariableContainer, FunctorContainer, container_implementation=MutableContainer):
+class TermContainer(VariableContainer, FunctorContainer):
     def __init__(self, items: Iterable[Term], *args, **kwargs):
         super().__init__(items=items, *args, **kwargs)
 

@@ -2,10 +2,10 @@ from __future__ import annotations
 
 from typing import overload, Tuple, Iterable, Set, Type
 
-from ...containers import Container, MutableContainer
+from ...containers import Container
 
 
-class FunctorContainer(Container, container_implementation=MutableContainer):
+class FunctorContainer(Container):
     def __init__(self, items: Iterable[Functor], *args, **kwargs):
         super().__init__(items=items, *args, **kwargs)
 

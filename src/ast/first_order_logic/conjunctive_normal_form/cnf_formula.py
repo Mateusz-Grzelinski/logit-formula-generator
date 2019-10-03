@@ -3,12 +3,11 @@ from __future__ import annotations
 from typing import Iterable
 
 from src.ast.first_order_logic.folelement import FolElement
-from src.containers import ImmutableContainer
 from src.containers.fol import CNFClauseContainer
 from .cnf_clause import CNFClause
 
 
-class CNFFormula(CNFClauseContainer, FolElement, container_implementation=ImmutableContainer):
+class CNFFormula(CNFClauseContainer, FolElement):
     def __init__(self, items: Iterable[CNFClause], related_placeholder: Placeholder = None, parent: CNFFormula = None,
                  scope: CNFFormula = None, *args, **kwargs):
         super().__init__(items=items, related_placeholder=related_placeholder, parent=parent, scope=scope, *args,

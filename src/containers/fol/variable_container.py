@@ -2,10 +2,10 @@ from __future__ import annotations
 
 from typing import Generator, overload, Iterable, Tuple, Type, Set
 
-from ...containers import Container, MutableContainer
+from ...containers import Container
 
 
-class VariableContainer(Container, container_implementation=MutableContainer):
+class VariableContainer(Container):
     def __init__(self, items: Iterable[Variable], *args, **kwargs):
         super().__init__(items=items, *args, **kwargs)
 

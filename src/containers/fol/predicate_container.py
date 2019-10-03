@@ -2,10 +2,10 @@ from __future__ import annotations
 
 from typing import Generator, overload, Iterable, Tuple, Set, Type
 
-from ...containers import Container, MutableContainer
+from ...containers import Container
 
 
-class PredicateContainer(Container, container_implementation=MutableContainer):
+class PredicateContainer(Container):
     def __init__(self, items: Iterable[Literal], *args, **kwargs):
         super().__init__(items=items, *args, **kwargs)
 

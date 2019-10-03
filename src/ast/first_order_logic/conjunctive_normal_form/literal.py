@@ -2,11 +2,10 @@ from __future__ import annotations
 
 from src.ast.first_order_logic.atom import Atom
 from src.ast.first_order_logic.folelement import FolElement
-from src.containers import ImmutableContainer
 from src.containers.fol import AtomContainer
 
 
-class Literal(AtomContainer, FolElement, container_implementation=ImmutableContainer):
+class Literal(AtomContainer, FolElement):
     def __init__(self, item: Atom, negated: bool, related_placeholder: LiteralPlaceholder = None,
                  parent: CNFFormula = None, scope: CNFFormula = None, *args, **kwargs):
         self.is_negated = negated

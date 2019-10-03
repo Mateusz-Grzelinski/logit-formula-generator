@@ -4,10 +4,9 @@ from typing import overload, Iterable, Tuple, Set, Type
 
 from .predicate_container import PredicateContainer
 from .term_container import TermContainer
-from ...containers import MutableContainer
 
 
-class AtomContainer(TermContainer, PredicateContainer, container_implementation=MutableContainer):
+class AtomContainer(TermContainer, PredicateContainer):
     def __init__(self, items: Iterable[Atom], *args, **kwargs):
         super().__init__(items=items, *args, **kwargs)
 

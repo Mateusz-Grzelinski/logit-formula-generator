@@ -1,7 +1,7 @@
 from collections import Hashable
 from typing import Iterable, Tuple
 
-from .container import _ContainerBase, ItemType, Container
+from ._containerbase import _ContainerBase, ItemType
 
 
 class ImmutableContainer(_ContainerBase, Hashable):
@@ -9,12 +9,8 @@ class ImmutableContainer(_ContainerBase, Hashable):
         return hash(self._items)
 
     def __eq__(self, other):
-        from .constantlengthcontainer import ConstantLengthContainer
-        if isinstance(other, Container):
-            if issubclass(other.implementation, ConstantLengthContainer):
-                return NotImplemented('TODO')
-            elif issubclass(other.implementation, ImmutableContainer):
-                return self._items == other._items
+        if isinstance(other, ImmutableContainer):
+            return self._items == other._items
         raise NotImplemented
 
     def __setitem__(self, i: int, o: ItemType) -> None:

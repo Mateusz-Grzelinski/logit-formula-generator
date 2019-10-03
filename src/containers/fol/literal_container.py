@@ -3,10 +3,9 @@ from __future__ import annotations
 from typing import Iterable, overload, Tuple, Type, Set
 
 from .atom_container import AtomContainer
-from ...containers import MutableContainer
 
 
-class LiteralContainer(AtomContainer, container_implementation=MutableContainer):
+class LiteralContainer(AtomContainer):
     def __init__(self, items: Iterable[Literal], *args, **kwargs):
         super().__init__(items=items, *args, **kwargs)
 
