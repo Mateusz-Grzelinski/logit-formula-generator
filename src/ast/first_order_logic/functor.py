@@ -2,16 +2,15 @@ from __future__ import annotations
 
 from typing import Iterable
 
-from src.containers.fol import TermContainer
+from src.ast.first_order_logic.containers.term_container import TermContainer
 from .folelement import FolElement
 from .term import Term
 
 
 class Functor(Term, TermContainer, FolElement):
-    def __init__(self, name: str, items: Iterable[Term] = None, related_placeholder: FunctorPlaceholder = None,
-                 parent: CNFFormula = None, scope: CNFFormula = None, *args, **kwargs):
-        super().__init__(name=name, items=items, related_placeholder=related_placeholder, parent=parent, scope=scope,
-                         *args, **kwargs)
+    def __init__(self, name: str, items: Iterable[Term] = None, parent: CNFFormula = None, scope: CNFFormula = None,
+                 *args, **kwargs):
+        super().__init__(name=name, items=items, parent=parent, scope=scope, *args, **kwargs)
 
     def __hash__(self):
         return Term.__hash__(self) ^ TermContainer.__hash__(self)

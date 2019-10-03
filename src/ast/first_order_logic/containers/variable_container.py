@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import Generator, overload, Iterable, Tuple, Type, Set
 
-from ...containers import Container
+from src.ast.containers import Container
 
 
 class VariableContainer(Container):

@@ -7,9 +7,9 @@ from .term import Term
 
 
 class Variable(Term, FolElement):
-    def __init__(self, name: str, related_placeholder: VariablePlaceholder = None, parent: AstElement = None,
+    def __init__(self, name: str, parent: AstElement = None,
                  scope: CNFClause = None, *args, **kwargs):
-        super().__init__(name=name, related_placeholder=related_placeholder, parent=parent, scope=scope)
+        super().__init__(name=name, parent=parent, scope=scope)
 
     def __hash__(self):
         return hash(self.name)

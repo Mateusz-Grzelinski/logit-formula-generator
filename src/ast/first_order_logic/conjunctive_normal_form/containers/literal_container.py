@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import Iterable, overload, Tuple, Type, Set
 
-from .atom_container import AtomContainer
+from src.ast.first_order_logic.containers.atom_container import AtomContainer
 
 
 class LiteralContainer(AtomContainer):

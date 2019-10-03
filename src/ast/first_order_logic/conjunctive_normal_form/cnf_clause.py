@@ -2,19 +2,18 @@ from __future__ import annotations
 
 from collections import Iterable
 
+from src.ast.first_order_logic.conjunctive_normal_form.containers.literal_container import LiteralContainer
 from src.ast.first_order_logic.conjunctive_normal_form.literal import Literal
 from src.ast.first_order_logic.folelement import FolElement
-from src.ast.operands import LogicalOperand
-from src.containers.fol import LiteralContainer
+from src.ast.operands import LogicalConnective
 
 
 class CNFClause(LiteralContainer, FolElement):
-    operand = LogicalOperand.AND
+    operand = LogicalConnective.AND
 
-    def __init__(self, items: Iterable[Literal] = None, related_placeholder: CNFClausePlaceholder = None,
-                 parent: CNFFormula = None, scope: CNFFormula = None, *args, **kwagrs):
-        super().__init__(items=items, related_placeholder=related_placeholder, parent=parent, scope=scope, *args,
-                         **kwagrs)
+    def __init__(self, items: Iterable[Literal] = None, parent: CNFFormula = None, scope: CNFFormula = None, *args,
+                 **kwagrs):
+        super().__init__(items=items, parent=parent, scope=scope, *args, **kwagrs)
 
     def __str__(self):
         return 'cnf(' + '|'.join(str(l) for l in self.literals()) + ').'

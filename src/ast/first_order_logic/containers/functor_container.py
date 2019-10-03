@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import overload, Tuple, Iterable, Set, Type
 
-from ...containers import Container
+from src.ast.containers import Container
 
 
 class FunctorContainer(Container):

@@ -4,11 +4,9 @@ from abc import abstractmethod
 
 
 class AstElement:
-    def __init__(self, related_placeholder: Placeholder = None, parent: AstElement = None, scope: AstElement = None,
-                 *args, **kwargs):
+    def __init__(self, parent: AstElement = None, scope: AstElement = None, *args, **kwargs):
         self.scope = scope
         self.parent = parent
-        self.related_placeholder = related_placeholder
         super().__init__(*args, **kwargs)
 
     def __repr__(self):

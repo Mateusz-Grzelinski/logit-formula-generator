@@ -10,11 +10,9 @@ class Term(ABC, FolElement):
 
     """
 
-    def __init__(self, name: str, related_placeholder: Placeholder = None, parent: AstElement = None,
-                 scope: AstElement = None, *args, **kwargs):
+    def __init__(self, name: str, parent: AstElement = None, scope: AstElement = None, *args, **kwargs):
         self.name = name
-        super().__init__(related_placeholder=related_placeholder, parent=parent, scope=scope, *args,
-                         **kwargs)
+        super().__init__(parent=parent, scope=scope, *args, **kwargs)
 
     def __hash__(self):
         return hash(self.name)

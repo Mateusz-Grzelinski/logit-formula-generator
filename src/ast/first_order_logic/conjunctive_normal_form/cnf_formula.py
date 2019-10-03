@@ -2,16 +2,15 @@ from __future__ import annotations
 
 from typing import Iterable
 
+from src.ast.first_order_logic.conjunctive_normal_form.containers.cnf_clause_container import CNFClauseContainer
 from src.ast.first_order_logic.folelement import FolElement
-from src.containers.fol import CNFClauseContainer
 from .cnf_clause import CNFClause
 
 
 class CNFFormula(CNFClauseContainer, FolElement):
-    def __init__(self, items: Iterable[CNFClause], related_placeholder: Placeholder = None, parent: CNFFormula = None,
-                 scope: CNFFormula = None, *args, **kwargs):
-        super().__init__(items=items, related_placeholder=related_placeholder, parent=parent, scope=scope, *args,
-                         **kwargs)
+    def __init__(self, items: Iterable[CNFClause], parent: CNFFormula = None, scope: CNFFormula = None, *args,
+                 **kwargs):
+        super().__init__(items=items, parent=parent, scope=scope, *args, **kwargs)
 
     def __str__(self):
         return '\n'.join(str(c) for c in self.clauses())

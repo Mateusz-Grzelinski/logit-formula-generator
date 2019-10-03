@@ -2,16 +2,16 @@ from __future__ import annotations
 
 from typing import Iterable
 
-from src.containers.fol import TermContainer
+from .containers.term_container import TermContainer
 from .folelement import FolElement
 from .term import Term
 
 
 class Predicate(TermContainer, FolElement):
-    def __init__(self, name: str, items: Iterable[Term] = None, related_placeholder: PredicatePlaceholder = None,
+    def __init__(self, name: str, items: Iterable[Term] = None,
                  parent: CNFFormula = None, scope: CNFFormula = None, *args, **kwargs):
         self.name = name
-        super().__init__(items=items, related_placeholder=related_placeholder, parent=parent, scope=scope,
+        super().__init__(items=items, parent=parent, scope=scope,
                          *args, **kwargs)
 
     def __str__(self):

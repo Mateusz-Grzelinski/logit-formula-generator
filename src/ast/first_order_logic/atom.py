@@ -3,24 +3,23 @@ from __future__ import annotations
 from typing import Optional, Union, Iterable, Set, Type
 
 from src.ast import operands
-from src.ast.operands import MathOperand
-from src.containers.fol import PredicateContainer
-from src.containers.fol import TermContainer
+from src.ast.operands import MathConnective
+from .containers.predicate_container import PredicateContainer
+from .containers.term_container import TermContainer
 from .folelement import FolElement
 from .predicate import Predicate
 from .term import Term
 
 
 class Atom(TermContainer, PredicateContainer, FolElement):
-    def __init__(self, items: Iterable[Term, Predicate], connective: Optional[Union[str, MathOperand]],
-                 related_placeholder: AtomPlaceholder = None, parent: CNFFormula = None, scope: CNFFormula = None,
-                 *args, **kwargs):
-        super().__init__(items=items, related_placeholder=related_placeholder, parent=parent,
+    def __init__(self, items: Iterable[Term, Predicate], connective: Optional[Union[str, MathConnective]],
+                 parent: CNFFormula = None, scope: CNFFormula = None, *args, **kwargs):
+        super().__init__(items=items, parent=parent,
                          scope=scope, *args, **kwargs)
 
         if connective is None:
             self.connective_properties = None
-        elif isinstance(connective, str) or isinstance(connective, MathOperand):
+        elif isinstance(connective, str) or isinstance(connective, MathConnective):
             self.connective_properties = operands.get_operand_properties(connective)
         else:
             raise TypeError(f'invalid argument type for field connective: {connective}')
@@ -39,9 +38,9 @@ class Atom(TermContainer, PredicateContainer, FolElement):
             return str(self._items[0]) if self._items else ''
 
         # default visualization
-        if self.connective_properties.operand == MathOperand.EQUAL:
+        if self.connective_properties.connective == MathConnective.EQUAL:
             return '(' + ' = '.join(str(i) for i in self._items) + ')'
-        if self.connective_properties.operand == MathOperand.NOT_EQUAL:
+        if self.connective_properties.connective == MathConnective.NOT_EQUAL:
             return '(' + ' != '.join(str(i) for i in self._items) + ')'
 
         raise Exception(f'{self.connective_properties} does not have default visualization')

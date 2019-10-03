@@ -1,16 +1,14 @@
 from __future__ import annotations
 
 from src.ast.first_order_logic.atom import Atom
+from src.ast.first_order_logic.containers.atom_container import AtomContainer
 from src.ast.first_order_logic.folelement import FolElement
-from src.containers.fol import AtomContainer
 
 
 class Literal(AtomContainer, FolElement):
-    def __init__(self, item: Atom, negated: bool, related_placeholder: LiteralPlaceholder = None,
-                 parent: CNFFormula = None, scope: CNFFormula = None, *args, **kwargs):
+    def __init__(self, item: Atom, negated: bool, parent: CNFFormula = None, scope: CNFFormula = None, *args, **kwargs):
         self.is_negated = negated
-        super().__init__(items=[item], related_placeholder=related_placeholder, parent=parent, scope=scope, *args,
-                         **kwargs)
+        super().__init__(items=[item], parent=parent, scope=scope, *args, **kwargs)
 
     def __hash__(self):
         return hash(self.is_negated) + super().__hash__()

@@ -20,8 +20,8 @@ class AtomGenerator:
         for connective in self.allowed_connective_properties:
             if connective.commutative:
                 for items in combinations(chain(self.predicate_gen.generate(), [variable]), connective.arity):
-                    yield Atom(items=items, connective=connective.operand)
+                    yield Atom(items=items, connective=connective.connective)
             else:
                 for items in combinations_with_replacement(chain(self.predicate_gen.generate(), [variable]),
                                                            connective.arity):
-                    yield Atom(items=items, connective=connective.operand)
+                    yield Atom(items=items, connective=connective.connective)
