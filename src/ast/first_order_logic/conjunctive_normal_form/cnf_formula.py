@@ -2,13 +2,13 @@ from __future__ import annotations
 
 from typing import Iterable
 
-from src.containers import ConstantLengthContainer
+from src.ast.first_order_logic.folelement import FolElement
+from src.containers import ImmutableContainer
 from src.containers.fol import CNFClauseContainer
 from .cnf_clause import CNFClause
-from .folelement import FolElement
 
 
-class CNFFormula(CNFClauseContainer, FolElement, container_implementation=ConstantLengthContainer):
+class CNFFormula(CNFClauseContainer, FolElement, container_implementation=ImmutableContainer):
     def __init__(self, items: Iterable[CNFClause], related_placeholder: Placeholder = None, parent: CNFFormula = None,
                  scope: CNFFormula = None, *args, **kwargs):
         super().__init__(items=items, related_placeholder=related_placeholder, parent=parent, scope=scope, *args,
@@ -23,7 +23,7 @@ class CNFFormula(CNFClauseContainer, FolElement, container_implementation=Consta
         raise NotImplementedError
 
     def update_scope(self):
-        from src.ast.fol import CNFFormula
+        from src.ast.first_order_logic import CNFFormula
         parent = self.parent
         while parent is not None:
             if isinstance(parent, CNFFormula):

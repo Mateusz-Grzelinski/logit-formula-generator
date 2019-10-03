@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from src.ast.ast_element import AstElement
-from .cnf_clause import CNFClause
+from src.ast.first_order_logic.conjunctive_normal_form.cnf_clause import CNFClause
 from .folelement import FolElement
 from .term import Term
 
@@ -12,8 +12,6 @@ class Variable(Term, FolElement):
         super().__init__(name=name, related_placeholder=related_placeholder, parent=parent, scope=scope)
 
     def __hash__(self):
-        if self.scope:
-            return hash(self.name) + hash(self.scope)
         return hash(self.name)
 
     def __eq__(self, other):

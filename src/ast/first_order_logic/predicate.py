@@ -2,13 +2,13 @@ from __future__ import annotations
 
 from typing import Iterable
 
-from src.containers import ConstantLengthContainer
+from src.containers import ImmutableContainer
 from src.containers.fol import TermContainer
 from .folelement import FolElement
 from .term import Term
 
 
-class Predicate(TermContainer, FolElement, container_implementation=ConstantLengthContainer):
+class Predicate(TermContainer, FolElement, container_implementation=ImmutableContainer):
     def __init__(self, name: str, items: Iterable[Term] = None, related_placeholder: PredicatePlaceholder = None,
                  parent: CNFFormula = None, scope: CNFFormula = None, *args, **kwargs):
         self.name = name
@@ -22,15 +22,15 @@ class Predicate(TermContainer, FolElement, container_implementation=ConstantLeng
             return f'{self.name}'
 
     def __hash__(self):
-        return hash(self.name) + super().__hash__()
+        return Term.__hash__(self) ^ TermContainer.__hash__(self)
 
     def __eq__(self, other):
         if isinstance(other, Predicate):
-            return self.name == other.name and super().__eq__(other)
+            return Term.__eq__(self, other) and TermContainer.__eq__(self, other)
         raise NotImplementedError
 
     def update_scope(self):
-        from src.ast.fol import CNFFormula
+        from src.ast.first_order_logic import CNFFormula
         parent = self.parent
         while parent is not None:
             if isinstance(parent, CNFFormula):

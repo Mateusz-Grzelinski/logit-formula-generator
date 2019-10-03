@@ -69,7 +69,7 @@ class _ContainerBase(Generic[ItemType], Sequence, ABC):
 
     def items(self, type: Type = object, enum: bool = False, include_nested: bool = True):
         # the order of 2 following loops is important
-        # nested fol should be called first to fix with setting item to containers
+        # nested first_order_logic should be called first to fix with setting item to containers
         # but it is not optimal solution in terms of performance (recursion depth)
         if include_nested:
             for nested_container in self.nested_containers:
@@ -84,6 +84,6 @@ class _ContainerBase(Generic[ItemType], Sequence, ABC):
 
     @property
     def nested_containers(self) -> Iterable[Container]:
-        """iterate over all nested fol. Item can be a containers"""
+        """iterate over all nested first_order_logic. Item can be a containers"""
         from .container import Container
         return (i for i in self._items if isinstance(i, Container))

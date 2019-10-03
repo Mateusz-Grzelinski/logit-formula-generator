@@ -14,7 +14,7 @@ class CNFClauseContainer(LiteralContainer, container_implementation=MutableConta
 
     @classmethod
     def contains(cls) -> Set[Type]:
-        from src.ast.fol import CNFClause
+        from src.ast.first_order_logic import CNFClause
         return {CNFClause}
 
     @overload
@@ -26,7 +26,7 @@ class CNFClauseContainer(LiteralContainer, container_implementation=MutableConta
         ...
 
     def clauses(self, enum: bool = False) -> Iterable[CNFClause]:
-        from src.ast.fol.cnf_clause import CNFClause
+        from src.ast.first_order_logic.conjunctive_normal_form.cnf_clause import CNFClause
         if enum:
             return ((container, i, c) for container, i, c in self.items(enum=True) if isinstance(c, CNFClause))
         else:

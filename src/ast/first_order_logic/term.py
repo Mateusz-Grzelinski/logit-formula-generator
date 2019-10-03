@@ -28,7 +28,7 @@ class Term(ABC, FolElement):
         return self.name
 
     def update_scope(self):
-        from src.ast.fol import CNFFormula
+        from src.ast.first_order_logic import CNFFormula
         parent = self.parent
         while parent is not None:
             if isinstance(parent, CNFFormula):

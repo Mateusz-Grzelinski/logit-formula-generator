@@ -4,7 +4,7 @@ import textwrap
 from dataclasses import field, dataclass
 from typing import Union, Optional, Set, List
 
-from src.ast.fol import Atom, CNFClause, Functor, Predicate, Variable, CNFFormula
+from src.ast.first_order_logic import Atom, CNFClause, Functor, Predicate, Variable, CNFFormula
 
 
 def _print_arity(arities: Set[int]):

@@ -3,7 +3,7 @@ from __future__ import annotations
 from typing import Optional, Union, Dict, Iterable, Set, Type
 
 from src.ast.operands import MathOperand
-from src.containers import ConstantLengthContainer
+from src.containers import ImmutableContainer
 from src.containers.fol import PredicateContainer
 from src.containers.fol import TermContainer
 from .folelement import FolElement
@@ -11,7 +11,7 @@ from .predicate import Predicate
 from .term import Term
 
 
-class Atom(TermContainer, PredicateContainer, FolElement, container_implementation=ConstantLengthContainer):
+class Atom(TermContainer, PredicateContainer, FolElement, container_implementation=ImmutableContainer):
     """Atom is every propositional statement (statement that can be assigned true or false):
     atom is logical statement - it evaluates to true of false
     Examples:
@@ -55,11 +55,11 @@ class Atom(TermContainer, PredicateContainer, FolElement, container_implementati
             raise TypeError(f'invalid argument type for field connective: {connective}')
 
     def __hash__(self):
-        return hash(self.connective) + super().__hash__()
+        return hash(self.connective) ^ PredicateContainer.__hash__(self)
 
     def __eq__(self, other):
         if isinstance(other, Atom):
-            return self.connective == other.connective and super().__eq__(other)
+            return self.connective == other.connective and PredicateContainer.__eq__(self, other)
         raise NotImplementedError
 
     def __str__(self):
@@ -84,7 +84,7 @@ class Atom(TermContainer, PredicateContainer, FolElement, container_implementati
         return len(self._items)
 
     def update_scope(self):
-        from src.ast.fol import CNFFormula
+        from src.ast.first_order_logic import CNFFormula
         parent = self.parent
         while parent is not None:
             if isinstance(parent, CNFFormula):

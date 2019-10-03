@@ -1,4 +1,4 @@
-from . import fol
+from . import first_order_logic
 from .ast_element import AstElement
 
 __all__ = [

@@ -2,14 +2,14 @@ from __future__ import annotations
 
 from collections import Iterable
 
+from src.ast.first_order_logic.conjunctive_normal_form.literal import Literal
+from src.ast.first_order_logic.folelement import FolElement
 from src.ast.operands import LogicalOperand
-from src.containers import ConstantLengthContainer
+from src.containers import ImmutableContainer
 from src.containers.fol import LiteralContainer
-from .folelement import FolElement
-from .literal import Literal
 
 
-class CNFClause(LiteralContainer, FolElement, container_implementation=ConstantLengthContainer):
+class CNFClause(LiteralContainer, FolElement, container_implementation=ImmutableContainer):
     operand = LogicalOperand.AND
 
     def __init__(self, items: Iterable[Literal] = None, related_placeholder: CNFClausePlaceholder = None,
@@ -18,7 +18,7 @@ class CNFClause(LiteralContainer, FolElement, container_implementation=ConstantL
                          **kwagrs)
 
     def __str__(self):
-        return 'cnf(' + '|'.join(str(l) for l in self.literals()) + ').'
+        return 'conjunctive_normal_form(' + '|'.join(str(l) for l in self.literals()) + ').'
 
     def __hash__(self):
         return super().__hash__()
@@ -43,7 +43,7 @@ class CNFClause(LiteralContainer, FolElement, container_implementation=ConstantL
         return len(singleton_vars)
 
     def update_scope(self):
-        from src.ast.fol import CNFFormula
+        from src.ast.first_order_logic import CNFFormula
         parent = self.parent
         while parent is not None:
             if isinstance(parent, CNFFormula):

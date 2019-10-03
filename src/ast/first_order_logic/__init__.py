@@ -1,9 +1,9 @@
-"""fol - First Order Logic"""
+"""first_order_logic - First Order Logic"""
 from .atom import Atom
-from .cnf_clause import CNFClause
-from .cnf_formula import CNFFormula
+from .conjunctive_normal_form.cnf_clause import CNFClause
+from .conjunctive_normal_form.cnf_formula import CNFFormula
+from .conjunctive_normal_form.literal import Literal
 from .functor import Functor
-from .literal import Literal
 from .predicate import Predicate
 from .term import Term
 from .variable import Variable
@@ -16,5 +16,5 @@ __all__ = [
     'Atom',
     'Literal',
     'CNFClause',
-    'CNFFormula',
+    'CNFFormula'
 ]

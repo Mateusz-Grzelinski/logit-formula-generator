@@ -11,7 +11,7 @@ class FunctorContainer(Container, container_implementation=MutableContainer):
 
     @classmethod
     def contains(cls) -> Set[Type]:
-        from src.ast.fol import Functor
+        from src.ast.first_order_logic import Functor
         return {Functor}
 
     @overload
@@ -23,7 +23,7 @@ class FunctorContainer(Container, container_implementation=MutableContainer):
         ...
 
     def functors(self, enum: bool = False):
-        from src.ast.fol import Functor
+        from src.ast.first_order_logic import Functor
         if enum:
             return ((container, i, f) for container, i, f in self.items(enum=True) if isinstance(f, Functor))
         else:

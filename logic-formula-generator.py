@@ -1,12 +1,12 @@
 from __future__ import annotations
 
-from src.ast.fol import Functor
-from src.ast.fol.atom import Atom
-from src.ast.fol.cnf_clause import CNFClause
-from src.ast.fol.cnf_formula import CNFFormula
-from src.ast.fol.literal import Literal
-from src.ast.fol.predicate import Predicate
-from src.ast.fol.variable import Variable
+from src.ast.first_order_logic import Functor
+from src.ast.first_order_logic.atom import Atom
+from src.ast.first_order_logic.conjunctive_normal_form.cnf_clause import CNFClause
+from src.ast.first_order_logic.conjunctive_normal_form.cnf_formula import CNFFormula
+from src.ast.first_order_logic.conjunctive_normal_form.literal import Literal
+from src.ast.first_order_logic.predicate import Predicate
+from src.ast.first_order_logic.variable import Variable
 
 if __name__ == '__main__':
     v = Variable(name='V')

@@ -12,7 +12,7 @@ class LiteralContainer(AtomContainer, container_implementation=MutableContainer)
 
     @classmethod
     def contains(cls) -> Set[Type]:
-        from src.ast.fol import Literal
+        from src.ast.first_order_logic import Literal
         return {Literal}
 
     @overload
@@ -24,7 +24,7 @@ class LiteralContainer(AtomContainer, container_implementation=MutableContainer)
         ...
 
     def literals(self, enum: bool = False) -> Iterable:
-        from src.ast.fol.literal import Literal
+        from src.ast.first_order_logic.conjunctive_normal_form.literal import Literal
         if enum:
             return ((container, i, l) for container, i, l in self.items(enum=True) if isinstance(l, Literal))
         else:

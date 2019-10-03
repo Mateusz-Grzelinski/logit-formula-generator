@@ -11,7 +11,7 @@ class PredicateContainer(Container, container_implementation=MutableContainer):
 
     @classmethod
     def contains(cls) -> Set[Type]:
-        from src.ast.fol import Predicate
+        from src.ast.first_order_logic import Predicate
         return {Predicate}
 
     @overload
@@ -23,7 +23,7 @@ class PredicateContainer(Container, container_implementation=MutableContainer):
         ...
 
     def predicates(self, enum: bool = False) -> Generator:
-        from src.ast.fol.predicate import Predicate
+        from src.ast.first_order_logic.predicate import Predicate
         if enum:
             return ((container, i, p) for container, i, p in self.items(enum=True) if isinstance(p, Predicate))
         else:

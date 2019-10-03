@@ -1,12 +1,12 @@
 from __future__ import annotations
 
-from src.containers import ConstantLengthContainer
+from src.ast.first_order_logic.atom import Atom
+from src.ast.first_order_logic.folelement import FolElement
+from src.containers import ImmutableContainer
 from src.containers.fol import AtomContainer
-from .atom import Atom
-from .folelement import FolElement
 
 
-class Literal(AtomContainer, FolElement, container_implementation=ConstantLengthContainer):
+class Literal(AtomContainer, FolElement, container_implementation=ImmutableContainer):
     def __init__(self, item: Atom, negated: bool, related_placeholder: LiteralPlaceholder = None,
                  parent: CNFFormula = None, scope: CNFFormula = None, *args, **kwargs):
         self.is_negated = negated
@@ -32,7 +32,7 @@ class Literal(AtomContainer, FolElement, container_implementation=ConstantLength
         return self._items[0]
 
     def update_scope(self):
-        from src.ast.fol import CNFFormula
+        from src.ast.first_order_logic import CNFFormula
         parent = self.parent
         while parent is not None:
             if isinstance(parent, CNFFormula):

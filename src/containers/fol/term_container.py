@@ -24,7 +24,7 @@ class TermContainer(VariableContainer, FunctorContainer, container_implementatio
         ...
 
     def terms(self, enum: bool = False):
-        from src.ast.fol.term import Term
+        from src.ast.first_order_logic.term import Term
         if enum:
             return ((container, i, t) for container, i, t in self.items(enum=True) if isinstance(t, Term))
         else:

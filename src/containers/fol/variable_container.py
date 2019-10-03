@@ -11,7 +11,7 @@ class VariableContainer(Container, container_implementation=MutableContainer):
 
     @classmethod
     def contains(cls) -> Set[Type]:
-        from src.ast.fol import Variable
+        from src.ast.first_order_logic import Variable
         return {Variable}
 
     @overload
@@ -23,7 +23,7 @@ class VariableContainer(Container, container_implementation=MutableContainer):
         ...
 
     def variables(self, enum: bool = False) -> Generator:
-        from src.ast.fol.variable import Variable
+        from src.ast.first_order_logic.variable import Variable
         if enum:
             return ((container, i, v) for container, i, v in self.items(enum=True) if isinstance(v, Variable))
         else:

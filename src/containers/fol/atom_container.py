@@ -13,7 +13,7 @@ class AtomContainer(TermContainer, PredicateContainer, container_implementation=
 
     @classmethod
     def contains(cls) -> Set[Type]:
-        from src.ast.fol import Atom
+        from src.ast.first_order_logic import Atom
         return {Atom}
 
     @overload
@@ -25,7 +25,7 @@ class AtomContainer(TermContainer, PredicateContainer, container_implementation=
         ...
 
     def atoms(self, enum: bool = False) -> Iterable:
-        from src.ast.fol.atom import Atom
+        from src.ast.first_order_logic.atom import Atom
         if enum:
             return ((container, i, a) for container, i, a in self.items(enum=True) if isinstance(a, Atom))
         else:
