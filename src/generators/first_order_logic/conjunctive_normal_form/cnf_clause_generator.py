@@ -3,7 +3,7 @@ from __future__ import annotations
 from itertools import combinations
 from typing import Iterable, Generator
 
-from src.ast.first_order_logic import *
+from src.ast.first_order_logic import CNFClause
 
 
 class CNFClauseGenerator:

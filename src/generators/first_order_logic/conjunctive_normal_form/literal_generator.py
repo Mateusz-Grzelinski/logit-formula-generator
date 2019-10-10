@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from src.ast.first_order_logic import *
+from src.ast.first_order_logic import Literal
 
 
 class LiteralGenerator:

@@ -33,6 +33,10 @@ class Range(Sequence):
     def __repr__(self):
         return f'({self.min}, {self.max})'
 
+    @property
+    def average(self):
+        return (self.min + self.max) / 2
+
     @classmethod
     def compute(cls, number: int, threshold: float = None, min_delta: int = None) -> Range:
         if threshold is None and min_delta is None:
