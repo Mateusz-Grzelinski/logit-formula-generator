@@ -3,7 +3,7 @@ from __future__ import annotations
 from src.ast.first_order_logic import Literal
 
 
-class LiteralGenerator:
+class LiteralSignatureGenerator:
     def __init__(self, allow_positive: bool, allow_negated: bool, atom_gen: AtomGenerator):
         self.atom_gen = atom_gen
         self.allow_positive = allow_positive

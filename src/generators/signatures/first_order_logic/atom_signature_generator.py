@@ -4,12 +4,12 @@ from itertools import combinations, combinations_with_replacement, chain
 from typing import Generator, Set
 
 from src.ast import operands
-from src.ast.first_order_logic import *
+from src.ast.first_order_logic import Atom, Variable
 
 variable = Variable('V')
 
 
-class AtomGenerator:
+class AtomSignatureGenerator:
     def __init__(self, allowed_connectives: Set[str], predicate_gen: PredicateGenerator):
         self.predicate_gen = predicate_gen
         self.allowed_connective_properties = set(operands.get_operand_properties(connective) for connective in

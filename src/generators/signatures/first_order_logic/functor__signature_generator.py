@@ -4,12 +4,12 @@ from collections import defaultdict
 from itertools import product
 from typing import Iterable, Dict, Generator, List
 
-from src.ast.first_order_logic import *
+from src.ast.first_order_logic import Functor, Variable
 
 variable = Variable('V')
 
 
-class FunctorGenerator:
+class FunctorSignatureGenerator:
     def __init__(self, arities: Iterable[int], max_recursion_depth: int):
         self.max_recursion_depth = max_recursion_depth
         self.arities = set(arities)
@@ -25,11 +25,10 @@ class FunctorGenerator:
 
         # now generate nested structures
         for arity in self.arities:
-            # Dict[argument_number, argument_candidates]
-
             last_functor_length = None
             while last_functor_length != len(functors):
                 last_functor_length = len(functors)
+                # Dict[argument_number, argument_candidates]
                 terms: Dict[int, List[Term]] = defaultdict(list)
                 for argument_index in range(arity):
                     terms[argument_index].append(variable)

@@ -3,12 +3,12 @@ from __future__ import annotations
 from itertools import combinations_with_replacement, chain
 from typing import Iterable, Generator
 
-from src.ast.first_order_logic import *
+from src.ast.first_order_logic import Variable, Predicate
 
 variable = Variable('V')
 
 
-class PredicateGenerator:
+class PredicateSignatureGenerator:
     def __init__(self, arities: Iterable[int], functor_gen: FunctorGenerator):
         self.arities = set(arities)
         self.functor_gen = functor_gen
