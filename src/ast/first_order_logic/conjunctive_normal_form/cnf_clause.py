@@ -2,10 +2,10 @@ from __future__ import annotations
 
 from collections import Iterable
 
+from src.ast.connectives import LogicalConnective
 from src.ast.first_order_logic.conjunctive_normal_form.containers.literal_container import LiteralContainer
 from src.ast.first_order_logic.conjunctive_normal_form.literal import Literal
 from src.ast.first_order_logic.folelement import FolElement
-from src.ast.operands import LogicalConnective
 
 
 class CNFClause(LiteralContainer, FolElement):

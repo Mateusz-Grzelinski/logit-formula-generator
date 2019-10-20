@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from collections import defaultdict
 from itertools import product
+from random import sample
 from typing import Iterable, Dict, Generator, List
 
 from src.ast.first_order_logic import Functor, Variable
@@ -14,7 +15,7 @@ class FunctorSignatureGenerator:
         self.max_recursion_depth = max_recursion_depth
         self.arities = set(arities)
 
-    def generate(self) -> Generator[Functor, None, None]:
+    def generate(self, random: bool = True) -> Generator[Functor, None, None]:
         global variable
 
         # first generate non-recursive structures
@@ -40,6 +41,7 @@ class FunctorSignatureGenerator:
                     for n_args in product(*terms.values()):
                         functor = Functor(name='f', items=n_args)
                         functors.add(functor)
+        functors = sample(functors, len(functors)) if random else functors
         for functor in functors:
             if functor.arity in self.arities:
                 yield functor

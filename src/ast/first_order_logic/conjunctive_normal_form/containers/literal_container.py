@@ -22,7 +22,7 @@ class LiteralContainer(AtomContainer):
     def literals(self, enum: bool = False) -> Iterable[Literal]:
         ...
 
-    def literals(self, enum: bool = False) -> Iterable:
+    def literals(self, enum: bool = False) -> Iterable[Literal]:
         from src.ast.first_order_logic.conjunctive_normal_form.literal import Literal
         if enum:
             return ((container, i, l) for container, i, l in self.items(enum=True) if isinstance(l, Literal))

@@ -22,7 +22,7 @@ class PredicateContainer(Container):
     def predicates(self, enum: bool = False) -> Iterable[Predicate]:
         ...
 
-    def predicates(self, enum: bool = False) -> Generator:
+    def predicates(self, enum: bool = False) -> Generator[Predicate, None, None]:
         from src.ast.first_order_logic.predicate import Predicate
         if enum:
             return ((container, i, p) for container, i, p in self.items(enum=True) if isinstance(p, Predicate))

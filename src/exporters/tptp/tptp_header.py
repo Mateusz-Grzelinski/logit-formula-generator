@@ -2,9 +2,9 @@ from __future__ import annotations
 
 import textwrap
 from dataclasses import field, dataclass
-from typing import Union, Optional, Set, List
+from typing import Optional, Set, List
 
-from src.ast.first_order_logic import Atom, CNFClause, Functor, Predicate, Variable, CNFFormula
+from src.ast.first_order_logic import CNFFormula
 
 
 def _print_arity(arities: Set[int]):
@@ -24,12 +24,6 @@ def _print_arity(arities: Set[int]):
             ranges[-1].append(number)
         previous_number = number
     return ','.join(['-'.join(map(str, range)) for range in ranges])
-
-
-class TPTPExporter:
-    @staticmethod
-    def cnf_export(expression: Union[Functor, Variable, Predicate, Atom, Literal, CNFClause, CNFFormula]) -> str:
-        raise NotImplemented
 
 
 @dataclass
@@ -111,7 +105,7 @@ class TPTPHeader:
             number_of_clauses=['Number of clauses', self.number_of_clause_instances, self.number_of_horn_clauses,
                                self.number_of_unit_clauses, self.number_of_RR_clauses],
             number_of_atoms=['Number of atoms', self.number_of_atom_instances, self.number_of_equality_atom_instances],
-            maximal_clause_size=['Maximal clause size', self.max_clause_size, int(self.average_clause_size)],
+            maximal_clause_size=['Maximal clause size', self.max_clause_size, self.average_clause_size],
             number_of_predicates=['Number of predicates', self.number_of_predicates,
                                   self.number_of_propositional_predicates, _print_arity(self.predicate_arities)],
             number_of_functors=['Number of functors', self.number_of_functors, self.number_of_constant_functors,

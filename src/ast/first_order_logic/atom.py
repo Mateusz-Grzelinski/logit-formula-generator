@@ -2,8 +2,8 @@ from __future__ import annotations
 
 from typing import Optional, Union, Iterable, Set, Type
 
-from src.ast import operands
-from src.ast.operands import MathConnective
+from src.ast import connectives
+from src.ast.connectives import MathConnective
 from .containers.predicate_container import PredicateContainer
 from .containers.term_container import TermContainer
 from .folelement import FolElement
@@ -20,7 +20,7 @@ class Atom(TermContainer, PredicateContainer, FolElement):
         if connective is None:
             self.connective_properties = None
         elif isinstance(connective, str) or isinstance(connective, MathConnective):
-            self.connective_properties = operands.get_operand_properties(connective)
+            self.connective_properties = connectives.get_operand_properties(connective)
         else:
             raise TypeError(f'invalid argument type for field connective: {connective}')
 

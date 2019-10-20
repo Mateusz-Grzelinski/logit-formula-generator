@@ -17,5 +17,6 @@ class CNFClauseSignatureGenerator:
                 yield CNFClause(items=n_args)
         else:
             for clause_len in self.allowed_clause_lengths:
+                # todo randomize like atoms
                 for n_args in combinations(self.literal_gen.generate(), clause_len):
                     yield CNFClause(items=n_args)

@@ -1,8 +1,8 @@
 from typing import Iterable
 
+from src.ast.connectives import LogicalConnective
 from src.ast.first_order_logic.containers.atom_container import AtomContainer
 from src.ast.first_order_logic.containers.quantifier_container import QuantifierContainer
-from src.ast.operands import LogicalConnective
 
 
 class FolFormulae(AtomContainer, QuantifierContainer):

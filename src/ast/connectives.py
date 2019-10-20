@@ -4,7 +4,7 @@ from typing import Union, Optional
 
 
 @dataclass(frozen=True, eq=True)
-class OperandProperties:
+class ConnectiveProperties:
     connective: Optional[Enum]
     arity: int = field(compare=False, hash=False)
     commutative: bool = field(compare=False, hash=False)
@@ -25,12 +25,12 @@ class MathConnective(Enum):
     NOT_EQUAL = '!='
 
 
-_no_connective = OperandProperties(connective=None, arity=1, commutative=False)
-_and = OperandProperties(connective=LogicalConnective.AND, arity=2, commutative=True)
-_or = OperandProperties(connective=LogicalConnective.OR, arity=2, commutative=True)
-_not = OperandProperties(connective=LogicalConnective.NOT, arity=2, commutative=False)
-_equal = OperandProperties(connective=MathConnective.EQUAL, arity=2, commutative=True)
-_not_equal = OperandProperties(connective=MathConnective.NOT_EQUAL, arity=2, commutative=True)
+_no_connective = ConnectiveProperties(connective=None, arity=1, commutative=False)
+_and = ConnectiveProperties(connective=LogicalConnective.AND, arity=2, commutative=True)
+_or = ConnectiveProperties(connective=LogicalConnective.OR, arity=2, commutative=True)
+_not = ConnectiveProperties(connective=LogicalConnective.NOT, arity=2, commutative=False)
+_equal = ConnectiveProperties(connective=MathConnective.EQUAL, arity=2, commutative=True)
+_not_equal = ConnectiveProperties(connective=MathConnective.NOT_EQUAL, arity=2, commutative=True)
 
 operand_lookup_table = {
     '': _no_connective,
@@ -53,5 +53,5 @@ operand_lookup_table = {
 }
 
 
-def get_operand_properties(operand: Union[str, MathConnective, LogicalConnective]) -> OperandProperties:
+def get_operand_properties(operand: Union[str, MathConnective, LogicalConnective]) -> ConnectiveProperties:
     return operand_lookup_table[operand]
