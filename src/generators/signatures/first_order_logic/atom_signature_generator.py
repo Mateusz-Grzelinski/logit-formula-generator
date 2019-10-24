@@ -1,6 +1,8 @@
 from __future__ import annotations
 
-from itertools import combinations_with_replacement, chain
+import collections
+import types
+from itertools import combinations_with_replacement
 from random import sample, randint
 from typing import Generator, Iterable
 
@@ -8,6 +10,27 @@ from src.ast import connectives
 from src.ast.first_order_logic import Atom, Variable
 
 variable = Variable('V')
+
+
+def random_chain(*args):
+    args = list(args)
+    while args:
+        index = randint(0, len(args) - 1)
+        if isinstance(args[index], types.GeneratorType):
+            try:
+                yield next(args[index])
+            except StopIteration:
+                del args[index]
+        elif isinstance(args[index], list):
+            try:
+                yield args[index].pop()
+            except IndexError:
+                del args[index]
+        elif isinstance(args[index], collections.abc.Iterable):
+            raise NotImplementedError
+        else:
+            yield args[index]
+            del args[index]
 
 
 class AtomSignatureGenerator:
@@ -22,7 +45,7 @@ class AtomSignatureGenerator:
         connective_properties = random_connectives if random else self.allowed_connective_properties
 
         def atom_with_defined_connective(connective: ConnectiveProperties):
-            for items in combinations_with_replacement(chain(self.predicate_gen.generate(), [variable]),
+            for items in combinations_with_replacement(random_chain(self.predicate_gen.generate(), [variable]),
                                                        connective.arity):
                 yield Atom(items=items, connective=connective.connective)
 

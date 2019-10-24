@@ -2,17 +2,17 @@ from __future__ import annotations
 
 from abc import ABC
 
-from .folelement import FolElement
+from .folelement import FOLElement
 
 
-class Term(ABC, FolElement):
+class Term(ABC, FOLElement):
     """Term is element of language
 
     """
 
-    def __init__(self, name: str, parent: AstElement = None, scope: AstElement = None, *args, **kwargs):
+    def __init__(self, name: str, *args, **kwargs):
         self.name = name
-        super().__init__(parent=parent, scope=scope, *args, **kwargs)
+        super().__init__(*args, **kwargs)
 
     def __hash__(self):
         return hash(self.name)
@@ -24,12 +24,3 @@ class Term(ABC, FolElement):
 
     def __str__(self):
         return self.name
-
-    def update_scope(self):
-        from src.ast.first_order_logic import CNFFormula
-        parent = self.parent
-        while parent is not None:
-            if isinstance(parent, CNFFormula):
-                self.scope = parent
-                break
-            parent = parent.parent

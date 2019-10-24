@@ -1,23 +1,24 @@
 from __future__ import annotations
 
-from typing import Iterable
+from typing import Iterable, Set, Type
 
-from src.ast.first_order_logic.containers.term_container import TermContainer
-from .folelement import FolElement
+from src.ast.containers import Container
+from .folelement import FOLElement
 from .term import Term
 
 
-class Functor(Term, TermContainer, FolElement):
-    def __init__(self, name: str, items: Iterable[Term] = None, parent: CNFFormula = None, scope: CNFFormula = None,
+class Functor(Term, Container, FOLElement):
+
+    def __init__(self, name: str, items: Iterable[Term] = None,
                  *args, **kwargs):
-        super().__init__(name=name, items=items, parent=parent, scope=scope, *args, **kwargs)
+        super().__init__(name=name, items=items, *args, **kwargs)
 
     def __hash__(self):
-        return Term.__hash__(self) ^ TermContainer.__hash__(self)
+        return Term.__hash__(self) ^ Container.__hash__(self)
 
     def __eq__(self, other):
         if isinstance(other, Functor):
-            return Term.__eq__(self, other) and TermContainer.__eq__(self, other)
+            return Term.__eq__(self, other) and Container.__eq__(self, other)
         raise NotImplementedError
 
     def __str__(self):
@@ -45,11 +46,7 @@ class Functor(Term, TermContainer, FolElement):
     def is_constant(self):
         return len(self._items) == 0
 
-    def update_scope(self):
-        from src.ast.first_order_logic import CNFFormula
-        parent = self.parent
-        while parent is not None:
-            if isinstance(parent, CNFFormula):
-                self.scope = parent
-                break
-            parent = parent.parent
+    @classmethod
+    def contains(cls) -> Set[Type[FOLElement]]:
+        from src.ast.first_order_logic import Variable
+        return {Functor, Variable}

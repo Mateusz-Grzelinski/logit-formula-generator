@@ -9,4 +9,4 @@ class LiteralSignatureGenerator:
 
     def generate(self):
         for allowed_atom in self.atom_gen.generate():
-            yield Literal(item=allowed_atom, negated=False)
+            yield Literal(items=allowed_atom, negated=False)

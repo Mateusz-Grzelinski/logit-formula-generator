@@ -1,4 +1,4 @@
-from collections import Hashable
+from collections.abc import Hashable
 from typing import Iterable, Tuple
 
 from ._containerbase import _ContainerBase, ItemType

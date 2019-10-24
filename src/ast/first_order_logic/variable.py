@@ -1,15 +1,12 @@
 from __future__ import annotations
 
-from src.ast.ast_element import AstElement
-from src.ast.first_order_logic.conjunctive_normal_form.cnf_clause import CNFClause
-from .folelement import FolElement
+from .folelement import FOLElement
 from .term import Term
 
 
-class Variable(Term, FolElement):
-    def __init__(self, name: str, parent: AstElement = None,
-                 scope: CNFClause = None, *args, **kwargs):
-        super().__init__(name=name, parent=parent, scope=scope)
+class Variable(Term, FOLElement):
+    def __init__(self, name: str, *args, **kwargs):
+        super().__init__(name=name, *args, **kwargs)
 
     def __hash__(self):
         return hash(self.name)
@@ -17,12 +14,4 @@ class Variable(Term, FolElement):
     def __eq__(self, other):
         if isinstance(other, Variable):
             return self.name == other.name
-        return False
-
-    def update_scope(self):
-        parent = self.parent
-        while parent is not None:
-            if isinstance(parent, CNFClause):
-                self.scope = parent
-                break
-            parent = parent.parent
+        raise NotImplementedError

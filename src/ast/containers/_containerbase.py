@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
-from collections import Sequence
+from collections.abc import Sequence
 from typing import Iterable, TypeVar, Generic, Tuple, overload, List, Type
 
 ItemType = TypeVar('ItemType')
@@ -58,15 +58,11 @@ class _ContainerBase(Generic[ItemType], Sequence, ABC):
         raise NotImplementedError
 
     @overload
-    def items(self, type: Type = object, enum: bool = False, include_nested: bool = True) -> Iterable[ItemType]:
-        ...
-
-    @overload
     def items(self, type: Type = object, enum: bool = False, include_nested: bool = True) -> Iterable[
         Tuple[Container, int, ItemType]]:
         ...
 
-    def items(self, type: Type = object, enum: bool = False, include_nested: bool = True):
+    def items(self, type: Type = object, enum: bool = False, include_nested: bool = True) -> Iterable[ItemType]:
         # the order of 2 following loops is important
         # nested first_order_logic should be called first to fix with setting item to containers
         # but it is not optimal solution in terms of performance (recursion depth)

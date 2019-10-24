@@ -1,7 +1,8 @@
 from pprint import pprint
-from typing import Iterable
+from typing import Iterable, Generator
 
 import src.generators.signatures.first_order_logic as fof
+from src.ast.first_order_logic import CNFFormula
 from src.generators.post_processors.fol_post_processor import FOLPostProcessor
 from src.generators.range import Range
 
@@ -21,7 +22,7 @@ class LivenessSafetyGenerator:
         self.predicate_arities = predicate_arities
         self.functor_arity = functor_arity
 
-    def generate(self):
+    def generate(self) -> Generator[CNFFormula, None, None]:
         f = fof.FunctorSignatureGenerator(arities=self.functor_arity, max_recursion_depth=0)
         print('functors:', end=' ')
         pprint(list(f.generate()))

@@ -1,17 +1,18 @@
 from __future__ import annotations
 
-from src.ast.first_order_logic.atom import Atom
-from src.ast.first_order_logic.containers.atom_container import AtomContainer
-from src.ast.first_order_logic.folelement import FolElement
+from typing import Set, Type
+
+from src.ast.containers import Container
+from src.ast.first_order_logic.folelement import FOLElement
 
 
-class Literal(AtomContainer, FolElement):
-    def __init__(self, item: Atom, negated: bool, parent: CNFFormula = None, scope: CNFFormula = None, *args, **kwargs):
+class Literal(Container, FOLElement):
+    def __init__(self, items: Atom, negated: bool, *args, **kwargs):
         self.is_negated = negated
-        super().__init__(items=[item], parent=parent, scope=scope, *args, **kwargs)
+        super().__init__(items=[items], *args, **kwargs)
 
     def __hash__(self):
-        return hash(self.is_negated) + super().__hash__()
+        return hash(self.is_negated) ^ Container.__hash__(self)
 
     def __eq__(self, other):
         if isinstance(other, Literal):
@@ -28,11 +29,7 @@ class Literal(AtomContainer, FolElement):
         assert len(self._items) == 1, 'literal can have only one atom'
         return self._items[0]
 
-    def update_scope(self):
-        from src.ast.first_order_logic import CNFFormula
-        parent = self.parent
-        while parent is not None:
-            if isinstance(parent, CNFFormula):
-                self.scope = parent
-                break
-            parent = parent.parent
+    @classmethod
+    def contains(cls) -> Set[Type[FOLElement]]:
+        from src.ast.first_order_logic.atom import Atom
+        return {Atom}

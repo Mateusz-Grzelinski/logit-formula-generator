@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import textwrap
 from dataclasses import field, dataclass
-from typing import Optional, Set, List
+from typing import Optional, Set
 
 from src.ast.first_order_logic import CNFFormula
 
@@ -91,15 +91,6 @@ class TPTPHeader:
 
     def get_header(self):
         file = f'{self.output_file} {self.version}'
-
-        class RowEntry:
-            def __init__(self, name: str, value: int, details: List):
-                self.name = name
-                self.value = value
-                self.details = details
-
-            def __str__(self):
-                return f'{self.name} : {self.value} ({self.details})'
 
         syntax = dict(
             number_of_clauses=['Number of clauses', self.number_of_clause_instances, self.number_of_horn_clauses,

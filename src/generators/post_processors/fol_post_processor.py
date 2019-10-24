@@ -13,11 +13,12 @@ class FOLPostProcessor:
         self.functor_names = functor_names
 
     def switch_names(self, formula: CNFFormula):
-        for literal in formula.literals():
+        from src.ast.first_order_logic import Variable, Functor, Predicate, Literal
+        for literal in formula.items(type=Literal):
             literal.is_negated = bool(random.randint(0, 1))
-        for predicate in formula.predicates():
+        for predicate in formula.items(type=Predicate):
             predicate.name = random.sample(self.predicate_names, 1)[0]
-        for functor in formula.functors():
+        for functor in formula.items(type=Functor):
             functor.name = random.sample(self.functor_names, 1)[0]
-        for variable in formula.variables():
+        for variable in formula.items(type=Variable):
             variable.name = random.sample(self.variable_names, 1)[0]
