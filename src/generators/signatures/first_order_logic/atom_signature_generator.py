@@ -36,7 +36,7 @@ def random_chain(*args):
 class AtomSignatureGenerator:
     def __init__(self, allowed_connectives: Iterable[str], predicate_gen: PredicateGenerator):
         self.predicate_gen = predicate_gen
-        self.allowed_connective_properties = set(connectives.get_operand_properties(connective) for connective in
+        self.allowed_connective_properties = set(connectives.get_connective_properties(connective) for connective in
                                                  allowed_connectives)
 
     def generate(self, random: bool = True) -> Generator[Atom, None, None]:

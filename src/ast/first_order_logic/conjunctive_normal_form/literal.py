@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from typing import Set, Type
 
+from src.ast.connectives import LogicalConnective
 from src.ast.containers import Container
 from src.ast.first_order_logic.folelement import FOLElement
 
@@ -9,7 +10,8 @@ from src.ast.first_order_logic.folelement import FOLElement
 class Literal(Container, FOLElement):
     def __init__(self, items: Atom, negated: bool, *args, **kwargs):
         self.is_negated = negated
-        super().__init__(items=[items], *args, **kwargs)
+        unary_connective = LogicalConnective.NOT if negated else None
+        super().__init__(items=[items], unary_connectives=[unary_connective], *args, **kwargs)
 
     def __hash__(self):
         return hash(self.is_negated) ^ Container.__hash__(self)

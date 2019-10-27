@@ -10,7 +10,18 @@ class ConnectiveProperties:
     commutative: bool = field(compare=False, hash=False)
 
 
-class LogicalConnective(Enum):
+class ConnectiveEnum:
+    pass
+
+
+class TLConnective(ConnectiveEnum, Enum):
+    ALWAYS = '[]'
+    """Also known as box"""
+    EVENTUALLY = '<>'
+    """Also known as diamond"""
+
+
+class LogicalConnective(ConnectiveEnum, Enum):
     """Operand and arity"""
     AND = '∧'
     OR = 'v'
@@ -19,7 +30,7 @@ class LogicalConnective(Enum):
     BICONDITION = '<=>'
 
 
-class MathConnective(Enum):
+class MathConnective(ConnectiveEnum, Enum):
     """Operand and arity"""
     EQUAL = '='
     NOT_EQUAL = '!='
@@ -31,8 +42,10 @@ _or = ConnectiveProperties(connective=LogicalConnective.OR, arity=2, commutative
 _not = ConnectiveProperties(connective=LogicalConnective.NOT, arity=2, commutative=False)
 _equal = ConnectiveProperties(connective=MathConnective.EQUAL, arity=2, commutative=True)
 _not_equal = ConnectiveProperties(connective=MathConnective.NOT_EQUAL, arity=2, commutative=True)
+_always = ConnectiveProperties(connective=TLConnective.ALWAYS, arity=1, commutative=False)
+_eventually = ConnectiveProperties(connective=TLConnective.EVENTUALLY, arity=1, commutative=False)
 
-operand_lookup_table = {
+connectives_lookup_table = {
     '': _no_connective,
     None: _no_connective,
     LogicalConnective.AND: _and,
@@ -49,9 +62,13 @@ operand_lookup_table = {
     '=': _equal,
     '==': _equal,
     MathConnective.NOT_EQUAL: _not_equal,
-    '!=': _not_equal
+    '!=': _not_equal,
+    TLConnective.ALWAYS: _always,
+    '[]': _always,
+    TLConnective.EVENTUALLY: _eventually,
+    '<>': _eventually,
 }
 
 
-def get_operand_properties(operand: Union[str, MathConnective, LogicalConnective]) -> ConnectiveProperties:
-    return operand_lookup_table[operand]
+def get_connective_properties(operand: Union[str, MathConnective, LogicalConnective]) -> ConnectiveProperties:
+    return connectives_lookup_table[operand]

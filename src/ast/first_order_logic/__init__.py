@@ -2,6 +2,7 @@
 from .atom import Atom
 from .conjunctive_normal_form.cnf_clause import CNFClause
 from .conjunctive_normal_form.cnf_formula import CNFFormula
+from .conjunctive_normal_form.cnf_formula_info import CNFFormulaInfo
 from .conjunctive_normal_form.literal import Literal
 from .functor import Functor
 from .predicate import Predicate
@@ -16,5 +17,6 @@ __all__ = [
     'Atom',
     'Literal',
     'CNFClause',
-    'CNFFormula'
+    'CNFFormula',
+    'CNFFormulaInfo'
 ]

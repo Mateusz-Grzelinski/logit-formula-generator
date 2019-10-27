@@ -17,7 +17,7 @@ class Atom(Container, FOLElement):
         if connective is None:
             self.connective_properties = None
         elif isinstance(connective, str) or isinstance(connective, MathConnective):
-            self.connective_properties = connectives.get_operand_properties(connective)
+            self.connective_properties = connectives.get_connective_properties(connective)
         else:
             raise TypeError(f'invalid argument type for field connective: {connective}')
 
