@@ -1,4 +1,4 @@
-from src.ast import AstElement
+from .._ast_element import AstElement
 
 
 class TLElement(AstElement):

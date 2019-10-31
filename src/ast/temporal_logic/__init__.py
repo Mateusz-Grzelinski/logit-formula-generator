@@ -1,9 +1,7 @@
-from .propositional_variable import PropositionalVariable
+from .temporal_logic_connectives import TemporalLogicConnective
 from .tl_element import TLElement
-from .tl_formula import TLFormula
 
 __all__ = [
-    'TLFormula',
-    'PropositionalVariable',
-    'TLElement'
+    'TLElement',
+    'TemporalLogicConnective'
 ]

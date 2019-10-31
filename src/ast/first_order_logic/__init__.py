@@ -1,13 +1,13 @@
 """first_order_logic - First Order Logic"""
-from .atom import Atom
-from .conjunctive_normal_form.cnf_clause import CNFClause
-from .conjunctive_normal_form.cnf_formula import CNFFormula
-from .conjunctive_normal_form.cnf_formula_info import CNFFormulaInfo
-from .conjunctive_normal_form.literal import Literal
-from .functor import Functor
-from .predicate import Predicate
-from .term import Term
-from .variable import Variable
+from ._atom import Atom
+from ._functor import Functor
+from ._predicate import Predicate
+from ._term import Term
+from ._variable import Variable
+from .conjunctive_normal_form._cnf_clause import CNFClause
+from .conjunctive_normal_form._cnf_formula import CNFFormula
+from .conjunctive_normal_form._cnf_formula_info import CNFFormulaInfo
+from .conjunctive_normal_form._literal import Literal
 
 __all__ = [
     'Term',

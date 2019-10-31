@@ -1,10 +1,16 @@
 from __future__ import annotations
 
-from src.ast._visitor import _Visitor
-from src.ast.first_order_logic import Variable, Functor, Predicate, Atom, Literal, CNFClause, CNFFormula
+from ._atom import Atom
+from ._functor import Functor
+from ._predicate import Predicate
+from ._variable import Variable
+from .conjunctive_normal_form._cnf_clause import CNFClause
+from .conjunctive_normal_form._cnf_formula import CNFFormula
+from .conjunctive_normal_form._literal import Literal
+from .._ast_visitor import AstVisitor
 
 
-class FOLVisitor(_Visitor):
+class FOLAstVisitor(AstVisitor):
 
     def visit(self, element: AstElement):
         if isinstance(element, Variable):
