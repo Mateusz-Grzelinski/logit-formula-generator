@@ -2,12 +2,12 @@ from __future__ import annotations
 
 import textwrap
 from dataclasses import field, dataclass
-from typing import Optional, Set
+from typing import Optional, Set, Dict, Any
 
 from ...first_order_logic import *
 
 
-def _print_arity(arities: Set[int]):
+def _print_arity(arities: Set[int]) -> str:
     if not arities:
         return '-'
 
@@ -27,9 +27,27 @@ def _print_arity(arities: Set[int]):
 
 
 @dataclass
+class _HeaderItem:
+    name: str
+    value: Any
+    details: Dict[str, Any]
+
+    def __str__(self):
+        details = []
+        for key, value in self.details.items():
+            if value is None:
+                value = '-'
+            details.append(f'{str(value).rjust(3)} {str(key)}')
+        details = '; '.join(details)
+
+        value = '-' if self.value is None else str(self.value)
+        return f'{self.name.ljust(22)}:{value.rjust(5)} ({details})\n'
+
+
+@dataclass
 class TPTPHeader:
     seed: int = '-'
-    version: str = '-'
+    version: str = ''
     output_file: str = ''
     comment_sign: str = '%'
     line_separator: str = '-' * 76
@@ -74,13 +92,13 @@ class TPTPHeader:
 
             self.number_of_atom_instances = object.number_of_instances[Atom]
 
-            # self.predicate_arities = set(object.predicate_arities.keys())
+            self.predicate_arities = set(object.predicate_arities.keys())
             self.number_of_predicates = object.number_of[Predicate]
 
             self.number_of_variables = object.number_of_instances[Variable]
             self.number_of_singleton_variables = object.number_of_singleton_variables
 
-            # self.functor_arities = set(object.functor_arities.keys())
+            self.functor_arities = set(object.functor_arities.keys())
             self.number_of_functors = object.number_of[Functor]
             self.number_of_constant_functors = object.number_of_constant_functors
             self.number_of_functors_instances = object.number_of_instances[Functor]
@@ -91,71 +109,51 @@ class TPTPHeader:
 
     def get_header(self):
         file = f'{self.output_file} {self.version}'
-
-        syntax = dict(
-            number_of_clauses=['Number of clauses', self.number_of_clause_instances, self.number_of_horn_clauses,
-                               self.number_of_unit_clauses, self.number_of_RR_clauses],
-            number_of_atoms=['Number of atoms', self.number_of_atom_instances, self.number_of_equality_atom_instances],
-            maximal_clause_size=['Maximal clause size', self.max_clause_size, self.average_clause_size],
-            number_of_predicates=['Number of predicates', self.number_of_predicates,
-                                  self.number_of_propositional_predicates, _print_arity(self.predicate_arities)],
-            number_of_functors=['Number of functors', self.number_of_functors, self.number_of_constant_functors,
-                                _print_arity(self.functor_arities)],
-            number_of_variables=['Number of variables', self.number_of_variables, self.number_of_singleton_variables],
-            maximal_term_depth=['Maximal term depth', self.max_term_depth, self.average_term_depth],
-        )
-
-        for key, value in syntax.items():
-            for i, item in enumerate(value):
-                if item is None:
-                    value[i] = '-'
-                else:
-                    value[i] = str(item)
-
-                if i == 0:
-                    value[i] = value[i].ljust(22)
-                elif i == 1:
-                    value[i] = value[i].rjust(4)
-                elif i == 2:
-                    value[i] = value[i].rjust(3)
-
-        syntax_text = [
-            f'{syntax["number_of_clauses"][0]}: '
-            f'{syntax["number_of_clauses"][1]} '
-            f'( {syntax["number_of_clauses"][2]} non-Horn; '
-            f'{syntax["number_of_clauses"][3]} unit; '
-            f'{syntax["number_of_clauses"][4]} RR)\n',
-
-            f'{syntax["number_of_atoms"][0]}: '
-            f'{syntax["number_of_atoms"][1]} '
-            f'( {syntax["number_of_atoms"][2]} equality)\n',
-
-            f'{syntax["maximal_clause_size"][0]}: '
-            f'{syntax["maximal_clause_size"][1]} '
-            f'( {syntax["maximal_clause_size"][2]} average)\n',
-
-            f'{syntax["number_of_predicates"][0]}: '
-            f'{syntax["number_of_predicates"][1]} '
-            f'( {syntax["number_of_predicates"][2]} propositional; '
-            f'{syntax["number_of_predicates"][3]} arity)\n',
-
-            f'{syntax["number_of_functors"][0]}: '
-            f'{syntax["number_of_functors"][1]} '
-            f'( {syntax["number_of_functors"][2]} constant; '
-            f'{syntax["number_of_functors"][3]} arity)\n',
-
-            f'{syntax["number_of_variables"][0]}: '
-            f'{syntax["number_of_variables"][1]} '
-            f'( {syntax["number_of_variables"][2]} singleton)\n',
-
-            f'{syntax["maximal_term_depth"][0]}: '
-            f'{syntax["maximal_term_depth"][1]} '
-            f'( {syntax["maximal_term_depth"][2]} average)\n',
+        syntax_items = [
+            _HeaderItem(
+                name='Number of clauses', value=self.number_of_clause_instances,
+                details={
+                    'non-Horn': self.number_of_horn_clauses,
+                    'unit': self.number_of_unit_clauses,
+                    'RR': self.number_of_RR_clauses
+                }),
+            _HeaderItem(
+                name='Number of atoms', value=self.number_of_atom_instances,
+                details={
+                    'equality': self.number_of_equality_atom_instances,
+                }),
+            _HeaderItem(
+                name='Maximal clause size', value=self.max_clause_size,
+                details={
+                    'average': self.average_clause_size,
+                }),
+            _HeaderItem(
+                name='Number of predicates', value=self.number_of_predicates,
+                details={
+                    'propositional': self.number_of_propositional_predicates,
+                    'arity': _print_arity(self.predicate_arities),
+                }),
+            _HeaderItem(
+                name='Number of functors', value=self.number_of_functors,
+                details={
+                    'constant': self.number_of_constant_functors,
+                    'arity': _print_arity(self.functor_arities),
+                }),
+            _HeaderItem(
+                name='Number of variables', value=self.number_of_variables,
+                details={
+                    'singleton': self.number_of_singleton_variables,
+                }),
+            _HeaderItem(
+                name='Maximal term depth', value=self.max_term_depth,
+                details={
+                    'average': self.average_term_depth,
+                }),
         ]
 
         text = f'{self.line_separator}\n' \
                f'File      : {file:<4}\n' \
-               f'Syntax    : {(12 * " ").join(syntax_text)}\n' \
+               f'Syntax    : {(12 * " ").join(str(i) for i in syntax_items)}\n' \
                f'{self.line_separator}\n'
 
         text = textwrap.indent(text=text, prefix=f'{self.comment_sign} ', predicate=lambda line: True)
