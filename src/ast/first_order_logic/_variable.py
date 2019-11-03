@@ -14,4 +14,6 @@ class Variable(Term, FOLElement):
     def __eq__(self, other):
         if isinstance(other, Variable):
             return self.name == other.name
+        elif isinstance(other, FOLElement):
+            return False
         raise NotImplementedError

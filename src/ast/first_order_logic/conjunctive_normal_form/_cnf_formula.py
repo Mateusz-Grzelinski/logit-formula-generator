@@ -19,6 +19,8 @@ class CNFFormula(Container, FOLElement):
     def __eq__(self, other):
         if isinstance(other, CNFFormula):
             return super().__eq__(other)
+        elif isinstance(other, FOLElement):
+            return False
         raise NotImplementedError
 
     def get_info(self) -> CNFFormulaInfo:
@@ -31,3 +33,16 @@ class CNFFormula(Container, FOLElement):
     def contains(cls) -> Set[Type[FOLElement]]:
         from ._cnf_clause import CNFClause
         return {CNFClause}
+
+    def equivalent(self, formula: CNFFormula):
+        """Compare 2 clauses but do not take into account order of literals"""
+        for item in self._items:
+            if item not in formula:
+                return False
+        return True
+
+    def equivalent_in(self, formulas: Iterable[CNFFormula]):
+        for cnf_formulas in formulas:
+            if self.equivalent(cnf_formulas):
+                return True
+        return False

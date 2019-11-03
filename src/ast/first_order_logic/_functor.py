@@ -19,6 +19,8 @@ class Functor(Term, Container, FOLElement):
     def __eq__(self, other):
         if isinstance(other, Functor):
             return Term.__eq__(self, other) and Container.__eq__(self, other)
+        elif isinstance(other, FOLElement):
+            return False
         raise NotImplementedError
 
     def __str__(self):
@@ -38,7 +40,7 @@ class Functor(Term, Container, FOLElement):
     @property
     def recursion_depth(self):
         if self.is_recursive:
-            return max(f.recursion_depth + 1 for f in self.functors())
+            return max(f.recursion_depth + 1 for f in self.items(type=Functor))
         else:
             return 0
 

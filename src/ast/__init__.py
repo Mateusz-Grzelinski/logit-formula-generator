@@ -1,6 +1,7 @@
 from ._ast_element import AstElement
 from ._ast_visitor import AstVisitor
-from ._connectives import MathConnective, LogicalConnective, ConnectiveEnum, ConnectiveProperties
+from ._connectives import MathConnective, LogicalConnective, ConnectiveEnum, ConnectiveProperties, \
+    get_connective_properties
 
 __all__ = [
     'AstElement',
@@ -8,5 +9,6 @@ __all__ = [
     'ConnectiveProperties',
     'ConnectiveEnum',
     'LogicalConnective',
-    'MathConnective'
+    'MathConnective',
+    'get_connective_properties',
 ]

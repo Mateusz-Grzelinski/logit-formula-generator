@@ -13,19 +13,20 @@ class Atom(Container, FOLElement):
                  *args, **kwargs):
         super().__init__(items=items, *args, **kwargs)
 
-        if connective is None:
-            self.connective_properties = None
-        elif isinstance(connective, str) or isinstance(connective, MathConnective):
+        if connective is None or isinstance(connective, str) or isinstance(connective, MathConnective):
             self.connective_properties = get_connective_properties(connective)
         else:
             raise TypeError(f'invalid argument type for field connective: {connective}')
 
     def __hash__(self):
-        return hash(self.connective_properties) ^ Container.__hash__(self)
+        return hash(self.connective_properties.connective) ^ Container.__hash__(self)
 
     def __eq__(self, other):
         if isinstance(other, Atom):
-            return self.connective_properties == other.connective_properties and Container.__eq__(self, other)
+            return self.connective_properties.connective == other.connective_properties.connective and \
+                   Container.__eq__(self, other)
+        elif isinstance(other, FOLElement):
+            return False
         raise NotImplementedError
 
     def __str__(self):
@@ -50,4 +51,3 @@ class Atom(Container, FOLElement):
     @property
     def arity(self):
         return len(self._items)
-

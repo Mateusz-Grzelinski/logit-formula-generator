@@ -19,7 +19,9 @@ class Literal(Container, FOLElement):
     def __eq__(self, other):
         if isinstance(other, Literal):
             return self.is_negated == other.is_negated and super().__eq__(other)
-        return False
+        elif isinstance(other, FOLElement):
+            return False
+        raise NotImplementedError
 
     def __str__(self):
         if self.is_negated:

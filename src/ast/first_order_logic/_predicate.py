@@ -19,11 +19,13 @@ class Predicate(Container, FOLElement):
             return f'{self.name}'
 
     def __hash__(self):
-        return Term.__hash__(self) ^ Container.__hash__(self)
+        return hash(self.name) ^ Container.__hash__(self)
 
     def __eq__(self, other):
         if isinstance(other, Predicate):
-            return Term.__eq__(self, other) and Container.__eq__(self, other)
+            return self.name == other.name and Container.__eq__(self, other)
+        elif isinstance(other, FOLElement):
+            return False
         raise NotImplementedError
 
     @property

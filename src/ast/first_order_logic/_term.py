@@ -20,6 +20,8 @@ class Term(ABC, FOLElement):
     def __eq__(self, other):
         if isinstance(other, Term):
             return self.name == other.name
+        elif isinstance(other, FOLElement):
+            return False
         return False
 
     def __str__(self):

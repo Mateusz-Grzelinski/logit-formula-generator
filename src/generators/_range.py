@@ -38,7 +38,7 @@ class IntegerRange(Sequence):
         return (self.min + self.max) / 2
 
     @classmethod
-    def compute(cls, number: int, threshold: float = None, min_delta: int = None) -> IntegerRange:
+    def from_relative(cls, number: int, threshold: float = None, min_delta: int = None) -> IntegerRange:
         if threshold is None and min_delta is None:
             raise AttributeError('one of threshold or delta must be defined')
         elif threshold is None:
@@ -48,5 +48,5 @@ class IntegerRange(Sequence):
             return cls(int(number - delta_from_threshold), int(number + delta_from_threshold))
         else:
             delta_from_threshold = number * threshold
-            return cls(min(int(number - delta_from_threshold), number + min_delta),
+            return cls(min(int(number - delta_from_threshold), number - min_delta),
                        max(int(number + delta_from_threshold), number + min_delta))

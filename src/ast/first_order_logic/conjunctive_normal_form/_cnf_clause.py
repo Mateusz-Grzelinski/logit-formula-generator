@@ -19,12 +19,27 @@ class CNFClause(Container, FOLElement):
         return 'cnf(' + '|'.join(str(l) for l in self.items(type=Literal)) + ').'
 
     def __hash__(self):
-        return super().__hash__()
+        return Container.__hash__(self)
 
     def __eq__(self, other):
         if isinstance(other, CNFClause):
-            return super().__eq__(other)
+            return Container.__eq__(self, other)
+        elif isinstance(other, FOLElement):
+            return False
         raise NotImplementedError
+
+    def equivalent(self, cnf_clause: CNFClause):
+        """Compare 2 clauses but do not take into account order of literals"""
+        for item in self._items:
+            if item not in cnf_clause:
+                return False
+        return True
+
+    def equivalent_in(self, cnf_clauses: Iterable[CNFClause]):
+        for cnf_clause in cnf_clauses:
+            if self.equivalent(cnf_clause):
+                return True
+        return False
 
     @property
     def length(self) -> int:
