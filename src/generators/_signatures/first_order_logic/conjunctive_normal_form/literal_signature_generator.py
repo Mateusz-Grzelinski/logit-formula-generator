@@ -5,7 +5,7 @@ from src.generators import AstGenerator
 
 
 class LiteralSignatureGenerator(AstGenerator):
-    def __init__(self, atom_gen: AtomGenerator):
+    def __init__(self, atom_gen: AtomSignatureGenerator):
         self.atom_gen = atom_gen
 
     def generate(self):
