@@ -1,3 +1,5 @@
+import random
+from random import randint
 from typing import Iterable, Generator
 
 import src.generators._signatures.first_order_logic as fol
@@ -25,6 +27,17 @@ class CNFFormulaGenerator(AstGenerator):
         self.functor_arity = functor_arity
 
     def generate(self) -> Generator[CNFFormula, None, None]:
+        def new_formula_signatures(literal_gen) -> Generator[CNFFormula, None, None]:
+            for solution in self.solve_constrains(allowed_clause_lengths=self.clause_lengths,
+                                                  number_of_clauses=self.number_of_clauses,
+                                                  number_of_literals=self.number_of_literals):
+                clause_gens = {}
+                for clause_len, amount_of_clauses in solution.items():
+                    c = fol.CNFClauseSignatureGenerator(clause_lengths={clause_len}, literal_gen=literal_gen)
+                    clause_gens[c] = amount_of_clauses
+                F = fol.CNFFormulaSignatureGenerator(clause_gens=clause_gens)
+                yield F.generate()
+
         post_proc = FOLPostProcessor(predicate_names=self.predicate_names, functor_names=self.functor_names,
                                      variable_names=self.variable_names)
 
@@ -32,18 +45,26 @@ class CNFFormulaGenerator(AstGenerator):
         p = fol.PredicateSignatureGenerator(arities=self.predicate_arities, functor_gen=f)
         a = fol.AtomSignatureGenerator(allowed_connectives=self.connectives, predicate_gen=p)
         l = fol.LiteralSignatureGenerator(atom_gen=a)
-        for solution in self.solve_constrains(allowed_clause_lengths=self.clause_lengths,
-                                              number_of_clauses=self.number_of_clauses,
-                                              number_of_literals=self.number_of_literals):
-            clause_gens = {}
-            for clause_len, amount_of_clauses in solution.items():
-                c = fol.CNFClauseSignatureGenerator(clause_lengths={clause_len}, literal_gen=l)
-                clause_gens[c] = amount_of_clauses
-            F = fol.CNFFormulaSignatureGenerator(clause_gens=clause_gens)
 
-            for formula in F.generate():
-                post_proc.switch_names(formula=formula)
-                yield formula
+        formula_signature_generator = new_formula_signatures(literal_gen=l)
+        skip_chance = random.random()
+        cached_formula_generators = []
+        more_signatures = True
+        while cached_formula_generators or more_signatures:
+            if cached_formula_generators and (not more_signatures or random.random() < skip_chance):
+                index = randint(0, len(cached_formula_generators) - 1)
+                try:
+                    formula = next(cached_formula_generators[index])
+                except StopIteration:
+                    del cached_formula_generators[index]
+                else:
+                    post_proc.switch_names(formula=formula)
+                    yield formula
+            else:
+                try:
+                    cached_formula_generators.append(next(formula_signature_generator))
+                except StopIteration:
+                    more_signatures = False
 
     @staticmethod
     def solve_constrains(allowed_clause_lengths: Iterable[int], number_of_clauses: IntegerRange,
