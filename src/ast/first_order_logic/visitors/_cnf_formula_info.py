@@ -3,8 +3,8 @@ from dataclasses import dataclass, field
 from functools import partial
 from typing import Dict, Type
 
-from ._literal import Literal
 from .._folelement import FOLElement
+from ..conjunctive_normal_form._literal import Literal
 
 
 @dataclass

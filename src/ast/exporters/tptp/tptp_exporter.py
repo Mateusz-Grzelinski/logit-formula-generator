@@ -5,7 +5,7 @@ from typing import NoReturn, Callable
 
 from .tptp_header import TPTPHeader
 from .._exporter import Exporter
-from ...first_order_logic import CNFFormula, CNFFormulaInfo
+from ...first_order_logic import CNFFormula
 
 
 class TPTPExporter(Exporter):

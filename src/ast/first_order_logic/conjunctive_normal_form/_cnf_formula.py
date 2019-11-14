@@ -2,8 +2,8 @@ from __future__ import annotations
 
 from typing import Iterable, Set, Type
 
+from src.ast.first_order_logic.visitors._cnf_formula_info import CNFFormulaInfo
 from ._cnf_clause import CNFClause
-from ._cnf_formula_info import CNFFormulaInfo
 from .._folelement import FOLElement
 from ..._containers import Container
 

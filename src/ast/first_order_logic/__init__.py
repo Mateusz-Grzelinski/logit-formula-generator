@@ -4,10 +4,9 @@ from ._functor import Functor
 from ._predicate import Predicate
 from ._term import Term
 from ._variable import Variable
-from .conjunctive_normal_form._cnf_clause import CNFClause
-from .conjunctive_normal_form._cnf_formula import CNFFormula
-from .conjunctive_normal_form._cnf_formula_info import CNFFormulaInfo
-from .conjunctive_normal_form._literal import Literal
+from .conjunctive_normal_form import CNFClause
+from .conjunctive_normal_form import CNFFormula
+from .conjunctive_normal_form import Literal
 
 __all__ = [
     'Term',
@@ -18,5 +17,4 @@ __all__ = [
     'Literal',
     'CNFClause',
     'CNFFormula',
-    'CNFFormulaInfo'
 ]

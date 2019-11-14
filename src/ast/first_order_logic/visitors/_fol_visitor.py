@@ -1,13 +1,13 @@
 from __future__ import annotations
 
-from ._atom import Atom
-from ._functor import Functor
-from ._predicate import Predicate
-from ._variable import Variable
-from .conjunctive_normal_form._cnf_clause import CNFClause
-from .conjunctive_normal_form._cnf_formula import CNFFormula
-from .conjunctive_normal_form._literal import Literal
-from .._ast_visitor import AstVisitor
+from .._atom import Atom
+from .._functor import Functor
+from .._predicate import Predicate
+from .._variable import Variable
+from ..conjunctive_normal_form._cnf_clause import CNFClause
+from ..conjunctive_normal_form._cnf_formula import CNFFormula
+from ..conjunctive_normal_form._literal import Literal
+from ..._ast_visitor import AstVisitor
 
 
 class FOLAstVisitor(AstVisitor):

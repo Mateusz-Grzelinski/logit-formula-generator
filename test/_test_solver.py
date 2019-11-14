@@ -7,6 +7,7 @@ from src.generators._contraint_solver.z3_solver import Z3ConstraintSolver
 
 
 class TestZ3ConstraintSolver:
+    """These test run too long to run normally"""
     def test_solutions(self):
         # not really a test
         solver = Z3ConstraintSolver(

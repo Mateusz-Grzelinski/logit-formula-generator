@@ -81,6 +81,7 @@ class TPTPHeader:
     average_term_depth: Optional[int] = None
 
     def read_from(self, object: CNFFormulaInfo):
+        from src.ast.first_order_logic.visitors import CNFFormulaInfo
         if isinstance(object, CNFFormulaInfo):
             self.number_of_clause_instances = object.number_of_instances[CNFClause]
             self.max_clause_size = object.max_clause_size

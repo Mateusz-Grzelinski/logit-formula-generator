@@ -3,15 +3,15 @@ from __future__ import annotations
 from collections import defaultdict
 from typing import Optional, Dict, Type, Set
 
+from src.ast.first_order_logic.visitors._fol_visitor import FOLAstVisitor
 from ._cnf_clause import CNFClause
 from ._cnf_formula import CNFFormula
-from ._cnf_formula_info import CNFFormulaInfo
 from ._literal import Literal
 from .._atom import Atom
-from .._fol_visitor import FOLAstVisitor
 from .._functor import Functor
 from .._predicate import Predicate
 from .._variable import Variable
+from ..visitors import CNFFormulaInfo
 from ..._connectives import MathConnective
 
 

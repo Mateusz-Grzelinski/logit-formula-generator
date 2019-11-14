@@ -5,6 +5,6 @@ from .._connectives import ConnectiveEnum
 
 class TemporalLogicConnective(ConnectiveEnum, Enum):
     ALWAYS = '[]'
-    """Also known as box"""
+    """Always, also known as box"""
     EVENTUALLY = '<>'
-    """Also known as diamond"""
+    """Eventually, also known as diamond"""
