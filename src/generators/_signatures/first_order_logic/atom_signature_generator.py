@@ -8,19 +8,19 @@ from src.ast import ConnectiveProperties
 from src.ast import get_connective_properties
 from src.ast.first_order_logic import Atom, Variable
 from src.generators import AstGenerator
-from src.generators._random_chain import random_chain
 from src.generators._signatures._ensure_unique_id import ensure_unique_id
+from src.generators.lazy_itertools import random_chain
 
 
 class AtomSignatureGenerator(AstGenerator):
     variable_name = 'V'
 
-    def __init__(self, allowed_connectives: Iterable[str], predicate_gen: PredicateSignatureGenerator,
+    def __init__(self, connectives: Iterable[str], predicate_gen: PredicateSignatureGenerator,
                  random: bool = True):
         self.random = random
         self.predicate_gen = predicate_gen
         self.allowed_connective_properties = set(get_connective_properties(connective) for connective in
-                                                 allowed_connectives)
+                                                 connectives)
 
     def generate(self) -> Generator[Atom, None, None]:
         def atom_with_defined_connective(connective: ConnectiveProperties) -> Generator[Atom, None, None]:

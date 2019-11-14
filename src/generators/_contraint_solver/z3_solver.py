@@ -7,10 +7,6 @@ from src.generators._contraint_solver.constraint_solver import ConstraintSolver
 from src.generators._range import IntegerRange
 
 
-class SolverException(Exception):
-    pass
-
-
 class Z3ConstraintSolver(ConstraintSolver):
 
     def __init__(self, clause_lengths: Iterable[int], number_of_clauses: IntegerRange,
@@ -42,9 +38,8 @@ class Z3ConstraintSolver(ConstraintSolver):
             solution = [s.model().evaluate(X[i]) for i in range(n)]
             yield {clause_len: s.as_long() for clause_len, s in zip(self.coefficients.literal_coeff, solution) if
                    s.as_long() != 0}
-            forbid = z3.Or([X[i] != solution[i].as_long() for i in range(n)])
+            forbid = z3.Or([X[i] != solution[i] for i in range(n)])
             s.add(forbid)
-        # raise SolverException('Out of solutions')
 
 
 if __name__ == '__main__':

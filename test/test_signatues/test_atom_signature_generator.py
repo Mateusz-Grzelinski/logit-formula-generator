@@ -6,12 +6,12 @@ from test.test_signatues.mock_signature_generators.mock_predicate_signature_gene
 
 class TestAtomSignatureGenerator:
     def test_atom_connective_empty(self):
-        ag = AtomSignatureGenerator(allowed_connectives={}, predicate_gen=MockPredicateSignatureGenerator())
+        ag = AtomSignatureGenerator(connectives={}, predicate_gen=MockPredicateSignatureGenerator())
         atoms = list(ag.generate())
         assert atoms == []
 
     def test_atom_connective_none(self):
-        ag = AtomSignatureGenerator(allowed_connectives={''}, predicate_gen=MockPredicateSignatureGenerator())
+        ag = AtomSignatureGenerator(connectives={''}, predicate_gen=MockPredicateSignatureGenerator())
         atoms = list(ag.generate())
         assert Atom(items=[Variable(name=ag.variable_name)], connective='') in atoms
         assert Atom(items=[pred_var], connective='') in atoms

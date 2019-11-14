@@ -6,8 +6,8 @@ from typing import Iterable, Generator
 
 from src.ast.first_order_logic import Variable, Predicate
 from src.generators import AstGenerator
-from src.generators._random_chain import random_chain
 from src.generators._signatures.first_order_logic import FunctorSignatureGenerator
+from src.generators.lazy_itertools import random_chain
 
 
 class PredicateSignatureGenerator(AstGenerator):

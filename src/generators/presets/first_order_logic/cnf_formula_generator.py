@@ -12,7 +12,7 @@ from src.generators._range import IntegerRange
 
 class CNFFormulaGenerator(AstGenerator):
     def __init__(self, functor_arity: Iterable[int], functor_recursion_depth: int, predicate_arities: Iterable[int],
-                 connectives: Iterable[str], clause_lengths: Iterable[int], number_of_clauses: IntegerRange,
+                 atom_connectives: Iterable[str], clause_lengths: Iterable[int], number_of_clauses: IntegerRange,
                  number_of_literals: IntegerRange, predicate_names: Iterable[str], functor_names: Iterable[str],
                  variable_names: Iterable[str]):
         self.predicate_names = predicate_names
@@ -22,7 +22,7 @@ class CNFFormulaGenerator(AstGenerator):
         self.number_of_literals = number_of_literals
         self.number_of_clauses = number_of_clauses
         self.clause_lengths = clause_lengths
-        self.connectives = connectives
+        self.atom_connectives = atom_connectives
         self.predicate_arities = predicate_arities
         self.functor_arity = functor_arity
 
@@ -40,10 +40,9 @@ class CNFFormulaGenerator(AstGenerator):
 
         post_proc = FOLPostProcessor(predicate_names=self.predicate_names, functor_names=self.functor_names,
                                      variable_names=self.variable_names)
-
         f = fol.FunctorSignatureGenerator(arities=self.functor_arity, max_recursion_depth=self.functor_recursion_depth)
         p = fol.PredicateSignatureGenerator(arities=self.predicate_arities, functor_gen=f)
-        a = fol.AtomSignatureGenerator(allowed_connectives=self.connectives, predicate_gen=p)
+        a = fol.AtomSignatureGenerator(connectives=self.atom_connectives, predicate_gen=p)
         l = fol.LiteralSignatureGenerator(atom_gen=a)
 
         formula_signature_generator = new_formula_signatures(literal_gen=l)

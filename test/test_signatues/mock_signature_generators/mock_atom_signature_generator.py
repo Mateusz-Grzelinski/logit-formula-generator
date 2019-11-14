@@ -8,7 +8,7 @@ from test.test_signatues.mock_signature_generators.mock_predicate_signature_gene
 
 class MockAtomSignatureGenerator(AtomSignatureGenerator):
     def __init__(self):
-        super().__init__(allowed_connectives={'', '='}, predicate_gen=None, random=True)
+        super().__init__(connectives={'', '='}, predicate_gen=None, random=True)
 
     def generate(self) -> Generator[Atom, None, None]:
         global atom0, atom1, atom0_1

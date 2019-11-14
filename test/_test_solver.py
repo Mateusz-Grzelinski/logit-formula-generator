@@ -27,6 +27,7 @@ class TestZ3ConstraintSolver:
             number_of_clauses=IntegerRange(min=30, max=100),
             number_of_literals=IntegerRange(min=100, max=3000)
         )
+        # note pytest will block printing to stdout
         print()
         start = time.time()
         for sol in solver.solve():
