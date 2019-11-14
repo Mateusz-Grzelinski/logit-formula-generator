@@ -2,12 +2,12 @@ from __future__ import annotations
 
 from typing import Iterable, Set, Type
 
-from ._folelement import FOLElement
+from ._first_order_logic_element import FirstOrderLogicElement
 from ._term import Term
 from .._containers import Container
 
 
-class Predicate(Container, FOLElement):
+class Predicate(Container, FirstOrderLogicElement):
     def __init__(self, name: str, items: Iterable[Term] = None, *args, **kwargs):
         self.name = name
         super().__init__(items=items, *args, **kwargs)
@@ -24,7 +24,7 @@ class Predicate(Container, FOLElement):
     def __eq__(self, other):
         if isinstance(other, Predicate):
             return self.name == other.name and Container.__eq__(self, other)
-        elif isinstance(other, FOLElement):
+        elif isinstance(other, FirstOrderLogicElement):
             return False
         raise NotImplementedError
 
@@ -33,6 +33,6 @@ class Predicate(Container, FOLElement):
         return len(self._items)
 
     @classmethod
-    def contains(cls) -> Set[Type[FOLElement]]:
+    def contains(cls) -> Set[Type[FirstOrderLogicElement]]:
         from src.ast.first_order_logic import Functor, Variable
         return {Variable, Functor}

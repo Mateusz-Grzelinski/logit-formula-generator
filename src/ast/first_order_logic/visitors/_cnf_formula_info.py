@@ -3,17 +3,17 @@ from dataclasses import dataclass, field
 from functools import partial
 from typing import Dict, Type
 
-from .._folelement import FOLElement
+from .._first_order_logic_element import FirstOrderLogicElement
 from ..conjunctive_normal_form._literal import Literal
 
 
 @dataclass
 class CNFFormulaInfo:
-    number_of: Dict[Type[FOLElement], int] = field(default_factory=partial(defaultdict, int))
+    number_of: Dict[Type[FirstOrderLogicElement], int] = field(default_factory=partial(defaultdict, int))
     """Dict[FolElement, quantity], in mathematical sense"""
     # number_of_signatures: Dict[Type[FolElement], int] = field(default_factory=partial(defaultdict, int))
     # """Dict[FolElement, quantity], by element's signature (see bachelor thesis)"""
-    number_of_instances: Dict[Type[FOLElement], int] = field(default_factory=partial(defaultdict, int))
+    number_of_instances: Dict[Type[FirstOrderLogicElement], int] = field(default_factory=partial(defaultdict, int))
     """Dict[FolElement, quantity], every occurrence of element"""
 
     clause_lengths: Dict[int, int] = field(default_factory=partial(defaultdict, int))

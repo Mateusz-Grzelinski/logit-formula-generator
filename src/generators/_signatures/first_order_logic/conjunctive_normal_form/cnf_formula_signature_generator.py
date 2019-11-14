@@ -5,8 +5,8 @@ from typing import Generator, Dict, Tuple
 
 from src.ast.first_order_logic import CNFFormula
 from src.generators import AstGenerator
-from src.generators._signatures._ensure_unique_id import ensure_unique_id
-from src.generators.lazy_itertools import lazy_product
+from src.generators.utils._ensure_unique_id import ensure_unique_id
+from src.generators.utils._lazy_itertools import lazy_product
 from .cnf_clause_signature_generator import CNFClauseSignatureGenerator
 
 

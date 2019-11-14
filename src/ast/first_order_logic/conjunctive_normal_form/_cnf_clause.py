@@ -3,12 +3,12 @@ from __future__ import annotations
 from collections.abc import Iterable
 from typing import Set, Type
 
-from .._folelement import FOLElement
+from .._first_order_logic_element import FirstOrderLogicElement
 from ..._connectives import LogicalConnective
 from ..._containers import Container
 
 
-class CNFClause(Container, FOLElement):
+class CNFClause(Container, FirstOrderLogicElement):
     connective = LogicalConnective.AND
 
     def __init__(self, items: Iterable[Literal] = None, *args, **kwagrs):
@@ -24,7 +24,7 @@ class CNFClause(Container, FOLElement):
     def __eq__(self, other):
         if isinstance(other, CNFClause):
             return Container.__eq__(self, other)
-        elif isinstance(other, FOLElement):
+        elif isinstance(other, FirstOrderLogicElement):
             return False
         raise NotImplementedError
 
@@ -67,6 +67,6 @@ class CNFClause(Container, FOLElement):
         return len(singleton_vars)
 
     @classmethod
-    def contains(cls) -> Set[Type[FOLElement]]:
+    def contains(cls) -> Set[Type[FirstOrderLogicElement]]:
         from src.ast.first_order_logic import Literal
         return {Literal}

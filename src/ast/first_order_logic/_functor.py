@@ -2,12 +2,12 @@ from __future__ import annotations
 
 from typing import Iterable, Set, Type
 
-from ._folelement import FOLElement
+from ._first_order_logic_element import FirstOrderLogicElement
 from ._term import Term
 from .._containers import Container
 
 
-class Functor(Term, Container, FOLElement):
+class Functor(Term, Container, FirstOrderLogicElement):
 
     def __init__(self, name: str, items: Iterable[Term] = None,
                  *args, **kwargs):
@@ -19,7 +19,7 @@ class Functor(Term, Container, FOLElement):
     def __eq__(self, other):
         if isinstance(other, Functor):
             return Term.__eq__(self, other) and Container.__eq__(self, other)
-        elif isinstance(other, FOLElement):
+        elif isinstance(other, FirstOrderLogicElement):
             return False
         raise NotImplementedError
 
@@ -49,6 +49,6 @@ class Functor(Term, Container, FOLElement):
         return len(self._items) == 0
 
     @classmethod
-    def contains(cls) -> Set[Type[FOLElement]]:
+    def contains(cls) -> Set[Type[FirstOrderLogicElement]]:
         from src.ast.first_order_logic import Variable
         return {Functor, Variable}

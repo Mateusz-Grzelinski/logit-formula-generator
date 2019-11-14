@@ -3,7 +3,7 @@ from __future__ import annotations
 from collections import defaultdict
 from typing import Optional, Dict, Type, Set
 
-from src.ast.first_order_logic.visitors._fol_visitor import FOLAstVisitor
+from src.ast.first_order_logic.visitors._first_order_logic_visitor import FOLAstVisitor
 from ._cnf_clause import CNFClause
 from ._cnf_formula import CNFFormula
 from ._literal import Literal

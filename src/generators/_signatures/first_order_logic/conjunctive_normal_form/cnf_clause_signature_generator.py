@@ -6,7 +6,7 @@ from typing import Iterable, Generator
 
 from src.ast.first_order_logic import CNFClause
 from src.generators import AstGenerator
-from src.generators._signatures._ensure_unique_id import ensure_unique_id
+from src.generators.utils._ensure_unique_id import ensure_unique_id
 
 
 class CNFClauseSignatureGenerator(AstGenerator):

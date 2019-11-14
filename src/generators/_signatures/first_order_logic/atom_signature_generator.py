@@ -8,8 +8,8 @@ from src.ast import ConnectiveProperties
 from src.ast import get_connective_properties
 from src.ast.first_order_logic import Atom, Variable
 from src.generators import AstGenerator
-from src.generators._signatures._ensure_unique_id import ensure_unique_id
-from src.generators.lazy_itertools import random_chain
+from src.generators.utils._ensure_unique_id import ensure_unique_id
+from src.generators.utils._lazy_itertools import random_chain
 
 
 class AtomSignatureGenerator(AstGenerator):

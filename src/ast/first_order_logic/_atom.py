@@ -2,13 +2,13 @@ from __future__ import annotations
 
 from typing import Optional, Union, Iterable, Set, Type
 
-from ._folelement import FOLElement
+from ._first_order_logic_element import FirstOrderLogicElement
 from ._term import Term
 from .._connectives import MathConnective, get_connective_properties
 from .._containers import Container
 
 
-class Atom(Container, FOLElement):
+class Atom(Container, FirstOrderLogicElement):
     def __init__(self, items: Iterable[Term, Predicate], connective: Optional[Union[str, MathConnective]],
                  *args, **kwargs):
         super().__init__(items=items, *args, **kwargs)
@@ -25,7 +25,7 @@ class Atom(Container, FOLElement):
         if isinstance(other, Atom):
             return self.connective_properties.connective == other.connective_properties.connective and \
                    Container.__eq__(self, other)
-        elif isinstance(other, FOLElement):
+        elif isinstance(other, FirstOrderLogicElement):
             return False
         raise NotImplementedError
 
@@ -43,7 +43,7 @@ class Atom(Container, FOLElement):
         raise Exception(f'{self.connective_properties} does not have default visualization')
 
     @classmethod
-    def contains(cls) -> Set[Type[FOLElement]]:
+    def contains(cls) -> Set[Type[FirstOrderLogicElement]]:
         from src.ast.first_order_logic import Variable
         from ._predicate import Predicate
         return {Predicate, Variable}

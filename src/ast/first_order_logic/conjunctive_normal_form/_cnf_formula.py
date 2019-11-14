@@ -4,11 +4,11 @@ from typing import Iterable, Set, Type
 
 from src.ast.first_order_logic.visitors._cnf_formula_info import CNFFormulaInfo
 from ._cnf_clause import CNFClause
-from .._folelement import FOLElement
+from .._first_order_logic_element import FirstOrderLogicElement
 from ..._containers import Container
 
 
-class CNFFormula(Container, FOLElement):
+class CNFFormula(Container, FirstOrderLogicElement):
     def __init__(self, items: Iterable[CNFClause], *args,
                  **kwargs):
         super().__init__(items=items, *args, **kwargs)
@@ -19,18 +19,18 @@ class CNFFormula(Container, FOLElement):
     def __eq__(self, other):
         if isinstance(other, CNFFormula):
             return super().__eq__(other)
-        elif isinstance(other, FOLElement):
+        elif isinstance(other, FirstOrderLogicElement):
             return False
         raise NotImplementedError
 
     def get_info(self) -> CNFFormulaInfo:
-        from src.ast.first_order_logic.conjunctive_normal_form.__cnf_formula_visitor import CNFFormulaVisitor
+        from src.ast.first_order_logic.conjunctive_normal_form._cnf_formula_visitor import CNFFormulaVisitor
         walker = CNFFormulaVisitor()
         self._accept(walker)
         return walker.info
 
     @classmethod
-    def contains(cls) -> Set[Type[FOLElement]]:
+    def contains(cls) -> Set[Type[FirstOrderLogicElement]]:
         from ._cnf_clause import CNFClause
         return {CNFClause}
 

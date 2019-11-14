@@ -1,7 +1,7 @@
-from src.ast.temporal_logic.tl_element import TLElement
+from ._temporal_logic_element import TemporalLogicElement
 
 
-class PropositionalVariable(TLElement):
+class Variable(TemporalLogicElement):
     def __init__(self, name: str, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.name = name
@@ -10,6 +10,6 @@ class PropositionalVariable(TLElement):
         return hash(self.name)
 
     def __eq__(self, other):
-        if isinstance(other, PropositionalVariable):
+        if isinstance(other, Variable):
             return self.name == other.name
         raise NotImplementedError

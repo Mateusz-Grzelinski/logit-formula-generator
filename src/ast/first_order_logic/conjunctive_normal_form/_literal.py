@@ -2,12 +2,12 @@ from __future__ import annotations
 
 from typing import Set, Type
 
-from .._folelement import FOLElement
+from .._first_order_logic_element import FirstOrderLogicElement
 from ..._connectives import LogicalConnective
 from ..._containers import Container
 
 
-class Literal(Container, FOLElement):
+class Literal(Container, FirstOrderLogicElement):
     def __init__(self, items: Atom, negated: bool, *args, **kwargs):
         self.is_negated = negated
         unary_connective = LogicalConnective.NOT if negated else None
@@ -19,7 +19,7 @@ class Literal(Container, FOLElement):
     def __eq__(self, other):
         if isinstance(other, Literal):
             return self.is_negated == other.is_negated and super().__eq__(other)
-        elif isinstance(other, FOLElement):
+        elif isinstance(other, FirstOrderLogicElement):
             return False
         raise NotImplementedError
 
@@ -34,6 +34,6 @@ class Literal(Container, FOLElement):
         return self._items[0]
 
     @classmethod
-    def contains(cls) -> Set[Type[FOLElement]]:
+    def contains(cls) -> Set[Type[FirstOrderLogicElement]]:
         from src.ast.first_order_logic._atom import Atom
         return {Atom}

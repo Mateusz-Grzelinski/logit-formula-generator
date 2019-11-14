@@ -1,6 +1,6 @@
 from enum import Enum
 
-from .._connectives import ConnectiveEnum
+from src.ast._connectives import ConnectiveEnum
 
 
 class TemporalLogicConnective(ConnectiveEnum, Enum):

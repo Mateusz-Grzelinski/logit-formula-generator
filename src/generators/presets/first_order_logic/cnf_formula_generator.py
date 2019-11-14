@@ -5,9 +5,9 @@ from typing import Iterable, Generator
 import src.generators._signatures.first_order_logic as fol
 from src.ast.first_order_logic import CNFFormula
 from src.generators import AstGenerator
-from src.generators._contraint_solver.z3_solver import Z3ConstraintSolver
-from src.generators._post_processors.fol_post_processor import FOLPostProcessor
-from src.generators._range import IntegerRange
+from src.generators._contraint_solver.first_order_logic.z3_solver import Z3CNFConstraintSolver
+from src.generators._post_processors.first_order_logic_post_processor import FOLPostProcessor
+from src.generators.utils._range import IntegerRange
 
 
 class CNFFormulaGenerator(AstGenerator):
@@ -57,7 +57,7 @@ class CNFFormulaGenerator(AstGenerator):
                 except StopIteration:
                     del cached_formula_generators[index]
                 else:
-                    post_proc.switch_names(formula=formula)
+                    post_proc.post_process(formula=formula)
                     yield formula
             else:
                 try:
@@ -68,7 +68,7 @@ class CNFFormulaGenerator(AstGenerator):
     @staticmethod
     def solve_constrains(allowed_clause_lengths: Iterable[int], number_of_clauses: IntegerRange,
                          number_of_literals: IntegerRange):
-        solver = Z3ConstraintSolver(clause_lengths=allowed_clause_lengths, number_of_clauses=number_of_clauses,
-                                    number_of_literals=number_of_literals)
+        solver = Z3CNFConstraintSolver(clause_lengths=allowed_clause_lengths, number_of_clauses=number_of_clauses,
+                                       number_of_literals=number_of_literals)
         for solution in solver.solve_in_random_order():
             yield solution

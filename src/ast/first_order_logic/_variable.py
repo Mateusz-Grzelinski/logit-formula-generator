@@ -1,10 +1,10 @@
 from __future__ import annotations
 
-from ._folelement import FOLElement
+from ._first_order_logic_element import FirstOrderLogicElement
 from ._term import Term
 
 
-class Variable(Term, FOLElement):
+class Variable(Term, FirstOrderLogicElement):
     def __init__(self, name: str, *args, **kwargs):
         super().__init__(name=name, *args, **kwargs)
 
@@ -14,6 +14,6 @@ class Variable(Term, FOLElement):
     def __eq__(self, other):
         if isinstance(other, Variable):
             return self.name == other.name
-        elif isinstance(other, FOLElement):
+        elif isinstance(other, FirstOrderLogicElement):
             return False
         raise NotImplementedError

@@ -28,7 +28,7 @@ class FOLAstVisitor(AstVisitor):
         elif isinstance(element, CNFFormula):
             self.visit_cnf_formula(element)
         else:
-            assert False, 'Unknown element for visitor'
+            assert False, f'Unknown element for visitor {type(element)}, {element}'
 
     def visit_variable(self, element: Variable):
         pass

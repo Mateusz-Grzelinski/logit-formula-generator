@@ -3,7 +3,7 @@ from abc import abstractmethod
 from dataclasses import dataclass, field
 from typing import Iterable, List, Dict
 
-from src.generators._range import IntegerRange
+from src.generators.utils._range import IntegerRange
 
 
 @dataclass
@@ -18,7 +18,7 @@ class Coefficient:
         return len(self.clauses_coeff)
 
 
-class ConstraintSolver:
+class CNFConstraintSolver:
     def __init__(self, allowed_clause_lengths: List, number_of_clauses: IntegerRange, number_of_literals: IntegerRange):
         self.coefficients = Coefficient(clauses_coeff=[1] * len(allowed_clause_lengths),
                                         literal_coeff=allowed_clause_lengths)

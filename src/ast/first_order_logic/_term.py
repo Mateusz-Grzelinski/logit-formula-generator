@@ -2,10 +2,10 @@ from __future__ import annotations
 
 from abc import ABC
 
-from ._folelement import FOLElement
+from ._first_order_logic_element import FirstOrderLogicElement
 
 
-class Term(ABC, FOLElement):
+class Term(ABC, FirstOrderLogicElement):
     """Term is element of language
 
     """
@@ -20,7 +20,7 @@ class Term(ABC, FOLElement):
     def __eq__(self, other):
         if isinstance(other, Term):
             return self.name == other.name
-        elif isinstance(other, FOLElement):
+        elif isinstance(other, FirstOrderLogicElement):
             return False
         return False
 

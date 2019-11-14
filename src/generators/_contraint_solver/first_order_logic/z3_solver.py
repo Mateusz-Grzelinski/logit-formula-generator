@@ -3,11 +3,11 @@ from typing import Iterable, Dict
 
 import z3
 
-from src.generators._contraint_solver.constraint_solver import ConstraintSolver
-from src.generators._range import IntegerRange
+from src.generators._contraint_solver.first_order_logic.cnf_constraint_solver import CNFConstraintSolver
+from src.generators.utils._range import IntegerRange
 
 
-class Z3ConstraintSolver(ConstraintSolver):
+class Z3CNFConstraintSolver(CNFConstraintSolver):
 
     def __init__(self, clause_lengths: Iterable[int], number_of_clauses: IntegerRange,
                  number_of_literals: IntegerRange):
@@ -43,7 +43,7 @@ class Z3ConstraintSolver(ConstraintSolver):
 
 
 if __name__ == '__main__':
-    z3solver = Z3ConstraintSolver(clause_lengths=[1, 2, 3], number_of_clauses=IntegerRange(min=5, max=10),
-                                  number_of_literals=IntegerRange(min=7, max=20))
+    z3solver = Z3CNFConstraintSolver(clause_lengths=[1, 2, 3], number_of_clauses=IntegerRange(min=5, max=10),
+                                     number_of_literals=IntegerRange(min=7, max=20))
     for solution in z3solver.solve_in_random_order():
         print(f'{solution=}')
