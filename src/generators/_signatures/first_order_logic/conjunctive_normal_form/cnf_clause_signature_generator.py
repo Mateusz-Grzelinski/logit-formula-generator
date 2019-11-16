@@ -17,6 +17,7 @@ class CNFClauseSignatureGenerator(AstGenerator):
 
     def generate(self) -> Generator[CNFClause, None, None]:
         def clause_with_defined_length(length: int) -> Generator[CNFClause, None, None]:
+            # todo randomize: itertools gives quite repetitive results
             for n_args in combinations_with_replacement(self.literal_gen.generate(), length):
                 yield CNFClause(items=ensure_unique_id(n_args))
 

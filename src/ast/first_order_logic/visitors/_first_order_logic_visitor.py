@@ -1,12 +1,14 @@
 from __future__ import annotations
 
 from .._atom import Atom
+from .._formula import Formula
 from .._functor import Functor
 from .._predicate import Predicate
+from .._quantifier import Quantifier
 from .._variable import Variable
-from ..conjunctive_normal_form._cnf_clause import CNFClause
-from ..conjunctive_normal_form._cnf_formula import CNFFormula
-from ..conjunctive_normal_form._literal import Literal
+from ..conjunctive_normal_form import CNFClause
+from ..conjunctive_normal_form import CNFFormula
+from ..conjunctive_normal_form import Literal
 from ..._ast_visitor import AstVisitor
 
 
@@ -25,6 +27,10 @@ class FOLAstVisitor(AstVisitor):
             self.visit_literal(element)
         elif isinstance(element, CNFClause):
             self.visit_cnf_clause(element)
+        elif isinstance(element, Formula):
+            self.visit_formula(element)
+        elif isinstance(element, Quantifier):
+            self.visit_quantifier(element)
         elif isinstance(element, CNFFormula):
             self.visit_cnf_formula(element)
         else:
@@ -49,4 +55,10 @@ class FOLAstVisitor(AstVisitor):
         pass
 
     def visit_cnf_formula(self, element: CNFFormula):
+        pass
+
+    def visit_quantifier(self, element: Quantifier):
+        pass
+
+    def visit_formula(self, element: Formula):
         pass

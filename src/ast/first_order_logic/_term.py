@@ -22,7 +22,7 @@ class Term(ABC, FirstOrderLogicElement):
             return self.name == other.name
         elif isinstance(other, FirstOrderLogicElement):
             return False
-        return False
+        raise NotImplementedError
 
     def __str__(self):
         return self.name

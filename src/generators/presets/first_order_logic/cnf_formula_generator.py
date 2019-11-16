@@ -2,7 +2,7 @@ import random
 from random import randint
 from typing import Iterable, Generator
 
-import src.generators._signatures.first_order_logic as fol
+import src.generators._signatures.first_order_logic as fol_sig
 from src.ast.first_order_logic import CNFFormula
 from src.generators import AstGenerator
 from src.generators._contraint_solver.first_order_logic.z3_solver import Z3CNFConstraintSolver
@@ -33,17 +33,18 @@ class CNFFormulaGenerator(AstGenerator):
                                                   number_of_literals=self.number_of_literals):
                 clause_gens = {}
                 for clause_len, amount_of_clauses in solution.items():
-                    c = fol.CNFClauseSignatureGenerator(clause_lengths={clause_len}, literal_gen=literal_gen)
+                    c = fol_sig.CNFClauseSignatureGenerator(clause_lengths={clause_len}, literal_gen=literal_gen)
                     clause_gens[c] = amount_of_clauses
-                F = fol.CNFFormulaSignatureGenerator(clause_gens=clause_gens)
+                F = fol_sig.CNFFormulaSignatureGenerator(clause_gens=clause_gens)
                 yield F.generate()
 
         post_proc = FOLPostProcessor(predicate_names=self.predicate_names, functor_names=self.functor_names,
                                      variable_names=self.variable_names)
-        f = fol.FunctorSignatureGenerator(arities=self.functor_arity, max_recursion_depth=self.functor_recursion_depth)
-        p = fol.PredicateSignatureGenerator(arities=self.predicate_arities, functor_gen=f)
-        a = fol.AtomSignatureGenerator(connectives=self.atom_connectives, predicate_gen=p)
-        l = fol.LiteralSignatureGenerator(atom_gen=a)
+        f = fol_sig.FunctorSignatureGenerator(arities=self.functor_arity,
+                                              max_recursion_depth=self.functor_recursion_depth)
+        p = fol_sig.PredicateSignatureGenerator(arities=self.predicate_arities, functor_gen=f)
+        a = fol_sig.AtomSignatureGenerator(connectives=self.atom_connectives, predicate_gen=p)
+        l = fol_sig.LiteralSignatureGenerator(atom_gen=a)
 
         formula_signature_generator = new_formula_signatures(literal_gen=l)
         skip_chance = random.random()
