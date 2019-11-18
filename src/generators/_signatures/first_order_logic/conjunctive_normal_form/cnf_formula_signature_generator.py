@@ -21,5 +21,5 @@ class CNFFormulaSignatureGenerator(AstGenerator):
         for clause_gen, n_clause in self.clause_gens.items():
             clause_candidates.append(lazy_combinations_with_replacement(clause_gen.generate(), n_clause))
         for clauses in lazy_product(*clause_candidates):
-            flatten = list(chain(*clauses))
+            flatten = list(chain.from_iterable(clauses))
             yield CNFFormula(items=ensure_unique_id(flatten))
