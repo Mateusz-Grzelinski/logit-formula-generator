@@ -1,4 +1,5 @@
 # https://stackoverflow.com/questions/46840912/how-to-solve-a-system-of-linear-equations-over-the-nonnegative-integers
+import math
 from typing import Iterable, Dict
 
 import z3
@@ -25,13 +26,17 @@ class Z3CNFConstraintSolver(CNFConstraintSolver):
 
         # clauses must be in range
         # s.add(z3.Sum([A.clauses_coeff[j] * X[j] for j in range(n)]) == int(self.number_of_clauses.average))
-        s.add(z3.Sum([A.clauses_coeff[j] * X[j] for j in range(n)]) <= self.number_of_clauses.max)
-        s.add(z3.Sum([A.clauses_coeff[j] * X[j] for j in range(n)]) >= self.number_of_clauses.min)
+        if self.number_of_clauses.max != math.inf:
+            s.add(z3.Sum([A.clauses_coeff[j] * X[j] for j in range(n)]) <= self.number_of_clauses.max)
+        if self.number_of_clauses.min != -math.inf:
+            s.add(z3.Sum([A.clauses_coeff[j] * X[j] for j in range(n)]) >= self.number_of_clauses.min)
 
         # literals must be in range
         # s.add(z3.Sum([A.literal_coeff[j] * X[j] for j in range(n)]) == int(self.number_of_literals.average))
-        s.add(z3.Sum([A.literal_coeff[j] * X[j] for j in range(n)]) <= self.number_of_literals.max)
-        s.add(z3.Sum([A.literal_coeff[j] * X[j] for j in range(n)]) >= self.number_of_literals.min)
+        if self.number_of_literals.max != math.inf:
+            s.add(z3.Sum([A.literal_coeff[j] * X[j] for j in range(n)]) <= self.number_of_literals.max)
+        if self.number_of_literals.min != -math.inf:
+            s.add(z3.Sum([A.literal_coeff[j] * X[j] for j in range(n)]) >= self.number_of_literals.min)
 
         # print(f'{s.model()=}')
         while s.check() == z3.sat:

@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import math
 from collections.abc import Sequence
-from typing import overload
+from typing import overload, Union
 
 
 class IntegerRange(Sequence):
@@ -20,7 +20,7 @@ class IntegerRange(Sequence):
     def __len__(self) -> int:
         return 2
 
-    def __init__(self, min: int = -math.inf, max: int = math.inf):
+    def __init__(self, min: Union[int, math.inf] = -math.inf, max: Union[int, math.inf] = math.inf):
         self.min: int = min
         self.max: int = max
 

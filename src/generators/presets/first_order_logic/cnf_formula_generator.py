@@ -28,9 +28,9 @@ class CNFFormulaGenerator(AstGenerator):
 
     def generate(self) -> Generator[CNFFormula, None, None]:
         def new_formula_signatures(literal_gen) -> Generator[CNFFormula, None, None]:
-            for solution in self.solve_constrains(allowed_clause_lengths=self.clause_lengths,
-                                                  number_of_clauses=self.number_of_clauses,
-                                                  number_of_literals=self.number_of_literals):
+            solver = Z3CNFConstraintSolver(clause_lengths=self.clause_lengths, number_of_clauses=self.number_of_clauses,
+                                           number_of_literals=self.number_of_literals)
+            for solution in solver.solve_in_random_order():
                 clause_gens = {}
                 for clause_len, amount_of_clauses in solution.items():
                     c = fol.CNFClauseSignatureGenerator(clause_lengths={clause_len}, literal_gen=literal_gen)
@@ -49,26 +49,24 @@ class CNFFormulaGenerator(AstGenerator):
         skip_chance = random.random()
         cached_formula_generators = []
         more_signatures = True
-        while cached_formula_generators or more_signatures:
-            if cached_formula_generators and (not more_signatures or random.random() < skip_chance):
-                index = randint(0, len(cached_formula_generators) - 1)
-                try:
-                    formula = next(cached_formula_generators[index])
-                except StopIteration:
-                    del cached_formula_generators[index]
-                else:
-                    post_proc.post_process(formula=formula)
-                    yield formula
-            else:
+        try:
+            cached_formula_generators.append(next(formula_signature_generator))
+        except StopIteration:
+            more_signatures = False
+        while more_signatures or cached_formula_generators:
+            if more_signatures and random.random() < skip_chance:
                 try:
                     cached_formula_generators.append(next(formula_signature_generator))
                 except StopIteration:
                     more_signatures = False
+                continue
 
-    @staticmethod
-    def solve_constrains(allowed_clause_lengths: Iterable[int], number_of_clauses: IntegerRange,
-                         number_of_literals: IntegerRange):
-        solver = Z3CNFConstraintSolver(clause_lengths=allowed_clause_lengths, number_of_clauses=number_of_clauses,
-                                       number_of_literals=number_of_literals)
-        for solution in solver.solve_in_random_order():
-            yield solution
+            index = randint(0, len(cached_formula_generators) - 1)
+            try:
+                formula_gen = next(cached_formula_generators[index])
+            except StopIteration:
+                del cached_formula_generators[index]
+            else:
+                post_proc.post_process(formula=formula_gen)
+                yield formula_gen
+        assert not cached_formula_generators

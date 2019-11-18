@@ -14,7 +14,7 @@ class CNFFormula(Container, FirstOrderLogicElement):
         super().__init__(items=items, *args, **kwargs)
 
     def __str__(self):
-        return '\n'.join(str(c) for c in self.items(type=CNFClause))
+        return '\n'.join(str(c) for c in self)
 
     def __eq__(self, other):
         if isinstance(other, CNFFormula):
