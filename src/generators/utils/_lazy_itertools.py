@@ -35,11 +35,14 @@ def iterProduct(ic):
 
 
 def lazy_product(*args: Generator):
+    assert all(args[i] is not args[len(args) - i - 1] for i in range(len(args) // 2) if
+               isinstance(args[i], types.GeneratorType)), 'generator must be unique'
+
     def _lazy_product_helper(*args: Generator):
         if not args:
             yield []
             return
-        # todo randomize
+
         for i in copy(args[0]):
             for js in lazy_product(*args[1:]):
                 yield [i] + js
@@ -81,30 +84,69 @@ def random_chain(*args) -> Iterable:
             del args[index]
 
 
+def random_lazy_product(*args: Generator):
+    assert all(args[i] is not args[len(args) - i - 1] for i in range(len(args) // 2) if
+               isinstance(args[i], types.GeneratorType)), 'generator must be unique'
+    skip_chance = random.random()
+
+    def _random_lazy_product_helper(*args: Generator):
+        nonlocal skip_chance
+        if not args:
+            yield []
+            return
+        cache = []
+        generators = []
+        for i in copy(args[0]):
+            cache.append(i)
+            generators.append(_random_lazy_product_helper(*args[1:]))
+            if random.random() > skip_chance:
+                continue
+            else:
+                random_index = random.randrange(len(generators))
+                try:
+                    js = next(generators[random_index])
+                    yield [i] + js
+                except StopIteration:
+                    del generators[random_index]
+
+        while generators:
+            random_index = random.randrange(len(generators))
+            try:
+                js = next(generators[random_index])
+                yield [cache[random_index]] + js
+            except StopIteration:
+                del generators[random_index]
+                del cache[random_index]
+
+    # generators does not support copy, but tee does
+    args_copy = [tee(i)[1] for i in args]
+    return _random_lazy_product_helper(*args_copy)
+
+
 if __name__ == '__main__':
-    a_gen = (i for i in range(2))
+    a_gen = (i for i in range(5))
     b_gen = (i for i in ['a', 'b'])
     c_gen = (i for i in ['c', 'd'])
     a = lambda: (i for i in [0, 1, 2])
     b = lambda: (i for i in ['a', 'b'])
     c = lambda: (i for i in ['c', 'd'])
 
-    for i in enumerate(lazy_combinations_with_replacement(a_gen, 3)):
-        print(i)
+    # for i in enumerate(lazy_combinations_with_replacement(a_gen, 3)):
+    #     print(i)
 
     # same as:
     # for i in enumerate(product([0, 1], [0, 1], [0, 1])):
     #     print(i)
 
-    print('lazy product combinations')
-    comb = []
-    comb.append(lazy_combinations_with_replacement(a_gen, 20))
-    comb.append(lazy_combinations_with_replacement(b_gen, 3))
-    for i in enumerate(lazy_product(*comb)):
-        print(i)
+    # print('lazy product combinations')
+    # comb = []
+    # comb.append(lazy_combinations_with_replacement(a_gen, 20))
+    # comb.append(lazy_combinations_with_replacement(b_gen, 3))
+    # for i in enumerate(lazy_product(*comb)):
+    #     print(i)
 
     print('lazy product:')
-    for i in enumerate(lazy_product(a_gen, b_gen)):
+    for i in enumerate(random_lazy_product(a_gen, b_gen)):
         print(i)
 
     # for i in enumerate(iterProduct([
