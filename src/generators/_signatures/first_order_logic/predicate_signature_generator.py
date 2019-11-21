@@ -1,13 +1,12 @@
 from __future__ import annotations
 
-from itertools import product
 from random import sample, randint
 from typing import Iterable, Generator
 
 from src.ast.first_order_logic import Variable, Predicate
 from src.generators import AstGenerator
 from src.generators._signatures.first_order_logic import FunctorSignatureGenerator
-from src.generators.utils._lazy_itertools import random_chain
+from src.generators.utils._lazy_itertools import random_chain, random_lazy_product
 
 
 class PredicateSignatureGenerator(AstGenerator):
@@ -23,7 +22,7 @@ class PredicateSignatureGenerator(AstGenerator):
         def predicate_with_defined_arity(arity: int):
             possible_arguments = [random_chain(self.functor_gen.generate(), Variable(name=self.variable_name)) for _ in
                                   range(arity)]
-            for args in product(*possible_arguments):
+            for args in random_lazy_product(*possible_arguments):
                 yield Predicate(name=self.predicate_name, items=args)
 
         arities = sample(self.arities, len(self.arities)) if self.random else self.arities

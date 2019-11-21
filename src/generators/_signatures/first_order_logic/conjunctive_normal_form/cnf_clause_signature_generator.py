@@ -1,12 +1,11 @@
 from __future__ import annotations
 
-from itertools import combinations_with_replacement
 from random import randint
 from typing import Iterable, Generator
 
 from src.ast.first_order_logic import CNFClause
 from src.generators import AstGenerator
-from src.generators.utils._ensure_unique_id import ensure_unique_id
+from src.generators.utils import ensure_unique_id, random_lazy_combinations_with_replacement
 
 
 class CNFClauseSignatureGenerator(AstGenerator):
@@ -17,7 +16,7 @@ class CNFClauseSignatureGenerator(AstGenerator):
 
     def generate(self) -> Generator[CNFClause, None, None]:
         def clause_with_defined_length(length: int) -> Generator[CNFClause, None, None]:
-            for n_args in combinations_with_replacement(self.literal_gen.generate(), length):
+            for n_args in random_lazy_combinations_with_replacement(self.literal_gen.generate(), length):
                 yield CNFClause(items=ensure_unique_id(n_args))
 
         generators = []

@@ -123,6 +123,11 @@ def random_lazy_product(*args: Generator):
     return _random_lazy_product_helper(*args_copy)
 
 
+def random_lazy_combinations_with_replacement(gen: Generator, r: int):
+    gen_copies = tee(gen, r)
+    yield from random_lazy_product(*gen_copies)
+
+
 if __name__ == '__main__':
     a_gen = (i for i in range(5))
     b_gen = (i for i in ['a', 'b'])
@@ -145,9 +150,13 @@ if __name__ == '__main__':
     # for i in enumerate(lazy_product(*comb)):
     #     print(i)
 
-    print('lazy product:')
-    for i in enumerate(random_lazy_product(a_gen, b_gen)):
+    print('lazy combinations with replacement:')
+    for i in enumerate(random_lazy_combinations_with_replacement(a_gen, 2)):
         print(i)
+
+    # print('lazy product:')
+    # for i in enumerate(random_lazy_product(a_gen, b_gen)):
+    #     print(i)
 
     # for i in enumerate(iterProduct([
     #     # lambda: lazy_combinations(b_gen, 3)

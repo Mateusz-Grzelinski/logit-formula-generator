@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-from itertools import combinations_with_replacement
 from random import sample, randint
 from typing import Generator, Iterable
 
@@ -9,7 +8,7 @@ from src.ast import get_connective_properties
 from src.ast.first_order_logic import Atom, Variable
 from src.generators import AstGenerator
 from src.generators.utils._ensure_unique_id import ensure_unique_id
-from src.generators.utils._lazy_itertools import random_chain
+from src.generators.utils._lazy_itertools import random_chain, random_lazy_combinations_with_replacement
 
 
 class AtomSignatureGenerator(AstGenerator):
@@ -25,7 +24,7 @@ class AtomSignatureGenerator(AstGenerator):
     def generate(self) -> Generator[Atom, None, None]:
         def atom_with_defined_connective(connective: ConnectiveProperties) -> Generator[Atom, None, None]:
             possible_arguments = random_chain(self.predicate_gen.generate(), Variable(name=self.variable_name))
-            for items in combinations_with_replacement(possible_arguments, connective.arity):
+            for items in random_lazy_combinations_with_replacement(possible_arguments, connective.arity):
                 yield Atom(items=ensure_unique_id(items), connective=connective.connective)
 
         random_connectives = sample(self.allowed_connective_properties, len(self.allowed_connective_properties))
