@@ -16,7 +16,7 @@ class CNFClause(Container, FirstOrderLogicElement):
 
     def __str__(self):
         from src.ast.first_order_logic import Literal
-        return 'cnf(' + '|'.join(str(l) for l in self.items(type=Literal)) + ').'
+        return 'cnf(name, axiom,' + '|'.join(str(l) for l in self.items(type=Literal)) + ').'
 
     def __hash__(self):
         return Container.__hash__(self)
