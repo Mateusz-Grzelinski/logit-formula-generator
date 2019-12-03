@@ -14,17 +14,17 @@ class FOLPostProcessor(PostProcessor):
         self.functor_names = set(functor_names)
 
     def post_process(self, formula: fol.CNFFormula):
-        self.switch_names(formula)
+        # self.switch_names(formula)
         self.apply_random_sign(formula)
 
-    def switch_names(self, formula: fol.CNFFormula):
-        for predicate in formula.items(type=fol.Predicate):
-            predicate.name = random.sample(self.predicate_names, 1)[0]
-        for functor in formula.items(type=fol.Functor):
-            functor.name = random.sample(self.functor_names, 1)[0]
-        for variable in formula.items(type=fol.Variable):
-            variable.name = random.sample(self.variable_names, 1)[0]
-
+    # def switch_names(self, formula: fol.CNFFormula):
+    #     for predicate in formula.items(type=fol.Predicate):
+    #         predicate.name = random.sample(self.predicate_names, 1)[0]
+    #     for functor in formula.items(type=fol.Functor):
+    #         functor.name = random.sample(self.functor_names, 1)[0]
+    #     for variable in formula.items(type=fol.Variable):
+    #         variable.name = random.sample(self.variable_names, 1)[0]
+    #
     def apply_random_sign(self, formula: fol.CNFFormula):
         from src.ast.first_order_logic import Literal
         for literal in formula.items(type=Literal):

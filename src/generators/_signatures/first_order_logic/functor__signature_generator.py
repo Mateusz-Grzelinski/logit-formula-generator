@@ -3,7 +3,7 @@ from __future__ import annotations
 from collections import defaultdict
 from copy import deepcopy
 from itertools import product
-from random import sample
+from random import sample, shuffle, choice
 from typing import Iterable, Dict, Generator, List
 
 from src.ast.first_order_logic import Functor, Variable
@@ -12,18 +12,26 @@ from src.generators import AstGenerator
 
 class FunctorSignatureGenerator(AstGenerator):
     variable_name = 'V'
-    functor_name = 'f'
 
-    def __init__(self, arities: Iterable[int], max_recursion_depth: int, random: bool = True):
+    def __init__(self, arities: Iterable[int], functor_names: Iterable[str], max_recursion_depth: int,
+                 random: bool = True):
         self.random = random
         self.max_recursion_depth = max_recursion_depth
         self.arities = set(arities)
+        self.functor_name_for_arity = {}
+        functor_names = shuffle(list(functor_names)) if not functor_names else [f'f{i}' for i in
+                                                                                range(len(self.arities))]
+        for arity in arities:
+            self.functor_name_for_arity[arity] = [functor_names.pop()]
+        while functor_names:
+            self.functor_name_for_arity[choice(arities)].append(functor_names.pop())
 
     def generate(self) -> Generator[Functor, None, None]:
         # first generate non-recursive structures
         functors = set()
         for arity in self.arities:
-            functor = Functor(name=self.functor_name, items=[Variable(name=self.variable_name) for i in range(arity)])
+            functor = Functor(name=choice(self.functor_name_for_arity[arity]),
+                              items=[Variable(name=self.variable_name) for i in range(arity)])
             functors.add(functor)
 
         # now generate nested structures
@@ -46,4 +54,5 @@ class FunctorSignatureGenerator(AstGenerator):
         functors = sample(functors, len(functors)) if self.random else functors
         for functor in functors:
             if functor.arity in self.arities:
+                functor.name = choice(self.functor_name_for_arity[functor.arity])
                 yield functor
