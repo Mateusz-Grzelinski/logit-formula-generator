@@ -8,17 +8,20 @@ from typing import Iterable, Dict, Generator, List
 
 from src.ast.first_order_logic import Functor, Variable
 from src.generators import AstGenerator
+from src.generators._signatures.first_order_logic.variable_name_generator import VariableNameGenerator
 
 
 class FunctorSignatureGenerator(AstGenerator):
     variable_name = 'V'
 
-    def __init__(self, arities: Iterable[int], functor_names: Iterable[str], max_recursion_depth: int,
+    def __init__(self, variable_name_gen: VariableNameGenerator, arities: Iterable[int], functor_names: Iterable[str],
+                 max_recursion_depth: int,
                  random: bool = True):
         self.random = random
         self.max_recursion_depth = max_recursion_depth
         self.arities = set(arities)
         self.functor_name_for_arity = {}
+        self.variable_name_gen = variable_name_gen
         functor_names = shuffle(list(functor_names)) if not functor_names else [f'f{i}' for i in
                                                                                 range(len(self.arities))]
         for arity in arities:
@@ -55,4 +58,6 @@ class FunctorSignatureGenerator(AstGenerator):
         for functor in functors:
             if functor.arity in self.arities:
                 functor.name = choice(self.functor_name_for_arity[functor.arity])
+                for var in functor.items(type=Variable):
+                    var.name = self.variable_name_gen.generate()
                 yield functor

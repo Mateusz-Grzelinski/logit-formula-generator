@@ -40,11 +40,13 @@ class CNFFormulaGenerator(AstGenerator):
 
         post_proc = FOLPostProcessor(predicate_names=self.predicate_names, functor_names=self.functor_names,
                                      variable_names=self.variable_names)
-        f = fol.FunctorSignatureGenerator(arities=self.functor_arity, functor_names=self.functor_names,
+        v = fol.VariableNameGenerator(variable_names=self.variable_names)
+        f = fol.FunctorSignatureGenerator(variable_name_gen=v, arities=self.functor_arity,
+                                          functor_names=self.functor_names,
                                           max_recursion_depth=self.functor_recursion_depth)
-        p = fol.PredicateSignatureGenerator(arities=self.predicate_arities, predicate_names=self.predicate_names,
-                                            functor_gen=f)
-        a = fol.AtomSignatureGenerator(connectives=self.atom_connectives, predicate_gen=p)
+        p = fol.PredicateSignatureGenerator(variable_name_gen=v, arities=self.predicate_arities,
+                                            predicate_names=self.predicate_names, functor_gen=f)
+        a = fol.AtomSignatureGenerator(variable_name_gen=v, connectives=self.atom_connectives, predicate_gen=p)
         l = fol.LiteralSignatureGenerator(atom_gen=a)
 
         formula_signature_generator = new_formula_signatures(literal_gen=l)

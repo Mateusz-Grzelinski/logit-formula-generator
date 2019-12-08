@@ -34,7 +34,7 @@ _connectives_lookup_table = None
 
 def _init_lookup_table():
     # to avoid circular deps
-    from src.ast.propositional_temporal_logic._temporal_logic_connectives import TemporalLogicConnective
+    from .propositional_temporal_logic import TemporalLogicConnective
     _no_connective = ConnectiveProperties(connective=None, arity=1, commutative=False)
     _and = ConnectiveProperties(connective=LogicalConnective.AND, arity=2, commutative=True)
     _or = ConnectiveProperties(connective=LogicalConnective.OR, arity=2, commutative=True)

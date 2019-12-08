@@ -6,16 +6,17 @@ from typing import Iterable, Generator
 from src.ast.first_order_logic import Variable, Predicate
 from src.generators import AstGenerator
 from src.generators._signatures.first_order_logic import FunctorSignatureGenerator
+from src.generators._signatures.first_order_logic.variable_name_generator import VariableNameGenerator
 from src.generators.utils._lazy_itertools import random_chain, random_lazy_product
 
 
 class PredicateSignatureGenerator(AstGenerator):
-    variable_name = 'V'
-
+    # variable_name = 'V'
     # predicate_name = 'p'
 
-    def __init__(self, arities: Iterable[int], predicate_names: Iterable[str], functor_gen: FunctorSignatureGenerator,
-                 random: bool = True):
+    def __init__(self, variable_name_gen: VariableNameGenerator, arities: Iterable[int], predicate_names: Iterable[str],
+                 functor_gen: FunctorSignatureGenerator, random: bool = True):
+        self.variable_gen = variable_name_gen
         self.random = random
         self.arities = set(arities)
         self.predicate_name_for_arity = {}
@@ -29,7 +30,8 @@ class PredicateSignatureGenerator(AstGenerator):
 
     def generate(self) -> Generator[Predicate, None, None]:
         def predicate_with_defined_arity(arity: int):
-            possible_arguments = [random_chain(self.functor_gen.generate(), Variable(name=self.variable_name)) for _ in
+            possible_arguments = [random_chain(self.functor_gen.generate(), Variable(name=self.variable_gen.generate()))
+                                  for _ in
                                   range(arity)]
             for args in random_lazy_product(*possible_arguments):
                 yield Predicate(name=choice(self.predicate_name_for_arity[arity]), items=args)
