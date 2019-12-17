@@ -1,11 +1,11 @@
-from collections import Iterable
-from typing import Generator, Any
+import copy
+import random
+from typing import Iterable
 
 import src.ast.propositional_temporal_logic as ptl
 import src.generators._signatures.propositional_temporal_logic as ptl_signatures
+from src.ast import get_connective_properties
 from src.generators import AstGenerator
-from ..._post_processors.propositional_temporal_logic_post_procesor import \
-    PropositionalTemporalLogicPostProcessor
 
 
 class PropositionalTemporalLogicGenerator(AstGenerator):
@@ -16,27 +16,32 @@ class PropositionalTemporalLogicGenerator(AstGenerator):
                  number_of_variables_with_eventually_connectives: int,
                  number_of_variables_with_both_connectives: int) -> None:
         self.variable_names = set(variable_names)
-        self.number_of_variables_with_both_connectives = number_of_variables_with_both_connectives
-        self.number_of_variables_with_eventually_connectives = number_of_variables_with_eventually_connectives
-        self.number_of_variables_with_always_connectives = number_of_variables_with_always_connectives
-        self.number_of_variables_without_connective = number_of_variables_without_connective
+        self.number_of = {
+            'variables_with_both_connectives': number_of_variables_with_both_connectives,
+            'variables_with_eventually_connectives': number_of_variables_with_eventually_connectives,
+            'variables_with_always_connectives': number_of_variables_with_always_connectives,
+            'variables_without_connective': number_of_variables_without_connective}
+        self._connectives = {
+            'variables_with_both_connectives': [get_connective_properties('[]'), get_connective_properties('<>')],
+            'variables_with_eventually_connectives': [get_connective_properties('[]')],
+            'variables_with_always_connectives': [get_connective_properties('<>')],
+            'variables_without_connective': []}
 
-    def generate(self) -> Generator[ptl.Formula, Any, Any]:
-        formula_signature = ptl_signatures.FormulaSignatureGenerator(number_of_variables=self.number_of_variables)
-        post_processor = PropositionalTemporalLogicPostProcessor(
-            variable_names=self.variable_names,
-            number_of_variables_with_both_connectives=self.number_of_variables_with_both_connectives,
-            number_of_variables_with_always_connectives=self.number_of_variables_with_always_connectives,
-            number_of_variables_with_eventually_connectives=self.number_of_variables_with_eventually_connectives,
-            number_of_variables_without_connective=self.number_of_variables_without_connective
-        )
-        for formula in formula_signature.generate():
-            post_processor.post_process(formula=formula)
-            yield formula
+    def generate(self) -> ptl.Formula:
+        number_of = copy.copy(self.number_of)
+        var_gen = ptl_signatures.VariableGenerator(variable_names=self.variable_names)
+        formula_generator = ptl_signatures.FormulaGenerator(var_gen=var_gen,
+                                                            number_of_variables=self.number_of_variables)
+        formula = formula_generator.generate()
+        for variable in formula.items(type=ptl.Variable):
+            variable: ptl.Variable
+            key = random.choice(list(number_of))
+            number_of[key] -= 1
+            if number_of[key] == 0:
+                del number_of[key]
+            variable.unary_connective.extend(self._connectives[key])
+        return formula
 
     @property
     def number_of_variables(self):
-        return sum([self.number_of_variables_without_connective,
-                    self.number_of_variables_with_always_connectives,
-                    self.number_of_variables_with_eventually_connectives,
-                    self.number_of_variables_with_both_connectives])
+        return sum(self.number_of.values())

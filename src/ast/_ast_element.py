@@ -7,16 +7,15 @@ from typing import Iterable
 class AstElement:
     def __init__(self, unary_connectives: Iterable[str, ConnectiveEnum, ConnectiveProperties] = None, *args, **kwargs):
         from ._connectives import ConnectiveProperties, ConnectiveEnum, get_connective_properties
-        unary_connectives = [None] if unary_connectives is None else unary_connectives
+        unary_connectives = [] if unary_connectives is None else unary_connectives
         self.unary_connective = []
         for unary_connective in unary_connectives:
-            if unary_connective is None or isinstance(unary_connective, ConnectiveEnum) or \
-                    isinstance(unary_connective, str):
+            if isinstance(unary_connective, ConnectiveEnum) or isinstance(unary_connective, str):
                 self.unary_connective.append(get_connective_properties(unary_connective))
             elif isinstance(unary_connective, ConnectiveProperties):
                 self.unary_connective.append(unary_connective)
             else:
-                assert False, f'Unknown {unary_connective=} type'
+                assert False, f'Unknown {unary_connective} type'
         super().__init__(*args, **kwargs)
 
     def __repr__(self):

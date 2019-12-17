@@ -2,10 +2,10 @@ from copy import deepcopy
 from typing import Generator
 
 from src.ast.first_order_logic import Functor, Variable
-from src.generators._signatures.first_order_logic import FunctorSignatureGenerator
+from src.generators._signatures.first_order_logic import FunctorGenerator
 
 
-class MockFunctorSignatureGenerator(FunctorSignatureGenerator):
+class MockFunctorGenerator(FunctorGenerator):
     def __init__(self):
         super().__init__(arities={1}, max_recursion_depth=2, random=True)
 
@@ -16,7 +16,7 @@ class MockFunctorSignatureGenerator(FunctorSignatureGenerator):
         yield func_rec_2
 
 
-func_rec_0 = Functor(name=MockFunctorSignatureGenerator.functor_name,
-                     items=[Variable(name=MockFunctorSignatureGenerator.variable_name)])
-func_rec_1 = Functor(name=MockFunctorSignatureGenerator.functor_name, items=[deepcopy(func_rec_0)])
-func_rec_2 = Functor(name=MockFunctorSignatureGenerator.functor_name, items=[deepcopy(func_rec_1)])
+func_rec_0 = Functor(name=MockFunctorGenerator.functor_name,
+                     items=[Variable(name=MockFunctorGenerator.variable_initial_name)])
+func_rec_1 = Functor(name=MockFunctorGenerator.functor_name, items=[deepcopy(func_rec_0)])
+func_rec_2 = Functor(name=MockFunctorGenerator.functor_name, items=[deepcopy(func_rec_1)])

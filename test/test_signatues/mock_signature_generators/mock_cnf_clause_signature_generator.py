@@ -1,11 +1,11 @@
 from typing import Generator
 
 from src.ast.first_order_logic import CNFClause
-from src.generators._signatures.first_order_logic import CNFClauseSignatureGenerator
+from src.generators._signatures.first_order_logic import CNFClauseGenerator
 from test.test_signatues.mock_signature_generators.mock_literal_signature_generator import literal0, literal1
 
 
-class MockCNFClauseSignatureGenerator(CNFClauseSignatureGenerator):
+class MockCNFClauseGenerator(CNFClauseGenerator):
     def __init__(self):
         super().__init__(clause_lengths={1, 2}, literal_gen=None)
 

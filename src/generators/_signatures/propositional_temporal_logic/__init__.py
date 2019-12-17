@@ -1,5 +1,7 @@
-from ._formula_signature_generator import FormulaSignatureGenerator
+from ._formula_generator import FormulaGenerator
+from ._variable_generator import VariableGenerator
 
 __all__ = [
-    'FormulaSignatureGenerator'
+    'FormulaGenerator',
+    'VariableGenerator'
 ]

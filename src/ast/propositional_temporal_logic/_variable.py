@@ -13,3 +13,6 @@ class Variable(TemporalLogicElement):
         if isinstance(other, Variable):
             return self.name == other.name
         raise NotImplementedError
+
+    def __str__(self):
+        return ''.join(i.connective.value for i in self.unary_connective if i.connective is not None) + self.name

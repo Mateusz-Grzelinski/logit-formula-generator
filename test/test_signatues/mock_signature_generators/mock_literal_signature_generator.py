@@ -1,10 +1,10 @@
 from src.ast.first_order_logic import Literal
 
-from src.generators._signatures.first_order_logic import LiteralSignatureGenerator
+from src.generators._signatures.first_order_logic import LiteralGenerator
 from test.test_signatues.mock_signature_generators.mock_atom_signature_generator import atom0, atom1, atom0_1
 
 
-class MockLiteralSignatureGenerator(LiteralSignatureGenerator):
+class MockLiteralGenerator(LiteralGenerator):
     def __init__(self):
         super().__init__(atom_gen=None)
 

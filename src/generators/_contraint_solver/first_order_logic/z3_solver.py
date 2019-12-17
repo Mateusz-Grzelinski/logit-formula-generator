@@ -51,4 +51,4 @@ if __name__ == '__main__':
     z3solver = Z3CNFConstraintSolver(clause_lengths=[1, 2, 3], number_of_clauses=IntegerRange(min=5, max=10),
                                      number_of_literals=IntegerRange(min=7, max=20))
     for solution in z3solver.solve_in_random_order():
-        print(f'{solution=}')
+        print(f'{solution}')

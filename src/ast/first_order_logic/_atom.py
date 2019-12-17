@@ -4,7 +4,7 @@ from typing import Optional, Union, Iterable, Set, Type
 
 from ._first_order_logic_element import FirstOrderLogicElement
 from ._term import Term
-from .._connectives import MathConnective, get_connective_properties
+from .._connectives import MathConnective, get_connective_properties, ConnectiveProperties
 from .._containers import Container
 
 
@@ -15,6 +15,8 @@ class Atom(Container, FirstOrderLogicElement):
 
         if connective is None or isinstance(connective, str) or isinstance(connective, MathConnective):
             self.connective_properties = get_connective_properties(connective)
+        elif isinstance(connective, ConnectiveProperties):
+            self.connective_properties = connective
         else:
             raise TypeError(f'invalid argument type for field connective: {connective}')
 

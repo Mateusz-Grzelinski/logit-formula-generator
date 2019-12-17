@@ -10,8 +10,8 @@ from ..._containers import Container
 class Literal(Container, FirstOrderLogicElement):
     def __init__(self, items: Atom, negated: bool, *args, **kwargs):
         self.is_negated = negated
-        unary_connective = LogicalConnective.NOT if negated else None
-        super().__init__(items=[items], unary_connectives=[unary_connective], *args, **kwargs)
+        unary_connective = [LogicalConnective.NOT] if negated else []
+        super().__init__(items=[items], unary_connectives=unary_connective, *args, **kwargs)
 
     def __hash__(self):
         return hash(self.is_negated) ^ Container.__hash__(self)
