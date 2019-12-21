@@ -1,14 +1,16 @@
 import random
+from typing import Iterable
 
 import src.ast.propositional_temporal_logic as ptl
+from src.ast import ConnectiveProperties
 from src.generators import AstGenerator
 from ._variable_generator import VariableGenerator
 
 
 class FormulaGenerator(AstGenerator):
-    variable_name = 'v'
-
-    def __init__(self, var_gen: VariableGenerator, number_of_variables: int):
+    def __init__(self, var_gen: VariableGenerator, number_of_variables: int,
+                 logical_connectives: Iterable[ConnectiveProperties]):
+        self.logical_connective = list(logical_connectives)
         self.variable_gen = var_gen
         self.number_of_variables = number_of_variables
 
@@ -20,10 +22,12 @@ class FormulaGenerator(AstGenerator):
             # todo: is single variable (not wrapped in formula) acceptable?
             return self.variable_gen.generate()
         elif number_of_variables == 2:
-            return ptl.Formula(items=[self.variable_gen.generate(), self.variable_gen.generate()])
+            return ptl.Formula(items=[self.variable_gen.generate(), self.variable_gen.generate()],
+                               logical_connective=random.choice(self.logical_connective))
         else:
             left_subtree_size = random.randrange(1, number_of_variables)
             left_subtree = self._formula_signature_generator_helper(number_of_variables=left_subtree_size)
             right_subtree_size = number_of_variables - left_subtree_size
             right_subtree = self._formula_signature_generator_helper(number_of_variables=right_subtree_size)
-            return ptl.Formula(items=[left_subtree, right_subtree])
+            return ptl.Formula(items=[left_subtree, right_subtree],
+                               logical_connective=random.choice(self.logical_connective))

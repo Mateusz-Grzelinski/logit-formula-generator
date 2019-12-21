@@ -10,12 +10,10 @@ from .._containers import Container
 class Formula(Container, TemporalLogicElement):
     """Propositional Temporal Logic"""
 
-    def __init__(self, items: MutableSequence[ItemType], logical_connective: ConnectiveProperties = None, *args,
+    def __init__(self, items: MutableSequence[ItemType], logical_connective: ConnectiveProperties, *args,
                  **kwargs):
         super().__init__(items, *args, **kwargs)
-        from src.ast import get_connective_properties
-        self.logical_connective = logical_connective if logical_connective is not None else get_connective_properties(
-            operand='&')
+        self.logical_connective = logical_connective
 
     @classmethod
     def contains(cls) -> Set[Type[TemporalLogicElement]]:
