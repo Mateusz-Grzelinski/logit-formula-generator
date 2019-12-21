@@ -3,7 +3,7 @@ import random
 from typing import Iterable
 
 import src.ast.propositional_temporal_logic as ptl
-import src.generators._signatures.propositional_temporal_logic as ptl_signatures
+import src.generators.syntax_tree_generators.propositional_temporal_logic as ptl_signatures
 from src.ast import get_connective_properties
 from src.generators import AstGenerator
 

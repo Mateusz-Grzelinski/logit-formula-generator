@@ -9,8 +9,8 @@ from .._ast_element import AstElement
 from .._containers import Container
 
 
-class Formula(Container, AstElement):
-    def __init__(self, items: Iterable[Atom, Quantifier, Formula], logical_connective: LogicalConnective, *args,
+class FOLFormula(Container, AstElement):
+    def __init__(self, items: Iterable[Atom, Quantifier, FOLFormula], logical_connective: LogicalConnective, *args,
                  **kwargs):
         super().__init__(items, *args, **kwargs)
         self.logical_connective = logical_connective

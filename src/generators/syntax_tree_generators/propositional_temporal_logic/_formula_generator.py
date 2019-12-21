@@ -17,6 +17,7 @@ class FormulaGenerator(AstGenerator):
 
     def _formula_signature_generator_helper(self, number_of_variables: int) -> ptl.Formula:
         if number_of_variables == 1:
+            # todo: is single variable (not wrapped in formula) acceptable?
             return self.variable_gen.generate()
         elif number_of_variables == 2:
             return ptl.Formula(items=[self.variable_gen.generate(), self.variable_gen.generate()])

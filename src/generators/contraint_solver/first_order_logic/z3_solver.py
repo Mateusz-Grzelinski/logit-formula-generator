@@ -4,7 +4,7 @@ from typing import Iterable, Dict
 
 import z3
 
-from src.generators._contraint_solver.first_order_logic.cnf_constraint_solver import CNFConstraintSolver
+from src.generators.contraint_solver.first_order_logic.cnf_constraint_solver import CNFConstraintSolver
 from src.generators.utils._range import IntegerRange
 
 

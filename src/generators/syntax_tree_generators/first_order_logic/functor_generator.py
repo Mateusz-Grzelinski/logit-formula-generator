@@ -8,7 +8,7 @@ from typing import Iterable, Dict, Generator, List
 
 from src.ast.first_order_logic import Functor, Variable
 from src.generators import AstGenerator
-from src.generators._signatures.first_order_logic.variable_generator import VariableGenerator
+from .variable_generator import VariableGenerator
 
 
 class FunctorGenerator(AstGenerator):

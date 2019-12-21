@@ -4,11 +4,14 @@ import random
 from typing import Iterable
 
 from src.ast.first_order_logic import Predicate
-from src.generators._signatures.first_order_logic import FunctorGenerator, PredicateGenerator
-from src.generators._signatures.first_order_logic.variable_generator import VariableGenerator
+from src.generators import AstGenerator
+from .functor_generator import FunctorGenerator
+from .variable_generator import VariableGenerator
 
 
-class SafetyLivenessPredicateGenerator(PredicateGenerator):
+class PredicateGenerator(AstGenerator):
+    # variable_name = 'V'
+    # predicate_name = 'p'
 
     def __init__(self, variable_gen: VariableGenerator, arities: Iterable[int], predicate_names: Iterable[str],
                  functor_gen: FunctorGenerator):
@@ -28,14 +31,9 @@ class SafetyLivenessPredicateGenerator(PredicateGenerator):
     def generate(self) -> Predicate:
         arity = random.choice(self.arities)
         p = Predicate(name=random.choice(self.predicate_name_for_arity[arity]), items=[])
-
-        # decide if predicate will present safety or liveness
-        if random.random() > 0.5:
-            # safety
-            for i in range(arity):
+        for i in range(arity):
+            if random.randint(0, 1):
                 p.append(self.variable_gen.generate())
-        else:
-            # liveness
-            for i in range(arity):
+            else:
                 p.append(self.functor_gen.generate())
         return p

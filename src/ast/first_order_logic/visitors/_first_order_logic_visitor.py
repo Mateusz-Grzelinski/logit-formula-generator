@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from .._atom import Atom
-from .._formula import Formula
+from .._formula import FOLFormula
 from .._functor import Functor
 from .._predicate import Predicate
 from .._quantifier import Quantifier
@@ -27,7 +27,7 @@ class FOLAstVisitor(AstVisitor):
             self.visit_literal(element)
         elif isinstance(element, CNFClause):
             self.visit_cnf_clause(element)
-        elif isinstance(element, Formula):
+        elif isinstance(element, FOLFormula):
             self.visit_formula(element)
         elif isinstance(element, Quantifier):
             self.visit_quantifier(element)
@@ -60,5 +60,5 @@ class FOLAstVisitor(AstVisitor):
     def visit_quantifier(self, element: Quantifier):
         pass
 
-    def visit_formula(self, element: Formula):
+    def visit_formula(self, element: FOLFormula):
         pass

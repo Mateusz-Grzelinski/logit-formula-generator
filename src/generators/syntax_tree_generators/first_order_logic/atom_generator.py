@@ -11,9 +11,9 @@ from src.generators import AstGenerator
 class AtomGenerator(AstGenerator):
     # variable_name = 'V'
 
-    def __init__(self, variable_name_gen: VariableNameGenerator, connectives: Iterable[str],
-                 predicate_gen: PredicateSignatureGenerator):
-        self.variable_name_gen = variable_name_gen
+    def __init__(self, variable_gen: VariableGenerator, connectives: Iterable[str],
+                 predicate_gen: PredicateGenerator):
+        self.variable_name_gen = variable_gen
         self.predicate_gen = predicate_gen
         self.allowed_connectives = list(get_connective_properties(connective) for connective in connectives)
 

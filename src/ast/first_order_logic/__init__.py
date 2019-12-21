@@ -1,6 +1,6 @@
 """first_order_logic - First Order Logic"""
 from ._atom import Atom
-from ._formula import Formula
+from ._formula import FOLFormula
 from ._functor import Functor
 from ._predicate import Predicate
 from ._quantifier import ExistentialQuantifier, UniversalQuantifier, Quantifier
@@ -16,7 +16,7 @@ __all__ = [
     'Functor',
     'Predicate',
     'Atom',
-    'Formula',
+    'FOLFormula',
     'ExistentialQuantifier',
     'UniversalQuantifier',
     'Quantifier',
