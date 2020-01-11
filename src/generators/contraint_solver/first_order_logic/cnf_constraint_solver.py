@@ -1,27 +1,13 @@
 import random
 from abc import abstractmethod
-from dataclasses import dataclass, field
 from typing import Iterable, List, Dict
 
 from src.generators.utils._range import IntegerRange
 
 
-@dataclass
-class Coefficient:
-    clauses_coeff: List[int] = field(default_factory=list)
-    literal_coeff: List[int] = field(default_factory=list)
-
-    def __post_init__(self):
-        assert len(self.clauses_coeff) == len(self.literal_coeff)
-
-    def __len__(self):
-        return len(self.clauses_coeff)
-
-
 class CNFConstraintSolver:
     def __init__(self, allowed_clause_lengths: List, number_of_clauses: IntegerRange, number_of_literals: IntegerRange):
-        self.coefficients = Coefficient(clauses_coeff=[1] * len(allowed_clause_lengths),
-                                        literal_coeff=allowed_clause_lengths)
+        self.literal_coefficients = allowed_clause_lengths
         self.number_of_literals = number_of_literals
         self.number_of_clauses = number_of_clauses
 
