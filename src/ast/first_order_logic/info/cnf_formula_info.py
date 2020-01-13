@@ -3,8 +3,8 @@ from dataclasses import dataclass, field
 from functools import partial
 from typing import Dict, Type
 
-from .._first_order_logic_element import FirstOrderLogicElement
-from ..conjunctive_normal_form._literal import Literal
+from src.ast.first_order_logic._first_order_logic_element import FirstOrderLogicElement
+from src.ast.first_order_logic.conjunctive_normal_form._literal import Literal
 
 
 @dataclass

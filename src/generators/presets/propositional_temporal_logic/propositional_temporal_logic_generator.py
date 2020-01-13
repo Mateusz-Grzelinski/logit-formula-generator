@@ -31,7 +31,7 @@ class PropositionalTemporalLogicGenerator(AstGenerator):
             'variables_with_always_connectives': [get_connective_properties('<>')],
             'variables_without_connective': []}
 
-    def generate(self) -> ptl.Formula:
+    def generate(self) -> ptl.PTLFormula:
         number_of = copy.copy(self.number_of)
         for key, val in self.number_of.items():
             if not val:
@@ -47,7 +47,7 @@ class PropositionalTemporalLogicGenerator(AstGenerator):
             number_of[key] -= 1
             if number_of[key] == 0:
                 del number_of[key]
-            variable.unary_connective.extend(self._connectives[key])
+            variable.unary_connectives.extend(self._connectives[key])
         return formula
 
     @property

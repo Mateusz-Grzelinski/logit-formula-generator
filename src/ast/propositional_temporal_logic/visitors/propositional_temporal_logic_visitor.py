@@ -1,16 +1,16 @@
 from __future__ import annotations
 
-from .._formula import Formula
+from .._ptl_formula import PTLFormula
 from .._variable import Variable
 from ..._ast_visitor import AstVisitor
 
 
-class FOLAstVisitor(AstVisitor):
+class PropositionalTemporalLogicVisitor(AstVisitor):
 
     def visit(self, element: TemporalLogicElement):
         if isinstance(element, Variable):
             self.visit_variable(element)
-        elif isinstance(element, Formula):
+        elif isinstance(element, PTLFormula):
             self.visit_temporal_logic_formula(element)
         else:
             assert False, f'Unknown element for visitor {type(element)}, {element}'
@@ -18,5 +18,5 @@ class FOLAstVisitor(AstVisitor):
     def visit_variable(self, element: Variable):
         pass
 
-    def visit_temporal_logic_formula(self, element: Formula):
+    def visit_temporal_logic_formula(self, element: PTLFormula):
         pass

@@ -15,4 +15,4 @@ class Variable(TemporalLogicElement):
         raise NotImplementedError
 
     def __str__(self):
-        return ''.join(i.connective.value for i in self.unary_connective if i.connective is not None) + self.name
+        return ''.join(i.connective.value for i in self.unary_connectives if i.connective is not None) + self.name

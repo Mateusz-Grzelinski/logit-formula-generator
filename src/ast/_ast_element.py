@@ -8,12 +8,12 @@ class AstElement:
     def __init__(self, unary_connectives: Iterable[str, ConnectiveEnum, ConnectiveProperties] = None, *args, **kwargs):
         from ._connectives import ConnectiveProperties, ConnectiveEnum, get_connective_properties
         unary_connectives = [] if unary_connectives is None else unary_connectives
-        self.unary_connective = []
+        self.unary_connectives = []
         for unary_connective in unary_connectives:
             if isinstance(unary_connective, ConnectiveEnum) or isinstance(unary_connective, str):
-                self.unary_connective.append(get_connective_properties(unary_connective))
+                self.unary_connectives.append(get_connective_properties(unary_connective))
             elif isinstance(unary_connective, ConnectiveProperties):
-                self.unary_connective.append(unary_connective)
+                self.unary_connectives.append(unary_connective)
             else:
                 assert False, f'Unknown {unary_connective} type'
         super().__init__(*args, **kwargs)

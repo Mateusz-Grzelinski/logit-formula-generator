@@ -2,16 +2,16 @@ from __future__ import annotations
 
 from typing import Optional, Dict, Type, Set
 
-from src.ast.first_order_logic.visitors._first_order_logic_visitor import FOLAstVisitor
-from ._cnf_clause import CNFClause
-from ._cnf_formula import CNFFormula
-from ._literal import Literal
-from .._atom import Atom
-from .._functor import Functor
-from .._predicate import Predicate
-from .._variable import Variable
-from ..visitors import CNFFormulaInfo
-from ..._connectives import MathConnective
+from src.ast._connectives import MathConnective
+from src.ast.first_order_logic._atom import Atom
+from src.ast.first_order_logic._functor import Functor
+from src.ast.first_order_logic._predicate import Predicate
+from src.ast.first_order_logic._variable import Variable
+from src.ast.first_order_logic.conjunctive_normal_form._cnf_clause import CNFClause
+from src.ast.first_order_logic.conjunctive_normal_form._cnf_formula import CNFFormula
+from src.ast.first_order_logic.conjunctive_normal_form._literal import Literal
+from src.ast.first_order_logic.visitors import CNFFormulaInfo
+from src.ast.first_order_logic.visitors.first_order_logic_visitor import FOLAstVisitor
 
 
 class MathSense:
