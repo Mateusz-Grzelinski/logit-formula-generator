@@ -3,8 +3,7 @@ from typing import Dict
 
 
 @dataclass
-class CNFPTLFormulaInfo:
-    """Propositional temporal logic formula statistics"""
+class ConjunctiveNormalFormPropositionalTemporalLogicFormulaInfo:
     number_of_variables: int = 0
     number_of_clauses: int = 0
     max_clause_size: int = 0

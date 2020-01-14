@@ -38,7 +38,6 @@ class CNFPropositionalTemporalLogicGenerator(AstGenerator):
             number_of_clauses=self.number_of_clauses,
             number_of_literals=self.number_of_variables)
         for solution in solver.solve_in_random_order():
-            print(solution)
             root = ptl.PTLFormula(items=[], logical_connective=get_connective_properties(LogicalConnective.AND))
             random_unary_connective_generator = self._random_unary_connective_generator()
             for clause_len, amount_of_clauses in solution.items():

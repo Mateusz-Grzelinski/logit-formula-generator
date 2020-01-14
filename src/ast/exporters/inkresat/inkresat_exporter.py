@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import logging
 import os
 import textwrap
 from typing import NoReturn, Callable
@@ -21,18 +22,20 @@ class InkresatExporter(Exporter):
         if not isinstance(expression, PTLFormula):
             raise NotImplementedError('Other elements of syntax tree arte not properly supported')
         # by 'coincidence' default visualisation of first order logic is TPTP format :)
-        from src.ast.propositional_temporal_logic.info.cnf_ptl_formula_info import CNFPTLFormulaInfo
-        formula_info: CNFPTLFormulaInfo = expression.get_info()
+        from src.ast.propositional_temporal_logic.info.cnf_ptl_formula_info import \
+            ConjunctiveNormalFormPropositionalTemporalLogicFormulaInfo
+        formula_info: ConjunctiveNormalFormPropositionalTemporalLogicFormulaInfo = expression.get_info()
         filename = self.filename_handle(formula_info) + filename_suffix
 
         if self.statistics_to_file:
             full_json_out_path = os.path.join(self.output_dir, filename + '.json')
+            logging.info(f'Writing json to {full_json_out_path}')
             with open(full_json_out_path, 'w') as out_json:
                 json.dump(formula_info.__dict__, out_json, indent=2)
 
         full_out_path = os.path.join(self.output_dir, filename + self.extension)
         with open(full_out_path, 'w') as out_file:
-            print(f'Writing formula to {full_out_path}')
+            logging.info(f'Writing formula to {full_out_path}')
             if not self.statistics_to_file:
                 text = json.dumps(**formula_info.__dict__, indent=2)
                 text = textwrap.indent(text=text, prefix=f'{self.comment_sign} ', predicate=lambda line: True) + '\n'

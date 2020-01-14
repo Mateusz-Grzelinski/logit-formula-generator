@@ -2,7 +2,8 @@ from __future__ import annotations
 
 from src.ast import LogicalConnective
 from src.ast.propositional_temporal_logic import TemporalLogicConnective
-from src.ast.propositional_temporal_logic.info.cnf_ptl_formula_info import CNFPTLFormulaInfo
+from src.ast.propositional_temporal_logic.info.cnf_ptl_formula_info import \
+    ConjunctiveNormalFormPropositionalTemporalLogicFormulaInfo
 from src.ast.propositional_temporal_logic.visitors.propositional_temporal_logic_visitor import \
     PropositionalTemporalLogicVisitor
 from .._ptl_formula import PTLFormula
@@ -11,7 +12,7 @@ from .._variable import Variable
 
 class CNFPTLFormulaVisitor(PropositionalTemporalLogicVisitor):
     def __init__(self):
-        self.info = CNFPTLFormulaInfo()
+        self.info = ConjunctiveNormalFormPropositionalTemporalLogicFormulaInfo()
         # no braces are generated so we can get away wothout context
         # self.context: Optional[PTLFormula] = None
 
@@ -38,3 +39,5 @@ class CNFPTLFormulaVisitor(PropositionalTemporalLogicVisitor):
         elif LogicalConnective.AND == element.logical_connective.connective:
             # this is root formula
             self.info.number_of_clauses = len(element)
+
+        self.info.max_clause_size = max(list(self.info.clause_sizes.keys()) + [0])
