@@ -12,17 +12,16 @@ from src.generators.contraint_solver.first_order_logic.z3_solver import Z3CNFCon
 class CNFPropositionalTemporalLogicGenerator(AstGenerator):
     variable_name = 'v'
 
-    def __init__(self, variable_names: Iterable[str],
-                 number_of_variables_without_connective: IntegerRange,
+    def __init__(self, variable_names: Iterable[str], number_of_variables_without_connective: IntegerRange,
                  number_of_variables_with_always_connectives: IntegerRange,
-                 number_of_variables_with_eventually_connectives: IntegerRange,
-                 number_of_clauses: IntegerRange,
-                 clause_lengths: Iterable[int]) -> None:
+                 number_of_variables_with_eventually_connectives: IntegerRange, number_of_clauses: IntegerRange,
+                 clause_lengths: Iterable[int], negation_probability=0.1) -> None:
         self.number_of_variables_without_connective = number_of_variables_without_connective
         self.number_of_variables_with_always_connectives = number_of_variables_with_always_connectives
         self.number_of_variables_with_eventually_connectives = number_of_variables_with_eventually_connectives
         self.number_of_clauses = number_of_clauses
         self.clause_lengths = set(clause_lengths)
+        self.negation_probability = negation_probability
         self.logical_connectives = []
         self.variable_names = set(variable_names)
 
@@ -46,6 +45,8 @@ class CNFPropositionalTemporalLogicGenerator(AstGenerator):
                     for variable in clause:
                         variable: ptl.Variable
                         variable.unary_connectives.extend(next(random_unary_connective_generator))
+                        if self.negation_probability >= random.random():
+                            variable.unary_connectives.append(get_connective_properties(LogicalConnective.NOT))
                     root.append(clause)
             yield root
 

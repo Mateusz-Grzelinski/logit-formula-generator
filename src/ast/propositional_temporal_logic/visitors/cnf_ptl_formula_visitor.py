@@ -18,12 +18,16 @@ class CNFPTLFormulaVisitor(PropositionalTemporalLogicVisitor):
 
     def visit_variable(self, element: Variable):
         self.info.number_of_variables += 1
-        if not element.unary_connectives:
-            self.info.number_of_variables_without_connective += 1
-        elif any(TemporalLogicConnective.ALWAYS == e.connective for e in element.unary_connectives):
+        unary_connectives = [e.connective for e in element.unary_connectives]
+        if TemporalLogicConnective.ALWAYS in unary_connectives:
             self.info.number_of_variables_with_always_connectives += 1
-        elif any(TemporalLogicConnective.EVENTUALLY == e.connective for e in element.unary_connectives):
+        if TemporalLogicConnective.EVENTUALLY in unary_connectives:
             self.info.number_of_variables_with_eventually_connectives += 1
+        if TemporalLogicConnective.ALWAYS not in unary_connectives \
+                and TemporalLogicConnective.EVENTUALLY not in unary_connectives:
+            self.info.number_of_variables_without_connective += 1
+        if LogicalConnective.NOT in unary_connectives:
+            self.info.number_of_negated_variables += 1
         # elif any(TemporalLogicConnective.ALWAYS == e.connective for e in element.unary_connectives):
         #     self.info.number_of_variables_with_both_connectives += 1
 

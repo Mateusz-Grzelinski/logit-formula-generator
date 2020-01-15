@@ -30,13 +30,13 @@ class InkresatExporter(Exporter):
 
         if self.statistics_to_file:
             full_json_out_path = os.path.join(self.output_dir, filename + '.json')
-            logging.info(f'Writing json to {full_json_out_path}')
+            logging.debug(f'Writing json to {full_json_out_path}')
             with open(full_json_out_path, 'w') as out_json:
                 json.dump(formula_info.__dict__, out_json, indent=2)
 
         full_out_path = os.path.join(self.output_dir, filename)
         with open(full_out_path, 'w') as out_file:
-            logging.info(f'Writing formula to {full_out_path}')
+            logging.debug(f'Writing formula to {full_out_path}')
             if not self.statistics_to_file:
                 text = json.dumps(**formula_info.__dict__, indent=2)
                 text = textwrap.indent(text=text, prefix=f'{self.comment_sign} ', predicate=lambda line: True) + '\n'

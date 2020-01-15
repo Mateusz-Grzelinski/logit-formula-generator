@@ -12,3 +12,4 @@ class ConjunctiveNormalFormPropositionalTemporalLogicFormulaInfo:
     number_of_variables_with_always_connectives: int = 0
     number_of_variables_with_eventually_connectives: int = 0
     number_of_variables_without_connective: int = 0
+    number_of_negated_variables: int = 0
