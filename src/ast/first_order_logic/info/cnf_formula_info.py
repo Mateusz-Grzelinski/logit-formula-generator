@@ -1,22 +1,19 @@
-from collections import defaultdict
 from dataclasses import dataclass, field
-from functools import partial
-from typing import Dict, Type
+from typing import Dict
 
-from src.ast.first_order_logic._first_order_logic_element import FirstOrderLogicElement
 from src.ast.first_order_logic.conjunctive_normal_form._literal import Literal
 
 
 @dataclass
 class CNFFormulaInfo:
-    number_of: Dict[Type[FirstOrderLogicElement], int] = field(default_factory=partial(defaultdict, int))
+    number_of: Dict[str, int] = field(default_factory=dict)
     """Dict[FolElement, quantity], in mathematical sense"""
     # number_of_signatures: Dict[Type[FolElement], int] = field(default_factory=partial(defaultdict, int))
     # """Dict[FolElement, quantity], by element's signature (see bachelor thesis)"""
-    number_of_instances: Dict[Type[FirstOrderLogicElement], int] = field(default_factory=partial(defaultdict, int))
+    number_of_instances: Dict[str, int] = field(default_factory=dict)
     """Dict[FolElement, quantity], every occurrence of element"""
 
-    clause_lengths: Dict[int, int] = field(default_factory=partial(defaultdict, int))
+    clause_lengths: Dict[int, int] = field(default_factory=dict)
     """Dict[clause_length, quantity]"""
     number_of_horn_clauses_instances: int = 0
     number_of_singleton_variables: int = 0
@@ -25,13 +22,13 @@ class CNFFormulaInfo:
 
     number_of_equality_atom_instances: int = 0
 
-    predicate_arities: Dict[int, int] = field(default_factory=partial(defaultdict, int))
+    predicate_arities: Dict[int, int] = field(default_factory=dict)
     """Dict[predicate_arity, quantity], counted by predicate instances"""
 
-    functor_arities: Dict[int, int] = field(default_factory=partial(defaultdict, int))
+    functor_arities: Dict[int, int] = field(default_factory=dict)
     """Dict[functor_arity, quantity], counted by functor instances"""
 
-    term_instances_depths: Dict[int, int] = field(default_factory=partial(defaultdict, int))
+    term_instances_depths: Dict[int, int] = field(default_factory=dict)
     """Dict[term_depth, quantity]"""
 
     @property

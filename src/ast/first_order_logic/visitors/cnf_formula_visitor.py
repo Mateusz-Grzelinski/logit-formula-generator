@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from collections import defaultdict
 from typing import Optional, Dict, Type, Set
 
 from src.ast._connectives import MathConnective
@@ -52,60 +53,65 @@ class MathSense:
 class CNFFormulaVisitor(FOLAstVisitor):
     def __init__(self):
         self.info = CNFFormulaInfo()
+        self.info.clause_lengths = defaultdict(int)
+        self.info.functor_arities = defaultdict(int)
+        self.info.predicate_arities = defaultdict(int)
+        self.info.term_instances_depths = defaultdict(int)
         # in future more advanced mechanism for context may be needed
         self.context: Optional[CNFClause] = None  # or quantifier
         self._hashes_in_math_sense: Dict[Type[FOLElement], Set[int]] = {}
-        for element_type in [Variable, Functor, Predicate, Atom, Literal, CNFClause]:
-            self._hashes_in_math_sense[element_type] = set()
+        for element_type in [Variable, Functor, Predicate, Atom, Literal, CNFClause, CNFFormula]:
+            self._hashes_in_math_sense[element_type.__name__] = set()
+            self.info.number_of_instances[element_type.__name__] = 0
+            self.info.number_of[element_type.__name__] = 0
 
     def visit(self, element: FOLElement):
         super().visit(element)
 
     def visit_variable(self, element: Variable):
-        self._hashes_in_math_sense[Variable].add(MathSense.hash_variable(self.context, element))
-        self.info.number_of_instances[Variable] += 1
+        self._hashes_in_math_sense[Variable.__name__].add(MathSense.hash_variable(self.context, element))
+        self.info.number_of_instances[Variable.__name__] += 1
 
     def visit_functor(self, element: Functor):
-        self._hashes_in_math_sense[Functor].add(MathSense.hash_functor(element))
-        self.info.number_of_instances[Functor] += 1
-        self.info.number_of[Functor] = len(self._hashes_in_math_sense[Functor])
+        self._hashes_in_math_sense[Functor.__name__].add(MathSense.hash_functor(element))
+        self.info.number_of_instances[Functor.__name__] += 1
+        self.info.number_of[Functor.__name__] = len(self._hashes_in_math_sense[Functor.__name__])
         self.info.functor_arities[element.arity] += 1
         self.info.term_instances_depths[element.recursion_depth] += 1
 
     def visit_predicate(self, element: Predicate):
-        self._hashes_in_math_sense[Predicate].add(MathSense.hash_predicate(element))
-        self.info.number_of[Predicate] = len(self._hashes_in_math_sense[Predicate])
-        self.info.number_of_instances[Predicate] += 1
+        self._hashes_in_math_sense[Predicate.__name__].add(MathSense.hash_predicate(element))
+        self.info.number_of[Predicate.__name__] = len(self._hashes_in_math_sense[Predicate.__name__])
+        self.info.number_of_instances[Predicate.__name__] += 1
         self.info.predicate_arities[element.arity] += 1
 
     def visit_atom(self, element: Atom):
-        self._hashes_in_math_sense[Atom].add(MathSense.hash_atom(self.context, element))
-        self.info.number_of[Atom] = len(self._hashes_in_math_sense[Atom])
-        self.info.number_of_instances[Atom] += 1
+        self._hashes_in_math_sense[Atom.__name__].add(MathSense.hash_atom(self.context, element))
+        self.info.number_of[Atom.__name__] = len(self._hashes_in_math_sense[Atom.__name__])
+        self.info.number_of_instances[Atom.__name__] += 1
         if element.connective_properties and \
                 element.connective_properties.connective in {MathConnective.EQUAL, MathConnective.NOT_EQUAL}:
             self.info.number_of_equality_atom_instances += 1
 
     def visit_literal(self, element: Literal):
-        self._hashes_in_math_sense[Literal].add(MathSense.hash_literal(self.context, element))
-        self.info.number_of[Literal] = len(self._hashes_in_math_sense[Literal])
-        self.info.number_of_instances[Literal] += 1
+        self._hashes_in_math_sense[Literal.__name__].add(MathSense.hash_literal(self.context, element))
+        self.info.number_of[Literal.__name__] = len(self._hashes_in_math_sense[Literal.__name__])
+        self.info.number_of_instances[Literal.__name__] += 1
         if element.is_negated:
             self.info.number_of_negated_literal_instances += 1
 
     def visit_cnf_clause(self, element: CNFClause):
-        self._hashes_in_math_sense[CNFClause].add(MathSense.hash_clause(element))
+        self._hashes_in_math_sense[CNFClause.__name__].add(MathSense.hash_clause(element))
         # variable is clause scoped
         self.info.number_of_singleton_variables += element.number_of_singleton_variables
-        self.info.number_of_instances[CNFClause] += 1
+        self.info.number_of_instances[CNFClause.__name__] += 1
         self.info.clause_lengths[element.length] += 1
         if element.is_horn:
             self.info.number_of_horn_clauses_instances += 1
         self.context = element
 
     def visit_cnf_formula(self, element: CNFFormula):
-        from ._cnf_formula import CNFFormula
-        self.info.number_of[CNFFormula] += 1
-        self.info.number_of_instances[CNFFormula] += 1
+        self.info.number_of[CNFFormula.__name__] += 1
+        self.info.number_of_instances[CNFFormula.__name__] += 1
 
         # instances can be handled here (but should they?)

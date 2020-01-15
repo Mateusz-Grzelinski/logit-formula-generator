@@ -83,30 +83,29 @@ class TPTPHeader:
     def read_from(self, object: CNFFormulaInfo):
         from src.ast.first_order_logic.visitors import CNFFormulaInfo
         if isinstance(object, CNFFormulaInfo):
-            self.number_of_clause_instances = object.number_of_instances[CNFClause]
+            self.number_of_clause_instances = object.number_of_instances[CNFClause.__name__]
             self.max_clause_size = object.max_clause_size
             self.average_clause_size = int(object.average_clause_size)
             self.number_of_unit_clauses = object.number_of_unit_clauses
             self.number_of_non_horn_clauses = object.number_of_instances[
-                                                  CNFClause] - object.number_of_horn_clauses_instances
+                                                  CNFClause.__name__] - object.number_of_horn_clauses_instances
 
-            self.number_of_literal_instances = object.number_of_instances[Literal]
+            self.number_of_literal_instances = object.number_of_instances[Literal.__name__]
             self.number_of_negated_literal_instances = object.number_of_negated_literal_instances
-
-            self.number_of_atom_instances = object.number_of_instances[Atom]
+            self.number_of_atom_instances = object.number_of_instances[Atom.__name__]
             self.number_of_equality_atom_instances = object.number_of_equality_atom_instances
 
             self.predicate_arities = set(object.predicate_arities.keys())
-            self.number_of_predicates = object.number_of[Predicate]
+            self.number_of_predicates = object.number_of[Predicate.__name__]
             self.number_of_propositional_predicates = object.number_of_propositional_predicates
 
-            self.number_of_variables = object.number_of_instances[Variable]
+            self.number_of_variables = object.number_of_instances[Variable.__name__]
             self.number_of_singleton_variables = object.number_of_singleton_variables
 
             self.functor_arities = set(object.functor_arities.keys())
-            self.number_of_functors = object.number_of[Functor]
+            self.number_of_functors = object.number_of[Functor.__name__]
             self.number_of_constant_functors = object.number_of_constant_functors
-            self.number_of_functors_instances = object.number_of_instances[Functor]
+            self.number_of_functors_instances = object.number_of_instances[Functor.__name__]
 
             self.max_term_depth = object.max_term_depth
         else:

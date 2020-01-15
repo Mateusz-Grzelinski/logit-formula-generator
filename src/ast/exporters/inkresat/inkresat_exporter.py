@@ -28,7 +28,7 @@ class InkresatExporter(Exporter):
         filename = self.filename_handle(formula_info) + filename_suffix
 
         if self.statistics_to_file:
-            full_json_out_path = os.path.join(self.output_dir, filename + '.json')
+            full_json_out_path = os.path.join(self.output_dir, filename + self.extension + '.json')
             logging.info(f'Writing json to {full_json_out_path}')
             with open(full_json_out_path, 'w') as out_json:
                 json.dump(formula_info.__dict__, out_json, indent=2)
