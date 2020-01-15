@@ -4,7 +4,7 @@ import json
 import logging
 import os
 import textwrap
-from typing import NoReturn, Callable
+from typing import NoReturn
 
 from .._exporter import Exporter
 
@@ -13,27 +13,28 @@ class InkresatExporter(Exporter):
     extension = '.fml'
     comment_sign = '#'
 
-    def __init__(self, filename_handle: Callable[[PTLFormulaInfo], str], output_dir: str, statistics_to_file=True):
-        super().__init__(filename_handle, output_dir)
+    def __init__(self, output_dir: str, statistics_to_file=True):
+        super().__init__(output_dir)
         self.statistics_to_file = statistics_to_file
 
-    def export(self, expression: PTLFormula, filename_suffix: str = '') -> NoReturn:
+    def export(self, expression: PTLFormula, filename: str = '') -> NoReturn:
+        # by 'coincidence' default visualisation of teporal logic is inkresat
         from src.ast.propositional_temporal_logic import PTLFormula
-        if not isinstance(expression, PTLFormula):
-            raise NotImplementedError('Other elements of syntax tree arte not properly supported')
-        # by 'coincidence' default visualisation of first order logic is TPTP format :)
         from src.ast.propositional_temporal_logic.info.cnf_ptl_formula_info import \
             ConjunctiveNormalFormPropositionalTemporalLogicFormulaInfo
+
+        if not isinstance(expression, PTLFormula):
+            raise NotImplementedError('Other elements of syntax tree arte not properly supported')
         formula_info: ConjunctiveNormalFormPropositionalTemporalLogicFormulaInfo = expression.get_info()
-        filename = self.filename_handle(formula_info) + filename_suffix
+        filename = filename + self.extension
 
         if self.statistics_to_file:
-            full_json_out_path = os.path.join(self.output_dir, filename + self.extension + '.json')
+            full_json_out_path = os.path.join(self.output_dir, filename + '.json')
             logging.info(f'Writing json to {full_json_out_path}')
             with open(full_json_out_path, 'w') as out_json:
                 json.dump(formula_info.__dict__, out_json, indent=2)
 
-        full_out_path = os.path.join(self.output_dir, filename + self.extension)
+        full_out_path = os.path.join(self.output_dir, filename)
         with open(full_out_path, 'w') as out_file:
             logging.info(f'Writing formula to {full_out_path}')
             if not self.statistics_to_file:

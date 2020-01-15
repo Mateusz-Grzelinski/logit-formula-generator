@@ -21,6 +21,8 @@ class CNFConstraintSolver:
 
     def solve_in_random_order(self, skip_chance: float = None):
         skip_chance = random.random() if skip_chance is None else skip_chance
+        if skip_chance > 0.5:
+            skip_chance = 0.5
         cache = []
         for solution in self.solve():
             if random.random() < skip_chance:
