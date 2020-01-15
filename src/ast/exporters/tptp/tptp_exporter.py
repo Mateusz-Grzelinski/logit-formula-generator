@@ -41,8 +41,9 @@ class SerializableJSONEncoder(json.JSONEncoder):
 class TPTPExporter(Exporter):
     extension = '.p'
 
-    def __init__(self, output_dir: str, statistics_to_file: bool = True, add_tptp_header=True):
-        super().__init__(output_dir)
+    def __init__(self, output_dir: str, statistics_to_file: bool = True, add_tptp_header=True,
+                 additional_statistics: Dict = None):
+        super().__init__(output_dir, additional_statistics)
         self.add_tptp_header = add_tptp_header
         self.statistics_to_file = statistics_to_file
 
@@ -51,6 +52,7 @@ class TPTPExporter(Exporter):
             raise NotImplementedError('Other elements of syntax tree arte not properly supported')
         # by 'coincidence' default visualisation of first order logic is TPTP format :)
         formula_info = expression.get_info()
+        formula_info.additional_statistics = self.additional_statistics
         filename = filename + self.extension
 
         if self.statistics_to_file:

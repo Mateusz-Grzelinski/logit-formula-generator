@@ -2,13 +2,14 @@ from __future__ import annotations
 
 import os
 from abc import abstractmethod
-from typing import NoReturn
+from typing import NoReturn, Dict
 
 from src.ast import AstVisitor
 
 
 class Exporter(AstVisitor):
-    def __init__(self, output_dir: str):
+    def __init__(self, output_dir: str, additional_statistics: Dict = None):
+        self.additional_statistics = additional_statistics
         self.output_dir = output_dir
 
         if not os.path.exists(self.output_dir):
