@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from collections import defaultdict
-from typing import Optional, Dict, Type, Set
+from typing import Optional, Dict, Set
 
 from src.ast._connectives import MathConnective
 from src.ast.first_order_logic._atom import Atom
@@ -59,7 +59,7 @@ class CNFFormulaVisitor(FOLAstVisitor):
         self.info.term_instances_depths = defaultdict(int)
         # in future more advanced mechanism for context may be needed
         self.context: Optional[CNFClause] = None  # or quantifier
-        self._hashes_in_math_sense: Dict[Type[FOLElement], Set[int]] = {}
+        self._hashes_in_math_sense: Dict[str, Set[int]] = {}
         for element_type in [Variable, Functor, Predicate, Atom, Literal, CNFClause, CNFFormula]:
             self._hashes_in_math_sense[element_type.__name__] = set()
             self.info.number_of_instances[element_type.__name__] = 0
@@ -70,6 +70,8 @@ class CNFFormulaVisitor(FOLAstVisitor):
 
     def visit_variable(self, element: Variable):
         self._hashes_in_math_sense[Variable.__name__].add(MathSense.hash_variable(self.context, element))
+        # todo this should not be computed every visit, only post CNFFormula
+        self.info.number_of[Variable.__name__] = len(self._hashes_in_math_sense[Variable.__name__])
         self.info.number_of_instances[Variable.__name__] += 1
 
     def visit_functor(self, element: Functor):
@@ -102,6 +104,7 @@ class CNFFormulaVisitor(FOLAstVisitor):
 
     def visit_cnf_clause(self, element: CNFClause):
         self._hashes_in_math_sense[CNFClause.__name__].add(MathSense.hash_clause(element))
+        self.info.number_of[CNFClause.__name__] = len(self._hashes_in_math_sense[CNFClause.__name__])
         # variable is clause scoped
         self.info.number_of_singleton_variables += element.number_of_singleton_variables
         self.info.number_of_instances[CNFClause.__name__] += 1
