@@ -6,13 +6,12 @@ from copy import deepcopy
 from itertools import product
 from typing import Iterable, Dict, Generator, List
 
-from src.ast.first_order_logic import Functor, Variable
-from src.generators import AstGenerator
+from src.generators import SyntaxTreeGenerator
+from src.syntax_tree.first_order_logic import Functor, Variable
 from .variable_generator import VariableGenerator
 
 
-class FunctorGenerator(AstGenerator):
-
+class FunctorGenerator(SyntaxTreeGenerator):
     def __init__(self, variable_gen: VariableGenerator, arities: Iterable[int], functor_names: Iterable[str],
                  max_recursion_depth: int):
         self.max_recursion_depth = max_recursion_depth
@@ -38,7 +37,7 @@ class FunctorGenerator(AstGenerator):
         functors = set()
         for arity in self.arities:
             functor = Functor(name=functor_initial_name,
-                              items=[Variable(name=variable_initial_name) for i in range(arity)])
+                              children=[Variable(name=variable_initial_name) for i in range(arity)])
             functors.add(functor)
 
         # now generate nested structures
@@ -56,7 +55,7 @@ class FunctorGenerator(AstGenerator):
                         terms[argument_index].append(functor)
 
                     for n_args in product(*terms.values()):
-                        functor = Functor(name=functor_initial_name, items=deepcopy(n_args))
+                        functor = Functor(name=functor_initial_name, children=deepcopy(n_args))
                         functors.add(functor)
         for functor in functors:
             if functor.arity in self.arities:
@@ -65,6 +64,6 @@ class FunctorGenerator(AstGenerator):
     def generate(self) -> Functor:
         functor = deepcopy(random.choice(self.functors))
         functor.name = random.choice(self.functor_name_for_arity[functor.arity])
-        for var in functor.items(type=Variable):
+        for var in functor.recursive_nodes(type=Variable):
             var.name = random.choice(self.variable_gen.variable_names)
         return functor

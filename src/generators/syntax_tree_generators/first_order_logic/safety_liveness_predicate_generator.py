@@ -3,7 +3,7 @@ from __future__ import annotations
 import random
 from typing import Iterable
 
-from src.ast.first_order_logic import Predicate
+from src.syntax_tree.first_order_logic import Predicate
 from .functor_generator import FunctorGenerator
 from .predicate_generator import PredicateGenerator
 from .variable_generator import VariableGenerator
@@ -29,7 +29,7 @@ class SafetyLivenessPredicateGenerator(PredicateGenerator):
 
     def generate(self) -> Predicate:
         arity = random.choice(self.arities)
-        p = Predicate(name=random.choice(self.predicate_name_for_arity[arity]), items=[])
+        p = Predicate(name=random.choice(self.predicate_name_for_arity[arity]), children=[])
 
         # decide if predicate will present safety or liveness
         if random.random() > 0.5:

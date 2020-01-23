@@ -2,13 +2,13 @@ import copy
 import random
 from typing import Iterable
 
-import src.ast.propositional_temporal_logic as ptl
 import src.generators.syntax_tree_generators.propositional_temporal_logic as ptl_gen
-from src.ast import get_connective_properties
-from src.generators import AstGenerator
+import src.syntax_tree.propositional_temporal_logic as ptl
+from src.generators import SyntaxTreeGenerator
+from src.syntax_tree import get_connective_properties
 
 
-class PropositionalTemporalLogicGenerator(AstGenerator):
+class PropositionalTemporalLogicGenerator(SyntaxTreeGenerator):
     variable_name = 'v'
 
     def __init__(self, variable_names: Iterable[str], number_of_variables_without_connective: int,

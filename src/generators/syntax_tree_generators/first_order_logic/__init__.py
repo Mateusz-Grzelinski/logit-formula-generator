@@ -1,5 +1,5 @@
 from .atom_generator import AtomGenerator
-from .conjunctive_normal_form import *
+from .conjunctive_normal_form import CNFFormulaGenerator, CNFClauseGenerator
 from .formula_generator import FormulaGenerator
 from .functor_generator import FunctorGenerator
 from .predicate_generator import PredicateGenerator
@@ -14,7 +14,6 @@ __all__ = [
     'FunctorGenerator',
     'AtomGenerator',
     'QuantifierGenerator',
-    'LiteralGenerator',
     'CNFClauseGenerator',
     'CNFFormulaGenerator',
     'FormulaGenerator'

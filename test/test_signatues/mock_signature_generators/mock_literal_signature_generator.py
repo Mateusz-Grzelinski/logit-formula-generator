@@ -1,6 +1,6 @@
-from src.ast.first_order_logic import Literal
-
 from src.generators._signatures.first_order_logic import LiteralGenerator
+
+from src.syntax_tree.first_order_logic import Literal
 from test.test_signatues.mock_signature_generators.mock_atom_signature_generator import atom0, atom1, atom0_1
 
 
@@ -16,7 +16,7 @@ class MockLiteralGenerator(LiteralGenerator):
         yield literal0_1
 
 
-literal0 = Literal(items=atom0, negated=False)
-literal1 = Literal(items=atom1, negated=False)
-literal1_neg = Literal(items=atom1, negated=True)
-literal0_1 = Literal(items=atom0_1, negated=False)
+literal0 = Literal(children=atom0, negated=False)
+literal1 = Literal(children=atom1, negated=False)
+literal1_neg = Literal(children=atom1, negated=True)
+literal0_1 = Literal(children=atom0_1, negated=False)

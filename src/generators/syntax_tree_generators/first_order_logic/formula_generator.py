@@ -3,13 +3,13 @@ from __future__ import annotations
 import random
 from typing import Iterable
 
-import src.ast.first_order_logic as fol
-from src.ast import LogicalConnective
-from src.generators import AstGenerator
+import src.syntax_tree.first_order_logic as fol
+from src.generators import SyntaxTreeGenerator
+from src.syntax_tree import LogicalConnective
 from .atom_generator import AtomGenerator
 
 
-class FormulaGenerator(AstGenerator):
+class FormulaGenerator(SyntaxTreeGenerator):
     def __init__(self, atoms_gen: AtomGenerator, number_of_atoms: int, number_of_existential_quantifiers: int,
                  number_of_universal_quantifiers: int, quantifier_number_of_atoms: Iterable[int]) -> None:
         self.atoms_gen = atoms_gen
@@ -30,13 +30,14 @@ class FormulaGenerator(AstGenerator):
         # todo randomize logical connective
         assert number_of_atoms != 0
         if number_of_atoms == 1:
-            return fol.FOLFormula(items=[atom_gen.generate()], logical_connective=LogicalConnective.OR)
+            return fol.FOLFormula(children=[atom_gen.generate()], binary_logical_connective=LogicalConnective.OR)
         elif number_of_atoms == 2:
-            return fol.FOLFormula(items=[atom_gen.generate(), atom_gen.generate()],
-                                  logical_connective=LogicalConnective.OR)
+            return fol.FOLFormula(children=[atom_gen.generate(), atom_gen.generate()],
+                                  binary_logical_connective=LogicalConnective.OR)
         else:
             left_subtree_size = random.randrange(1, number_of_atoms)
             right_subtree_size = number_of_atoms - left_subtree_size
             left_subtree = self._atom_only_formula_gen(atom_gen, number_of_atoms=left_subtree_size)
             right_subtree = self._atom_only_formula_gen(atom_gen, number_of_atoms=right_subtree_size)
-            return fol.FOLFormula(items=[left_subtree, right_subtree], logical_connective=LogicalConnective.OR)
+            return fol.FOLFormula(children=[left_subtree, right_subtree],
+                                  binary_logical_connective=LogicalConnective.OR)

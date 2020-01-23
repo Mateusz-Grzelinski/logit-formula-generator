@@ -1,11 +1,11 @@
 import random
 from typing import Iterable
 
-from src.ast.propositional_temporal_logic import Variable
-from src.generators import AstGenerator
+from src.generators import SyntaxTreeGenerator
+from src.syntax_tree.propositional_temporal_logic import Variable
 
 
-class VariableGenerator(AstGenerator):
+class VariableGenerator(SyntaxTreeGenerator):
     def __init__(self, variable_names: Iterable[str]):
         self.variable_names = list(variable_names)
 

@@ -2,14 +2,14 @@ import copy
 import random
 from typing import Iterable
 
-import src.ast.propositional_temporal_logic as ptl
 import src.generators.syntax_tree_generators.propositional_temporal_logic as ptl_gen
-from src.ast import get_connective_properties, LogicalConnective
-from src.generators import AstGenerator, IntegerRange
+import src.syntax_tree.propositional_temporal_logic as ptl
+from src.generators import SyntaxTreeGenerator, IntegerRange
 from src.generators.contraint_solver.first_order_logic.z3_solver import Z3CNFConstraintSolver
+from src.syntax_tree import get_connective_properties, LogicalConnective
 
 
-class CNFPropositionalTemporalLogicGenerator(AstGenerator):
+class CNFPropositionalTemporalLogicGenerator(SyntaxTreeGenerator):
     variable_name = 'v'
 
     def __init__(self, variable_names: Iterable[str], number_of_variables_without_connective: IntegerRange,
@@ -29,7 +29,7 @@ class CNFPropositionalTemporalLogicGenerator(AstGenerator):
         var_gen = ptl_gen.VariableGenerator(variable_names=self.variable_names)
 
         def generate_clause(length: int):
-            return ptl.PTLFormula(items=[var_gen.generate() for _ in range(length)],
+            return ptl.PTLFormula(children=[var_gen.generate() for _ in range(length)],
                                   logical_connective=get_connective_properties(LogicalConnective.OR))
 
         solver = Z3CNFConstraintSolver(
@@ -37,9 +37,9 @@ class CNFPropositionalTemporalLogicGenerator(AstGenerator):
             number_of_clauses=self.number_of_clauses,
             number_of_literals=self.number_of_variables)
         for solution in solver.solve_in_random_order():
-            root = ptl.PTLFormula(items=[], logical_connective=get_connective_properties(LogicalConnective.AND))
+            root = ptl.PTLFormula(children=[], logical_connective=get_connective_properties(LogicalConnective.AND))
             random_unary_connective_generator = self._random_unary_connective_generator()
-            for clause_len, amount_of_clauses in solution.items():
+            for clause_len, amount_of_clauses in solution.recursive_nodes():
                 for _ in range(amount_of_clauses):
                     clause = generate_clause(clause_len)
                     for variable in clause:

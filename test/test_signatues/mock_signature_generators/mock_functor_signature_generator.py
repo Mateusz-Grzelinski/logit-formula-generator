@@ -1,8 +1,9 @@
 from copy import deepcopy
 from typing import Generator
 
-from src.ast.first_order_logic import Functor, Variable
 from src.generators._signatures.first_order_logic import FunctorGenerator
+
+from src.syntax_tree.first_order_logic import Functor, Variable
 
 
 class MockFunctorGenerator(FunctorGenerator):
@@ -17,6 +18,6 @@ class MockFunctorGenerator(FunctorGenerator):
 
 
 func_rec_0 = Functor(name=MockFunctorGenerator.functor_name,
-                     items=[Variable(name=MockFunctorGenerator.variable_initial_name)])
-func_rec_1 = Functor(name=MockFunctorGenerator.functor_name, items=[deepcopy(func_rec_0)])
-func_rec_2 = Functor(name=MockFunctorGenerator.functor_name, items=[deepcopy(func_rec_1)])
+                     children=[Variable(name=MockFunctorGenerator.variable_initial_name)])
+func_rec_1 = Functor(name=MockFunctorGenerator.functor_name, children=[deepcopy(func_rec_0)])
+func_rec_2 = Functor(name=MockFunctorGenerator.functor_name, children=[deepcopy(func_rec_1)])

@@ -1,17 +1,17 @@
-from typing import Iterable
+from typing import Iterable, Union
 
-import src.ast.first_order_logic as fol
 import src.generators.syntax_tree_generators.first_order_logic as fol_gen
-from ..._ast_generator import AstGenerator
+import src.syntax_tree.first_order_logic as fol
+from ...syntax_tree_generator import SyntaxTreeGenerator
 
 
-class FormulaGenerator(AstGenerator):
+class FormulaGenerator(SyntaxTreeGenerator):
     def __init__(self, functor_arity: Iterable[int], functor_recursion_depth: int, predicate_arities: Iterable[int],
-                 atom_connectives: Iterable[str], number_of_atoms: int, number_of_universal_quantifiers: int,
+                 atom_connectives: Iterable[Union[str, None]], number_of_atoms: int, atom_negation_chance: float,
+                 number_of_universal_quantifiers: int,
                  number_of_existential_quantifiers: int, quantifier_number_of_atoms: Iterable[int],
                  predicate_names: Iterable[str], functor_names: Iterable[str],
                  variable_names: Iterable[str]):
-        self.number_of_atoms = number_of_atoms
         self.predicate_names = predicate_names
         self.functor_names = functor_names
         self.functor_recursion_depth = functor_recursion_depth
@@ -19,7 +19,9 @@ class FormulaGenerator(AstGenerator):
         self.number_of_universal_quantifiers = number_of_universal_quantifiers
         self.number_of_existential_quantifiers = number_of_existential_quantifiers
         self.quantifier_number_of_atoms = set(quantifier_number_of_atoms)
+        self.number_of_atoms = number_of_atoms
         self.atom_connectives = atom_connectives
+        self.atom_negation_chance = atom_negation_chance
         self.predicate_arities = predicate_arities
         self.functor_arity = functor_arity
 
@@ -30,7 +32,8 @@ class FormulaGenerator(AstGenerator):
                                      variable_gen=v, functor_names=self.functor_names)
         p = fol_gen.PredicateGenerator(arities=self.predicate_arities, functor_gen=f, variable_gen=v,
                                        predicate_names=self.predicate_names)
-        a = fol_gen.AtomGenerator(connectives=self.atom_connectives, predicate_gen=p, variable_gen=v)
+        a = fol_gen.AtomGenerator(math_connectives=self.atom_connectives, negation_chance=self.atom_negation_chance,
+                                  predicate_gen=p, variable_gen=v, functor_gen=f)
         # q = fol_sig.QuantifierGenerator(atom_gen=a, number_of_atoms=)
         F = fol_gen.FormulaGenerator(atoms_gen=a, number_of_atoms=self.number_of_atoms,
                                      number_of_universal_quantifiers=self.number_of_universal_quantifiers,

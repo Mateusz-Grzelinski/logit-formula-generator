@@ -1,7 +1,7 @@
 from src.generators.utils._range import IntegerRange
-from ._ast_generator import AstGenerator
+from .syntax_tree_generator import SyntaxTreeGenerator
 
 __all__ = [
     'IntegerRange',
-    'AstGenerator'
+    'SyntaxTreeGenerator'
 ]
