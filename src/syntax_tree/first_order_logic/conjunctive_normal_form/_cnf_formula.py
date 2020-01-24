@@ -45,3 +45,4 @@ class CNFFirstOrderLogicFormula(FirstOrderLogicFormula):
             if self.equivalent(cnf_formulas):
                 return True
         return False
+
