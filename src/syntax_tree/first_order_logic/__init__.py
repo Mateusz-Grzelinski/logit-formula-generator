@@ -1,13 +1,14 @@
 from typing import Union
 
 from ._atom import Atom
-from ._formula import FOLFormula
+from ._fol_formula import FirstOrderLogicFormula
 from ._functor import Functor
 from ._predicate import Predicate
 from ._quantifier import Quantifier
 from ._variable import Variable
 from .conjunctive_normal_form import CNFClause
-from .conjunctive_normal_form import CNFFOLFormula
+from .conjunctive_normal_form import CNFFirstOrderLogicFormula
+from .conjunctive_normal_form import CNFFormulaInfo
 
 Term = Union[Variable, Functor]
 
@@ -17,8 +18,9 @@ __all__ = [
     'Functor',
     'Predicate',
     'Atom',
-    'FOLFormula',
+    'FirstOrderLogicFormula',
     'Quantifier',
     'CNFClause',
-    'CNFFOLFormula',
+    'CNFFirstOrderLogicFormula',
+    'CNFFormulaInfo',
 ]

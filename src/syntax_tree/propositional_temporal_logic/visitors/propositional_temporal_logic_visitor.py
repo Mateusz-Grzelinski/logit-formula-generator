@@ -7,7 +7,7 @@ from ...syntax_tree_visitor import SyntaxTreeVisitor
 
 class PropositionalTemporalLogicVisitor(SyntaxTreeVisitor):
 
-    def visit(self, element: TemporalLogicElement):
+    def visit_pre(self, element: TemporalLogicElement):
         if isinstance(element, Variable):
             self.visit_variable(element)
         elif isinstance(element, PTLFormula):

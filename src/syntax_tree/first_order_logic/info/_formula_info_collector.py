@@ -1,0 +1,5 @@
+from src.syntax_tree.first_order_logic.visitors.first_order_logic_visitor import FirstOrderLogicSyntaxTreeVisitor
+
+
+class FirstOrderLogicFormulaInfoCollector(FirstOrderLogicSyntaxTreeVisitor):
+    pass

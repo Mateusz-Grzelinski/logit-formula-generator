@@ -22,22 +22,23 @@ class FormulaGenerator(SyntaxTreeGenerator):
         assert number_of_existential_quantifiers == 0, 'currently not supported'
         assert not quantifier_number_of_atoms, 'currently not suppported'
 
-    def generate(self) -> fol.FOLFormula:
+    def generate(self) -> fol.FirstOrderLogicFormula:
         return self._atom_only_formula_gen(atom_gen=self.atoms_gen, number_of_atoms=self.number_of_atoms)
 
-    def _atom_only_formula_gen(self, atom_gen: AtomGenerator, number_of_atoms: int) -> fol.FOLFormula:
+    def _atom_only_formula_gen(self, atom_gen: AtomGenerator, number_of_atoms: int) -> fol.FirstOrderLogicFormula:
         """Recursive generation in python is not a good idea"""
         # todo randomize logical connective
         assert number_of_atoms != 0
         if number_of_atoms == 1:
-            return fol.FOLFormula(children=[atom_gen.generate()], binary_logical_connective=LogicalConnective.OR)
+            return fol.FirstOrderLogicFormula(children=[atom_gen.generate()],
+                                              binary_logical_connective=LogicalConnective.OR)
         elif number_of_atoms == 2:
-            return fol.FOLFormula(children=[atom_gen.generate(), atom_gen.generate()],
-                                  binary_logical_connective=LogicalConnective.OR)
+            return fol.FirstOrderLogicFormula(children=[atom_gen.generate(), atom_gen.generate()],
+                                              binary_logical_connective=LogicalConnective.OR)
         else:
             left_subtree_size = random.randrange(1, number_of_atoms)
             right_subtree_size = number_of_atoms - left_subtree_size
             left_subtree = self._atom_only_formula_gen(atom_gen, number_of_atoms=left_subtree_size)
             right_subtree = self._atom_only_formula_gen(atom_gen, number_of_atoms=right_subtree_size)
-            return fol.FOLFormula(children=[left_subtree, right_subtree],
-                                  binary_logical_connective=LogicalConnective.OR)
+            return fol.FirstOrderLogicFormula(children=[left_subtree, right_subtree],
+                                              binary_logical_connective=LogicalConnective.OR)

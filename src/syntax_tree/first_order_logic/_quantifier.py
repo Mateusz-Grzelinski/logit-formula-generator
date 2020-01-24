@@ -7,7 +7,7 @@ from ..syntax_tree import FirstOrderLogicNode
 
 
 class Quantifier(FirstOrderLogicNode):
-    def __init__(self, children: Iterable[FOLFormula], unary_connective: Iterable,
+    def __init__(self, children: Iterable[FirstOrderLogicFormula], unary_connective: Iterable,
                  type: Literal['universal', 'existential']):
         self.unary_connective = tuple(unary_connective)
         self.type = type

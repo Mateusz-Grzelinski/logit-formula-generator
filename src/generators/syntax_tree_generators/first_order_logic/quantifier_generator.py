@@ -12,4 +12,4 @@ class QuantifierGenerator(SyntaxTreeGenerator):
 
     def generate(self) -> Generator[fol.Quantifier, Any, Any]:
         fol.Quantifier(children=[])
-        fol.FOLFormula(children=[])
+        fol.FirstOrderLogicFormula(children=[])

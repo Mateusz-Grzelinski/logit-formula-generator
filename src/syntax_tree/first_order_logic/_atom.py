@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import Iterable
 
-from ..connectives import ConnectiveProperties, LogicalConnective
+from ..connectives import ConnectiveProperties, LogicalConnective, MathConnective
 from ..syntax_tree import SyntaxTreeNode, FirstOrderLogicNode
 
 
@@ -36,3 +36,7 @@ class Atom(FirstOrderLogicNode):
     @property
     def arity(self):
         return len(self)
+
+    @property
+    def is_equality(self):
+        return MathConnective.EQUAL == self.math_connective or MathConnective.NOT_EQUAL == self.math_connective

@@ -7,9 +7,9 @@ class TestFOLInfo:
         a = fol.Atom(children=[v], math_connective=None)
         l = fol.Literal(children=a, negated=False)
         c = fol.CNFClause(children=[l])
-        f = fol.CNFFOLFormula(children=[c])
+        f = fol.CNFFirstOrderLogicFormula(children=[c])
 
-        info = f.get_info()
+        info = f.get_formula_info()
 
         assert info.number_of_singleton_variables == 1
         assert info.number_of_equality_atom_instances == 0
@@ -27,7 +27,7 @@ class TestFOLInfo:
         assert info.number_of_instances[fol.Atom] == 1
         assert info.number_of_instances[fol.Literal] == 1
         assert info.number_of_instances[fol.CNFClause] == 1
-        assert info.number_of_instances[fol.CNFFOLFormula] == 1
+        assert info.number_of_instances[fol.CNFFirstOrderLogicFormula] == 1
 
         assert info.number_of[fol.Variable] == 1
         assert info.number_of[fol.Predicate] == 0
@@ -35,7 +35,7 @@ class TestFOLInfo:
         assert info.number_of[fol.Atom] == 1
         assert info.number_of[fol.Literal] == 1
         assert info.number_of[fol.CNFClause] == 1
-        assert info.number_of[fol.CNFFOLFormula] == 1
+        assert info.number_of[fol.CNFFirstOrderLogicFormula] == 1
 
     def test_two_variable_two_atom_one_clause(self):
         v1 = fol.Variable('V1')
@@ -45,9 +45,9 @@ class TestFOLInfo:
         l1 = fol.Literal(children=a1, negated=False)
         l2 = fol.Literal(children=a2, negated=False)
         c = fol.CNFClause(children=[l1, l2])
-        f = fol.CNFFOLFormula(children=[c])
+        f = fol.CNFFirstOrderLogicFormula(children=[c])
 
-        info = f.get_info()
+        info = f.get_formula_info()
 
         assert info.number_of_singleton_variables == 2
         assert info.number_of_equality_atom_instances == 0
@@ -65,7 +65,7 @@ class TestFOLInfo:
         assert info.number_of_instances[fol.Atom] == 2
         assert info.number_of_instances[fol.Literal] == 2
         assert info.number_of_instances[fol.CNFClause] == 1
-        assert info.number_of_instances[fol.CNFFOLFormula] == 1
+        assert info.number_of_instances[fol.CNFFirstOrderLogicFormula] == 1
 
         assert info.number_of[fol.Variable] == 2
         assert info.number_of[fol.Predicate] == 0
@@ -73,7 +73,7 @@ class TestFOLInfo:
         assert info.number_of[fol.Atom] == 2
         assert info.number_of[fol.Literal] == 2
         assert info.number_of[fol.CNFClause] == 1
-        assert info.number_of[fol.CNFFOLFormula] == 1
+        assert info.number_of[fol.CNFFirstOrderLogicFormula] == 1
 
     def test_two_variable_two_atom_two_clauses(self):
         v1 = fol.Variable('V1')
@@ -84,9 +84,9 @@ class TestFOLInfo:
         l2 = fol.Literal(children=a2, negated=False)
         c1 = fol.CNFClause(children=[l1])
         c2 = fol.CNFClause(children=[l2])
-        f = fol.CNFFOLFormula(children=[c1, c2])
+        f = fol.CNFFirstOrderLogicFormula(children=[c1, c2])
 
-        info = f.get_info()
+        info = f.get_formula_info()
 
         assert info.number_of_singleton_variables == 2
         assert info.number_of_equality_atom_instances == 0
@@ -104,7 +104,7 @@ class TestFOLInfo:
         assert info.number_of_instances[fol.Atom] == 2
         assert info.number_of_instances[fol.Literal] == 2
         assert info.number_of_instances[fol.CNFClause] == 2
-        assert info.number_of_instances[fol.CNFFOLFormula] == 1
+        assert info.number_of_instances[fol.CNFFirstOrderLogicFormula] == 1
 
         assert info.number_of[fol.Variable] == 2
         assert info.number_of[fol.Predicate] == 0
@@ -113,7 +113,7 @@ class TestFOLInfo:
         assert info.number_of[fol.Literal] == 2
         # clauses are equivalent in mathematical sense
         assert info.number_of[fol.CNFClause] == 2  # todo check: 1 or 2
-        assert info.number_of[fol.CNFFOLFormula] == 1
+        assert info.number_of[fol.CNFFirstOrderLogicFormula] == 1
 
     def test_two_variable_two_predicate_two_atom_two_clauses(self):
         v1 = fol.Variable('V1')
@@ -126,9 +126,9 @@ class TestFOLInfo:
         l2 = fol.Literal(children=a2, negated=False)
         c1 = fol.CNFClause(children=[l1, l2])
         c2 = fol.CNFClause(children=[l2])
-        f = fol.CNFFOLFormula(children=[c1, c2])
+        f = fol.CNFFirstOrderLogicFormula(children=[c1, c2])
 
-        info = f.get_info()
+        info = f.get_formula_info()
 
         assert info.number_of_singleton_variables == 3
         assert info.number_of_equality_atom_instances == 0
@@ -148,7 +148,7 @@ class TestFOLInfo:
         assert info.number_of_instances[fol.Atom] == 3
         assert info.number_of_instances[fol.Literal] == 3
         assert info.number_of_instances[fol.CNFClause] == 2
-        assert info.number_of_instances[fol.CNFFOLFormula] == 1
+        assert info.number_of_instances[fol.CNFFirstOrderLogicFormula] == 1
 
         assert info.number_of[fol.Variable] == 3
         assert info.number_of[fol.Predicate] == 1
@@ -157,7 +157,7 @@ class TestFOLInfo:
         assert info.number_of[fol.Literal] == 3
         # clauses are equivalent in mathematical sense
         assert info.number_of[fol.CNFClause] == 2
-        assert info.number_of[fol.CNFFOLFormula] == 1
+        assert info.number_of[fol.CNFFirstOrderLogicFormula] == 1
 
     def test_two_predicate_one_functor_two_atom_two_clauses(self):
         p1 = fol.Predicate('p1', children=[])
@@ -169,9 +169,9 @@ class TestFOLInfo:
         l2 = fol.Literal(children=a2, negated=False)
         c1 = fol.CNFClause(children=[l1, l2])
         c2 = fol.CNFClause(children=[l2])
-        f = fol.CNFFOLFormula(children=[c1, c2])
+        f = fol.CNFFirstOrderLogicFormula(children=[c1, c2])
 
-        info = f.get_info()
+        info = f.get_formula_info()
 
         assert info.number_of_singleton_variables == 0
         assert info.number_of_equality_atom_instances == 0
@@ -194,7 +194,7 @@ class TestFOLInfo:
         assert info.number_of_instances[fol.Atom] == 3
         assert info.number_of_instances[fol.Literal] == 3
         assert info.number_of_instances[fol.CNFClause] == 2
-        assert info.number_of_instances[fol.CNFFOLFormula] == 1
+        assert info.number_of_instances[fol.CNFFirstOrderLogicFormula] == 1
 
         assert info.number_of[fol.Variable] == 0
         assert info.number_of[fol.Predicate] == 2
@@ -203,4 +203,4 @@ class TestFOLInfo:
         assert info.number_of[fol.Literal] == 2
         # clauses are equivalent in mathematical sense
         assert info.number_of[fol.CNFClause] == 2
-        assert info.number_of[fol.CNFFOLFormula] == 1
+        assert info.number_of[fol.CNFFirstOrderLogicFormula] == 1

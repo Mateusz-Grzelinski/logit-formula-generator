@@ -1,10 +1,10 @@
-from typing import Iterable, Union
+from typing import Iterable, Union, Generator
 
 import src.generators.syntax_tree_generators.first_order_logic as fol_gen
 from src.generators import SyntaxTreeGenerator
 from src.generators.contraint_solver.first_order_logic.z3_solver import Z3CNFConstraintSolver
 from src.generators.utils import IntegerRange
-from src.syntax_tree.first_order_logic import CNFFOLFormula
+from src.syntax_tree.first_order_logic import CNFFirstOrderLogicFormula
 
 
 class CNFSafetyLivenessGenerator(SyntaxTreeGenerator):
@@ -25,7 +25,7 @@ class CNFSafetyLivenessGenerator(SyntaxTreeGenerator):
         self.predicate_arities = predicate_arities
         self.functor_arity = functor_arity
 
-    def generate(self) -> CNFFOLFormula:
+    def generate(self) -> Generator[CNFFirstOrderLogicFormula, None, None]:
         v = fol_gen.VariableGenerator(variable_names=self.variable_names)
         f = fol_gen.FunctorGenerator(variable_gen=v, arities=self.functor_arity,
                                      functor_names=self.functor_names,

@@ -25,7 +25,7 @@ class FormulaGenerator(SyntaxTreeGenerator):
         self.predicate_arities = predicate_arities
         self.functor_arity = functor_arity
 
-    def generate(self) -> fol.FOLFormula:
+    def generate(self) -> fol.FirstOrderLogicFormula:
         # todo add variable gen, fix arguments
         v = fol_gen.VariableGenerator(variable_names=self.variable_names)
         f = fol_gen.FunctorGenerator(arities=self.functor_arity, max_recursion_depth=self.functor_recursion_depth,

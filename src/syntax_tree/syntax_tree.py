@@ -4,25 +4,9 @@ from abc import ABC
 from collections.abc import MutableSequence
 from typing import Iterable, TypeVar, overload, Tuple
 
+from ..syntax_tree.syntax_tree_visitor import SyntaxTreeVisitor
+
 ChildrenType = TypeVar('ChildrenType')
-
-
-# class SyntaxTreeNode(ABC):
-#     def __init__(self, unary_connectives: Iterable[str, ConnectiveEnum, ConnectiveProperties] = None, *args, **kwargs):
-#         from .connectives import ConnectiveProperties, ConnectiveEnum, get_connective_properties
-#         unary_connectives = [] if unary_connectives is None else unary_connectives
-#         self.unary_connectives = []
-#         for unary_connective in unary_connectives:
-#             if isinstance(unary_connective, ConnectiveEnum) or isinstance(unary_connective, str):
-#                 self.unary_connectives.append(get_connective_properties(unary_connective))
-#             elif isinstance(unary_connective, ConnectiveProperties):
-#                 self.unary_connectives.append(unary_connective)
-#             else:
-#                 assert False, f'Unknown {unary_connective} type'
-#         super().__init__(*args, **kwargs)
-#
-#     def _accept(self, visitor: AstVisitor):
-#         visitor.visit(self)
 
 
 class SyntaxTreeNode(MutableSequence, ABC):
@@ -78,11 +62,15 @@ class SyntaxTreeNode(MutableSequence, ABC):
         """iterate over all nested first_order_logic. Item can be a _containers"""
         return (i for i in self._children if isinstance(i, SyntaxTreeNode))
 
-    def _accept(self, visitor: AstVisitor):
-        visitor.visit(self)
-        if isinstance(self, SyntaxTreeNode):
-            for item in self._children:
-                item._accept(visitor)
+    def _accept(self, visitor: SyntaxTreeVisitor):
+        visitor.visit_pre(self)
+        # iterate all except last one to avoid last call on visitor.visit_in_between_children()
+        for item in self[:-1]:
+            item._accept(visitor)
+            visitor.visit_in_between_children(self)
+        if len(self):
+            self[-1]._accept(visitor)
+        visitor.visit_post(self)
 
 
 class FirstOrderLogicNode(SyntaxTreeNode):

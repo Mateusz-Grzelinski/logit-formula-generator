@@ -1,59 +1,169 @@
 from __future__ import annotations
 
-from .._atom import Atom
-from .._formula import FOLFormula
-from .._functor import Functor
-from .._predicate import Predicate
-from .._quantifier import Quantifier
-from .._variable import Variable
-from ..conjunctive_normal_form import CNFClause
-from ..conjunctive_normal_form import CNFFOLFormula
+from typing import NoReturn
+
 from ...syntax_tree import FirstOrderLogicNode
 from ...syntax_tree_visitor import SyntaxTreeVisitor
 
 
-class FOLSyntaxTreeVisitor(SyntaxTreeVisitor):
+class FirstOrderLogicSyntaxTreeVisitor(SyntaxTreeVisitor):
+    def __init__(self):
+        self.context = []
 
-    def visit(self, element: FirstOrderLogicNode):
+    def visit_pre(self, element: FirstOrderLogicNode) -> NoReturn:
+        from .._atom import Atom
+        from .._fol_formula import FirstOrderLogicFormula
+        from .._functor import Functor
+        from .._predicate import Predicate
+        from .._quantifier import Quantifier
+        from .._variable import Variable
+        from ..conjunctive_normal_form._cnf_clause import CNFClause
+        from ..conjunctive_normal_form._cnf_formula import CNFFirstOrderLogicFormula
         if isinstance(element, Variable):
-            self.visit_variable(element)
+            self.visit_variable_pre(element)
         elif isinstance(element, Functor):
-            self.visit_functor(element)
+            self.visit_functor_pre(element)
         elif isinstance(element, Predicate):
-            self.visit_predicate(element)
+            self.visit_predicate_pre(element)
         elif isinstance(element, Atom):
-            self.visit_atom(element)
+            self.visit_atom_pre(element)
         elif isinstance(element, CNFClause):
-            self.visit_cnf_clause(element)
-        elif isinstance(element, FOLFormula):
-            self.visit_formula(element)
+            self.visit_cnf_clause_pre(element)
+        elif isinstance(element, CNFFirstOrderLogicFormula):
+            self.visit_cnf_formula_pre(element)
+        elif isinstance(element, FirstOrderLogicFormula):
+            self.visit_fol_formula_pre(element)
         elif isinstance(element, Quantifier):
-            self.visit_quantifier(element)
-        elif isinstance(element, CNFFOLFormula):
-            self.visit_cnf_formula(element)
+            self.visit_quantifier_pre(element)
+        else:
+            assert False, f'Unknown element for visitor {type(element)}, {element}'
+        self.context.append(element)
+
+    def visit_in_between_children(self, element: SyntaxTreeNode) -> NoReturn:
+        from .._atom import Atom
+        from .._fol_formula import FirstOrderLogicFormula
+        from .._functor import Functor
+        from .._predicate import Predicate
+        from .._quantifier import Quantifier
+        from .._variable import Variable
+        from ..conjunctive_normal_form._cnf_clause import CNFClause
+        from ..conjunctive_normal_form._cnf_formula import CNFFirstOrderLogicFormula
+        if isinstance(element, Variable):
+            self.visit_variable_in_between_children(element)
+        elif isinstance(element, Functor):
+            self.visit_functor_in_between_children(element)
+        elif isinstance(element, Predicate):
+            self.visit_predicate_in_between_children(element)
+        elif isinstance(element, Atom):
+            self.visit_atom_in_between_children(element)
+        elif isinstance(element, CNFClause):
+            self.visit_cnf_clause_in_between_children(element)
+        elif isinstance(element, CNFFirstOrderLogicFormula):
+            self.visit_cnf_formula_in_between_children(element)
+        elif isinstance(element, FirstOrderLogicFormula):
+            self.visit_fol_formula_in_between_children(element)
+        elif isinstance(element, Quantifier):
+            self.visit_quantifier_in_between_children(element)
         else:
             assert False, f'Unknown element for visitor {type(element)}, {element}'
 
-    def visit_variable(self, element: Variable):
+    def visit_post(self, element: FirstOrderLogicNode) -> NoReturn:
+        from .._atom import Atom
+        from .._fol_formula import FirstOrderLogicFormula
+        from .._functor import Functor
+        from .._predicate import Predicate
+        from .._quantifier import Quantifier
+        from .._variable import Variable
+        from ..conjunctive_normal_form._cnf_clause import CNFClause
+        from ..conjunctive_normal_form._cnf_formula import CNFFirstOrderLogicFormula
+        self.context.pop()
+        if isinstance(element, Variable):
+            self.visit_variable_post(element)
+        elif isinstance(element, Functor):
+            self.visit_functor_post(element)
+        elif isinstance(element, Predicate):
+            self.visit_predicate_post(element)
+        elif isinstance(element, Atom):
+            self.visit_atom_post(element)
+        elif isinstance(element, CNFClause):
+            self.visit_cnf_clause_post(element)
+        elif isinstance(element, CNFFirstOrderLogicFormula):
+            self.visit_cnf_formula_post(element)
+        elif isinstance(element, FirstOrderLogicFormula):
+            self.visit_fol_formula_post(element)
+        elif isinstance(element, Quantifier):
+            self.visit_quantifier_post(element)
+        else:
+            assert False, f'Unknown element for visitor {type(element)}, {element}'
+
+    def visit_variable_pre(self, element: Variable):
         pass
 
-    def visit_functor(self, element: Functor):
+    def visit_functor_pre(self, element: Functor):
         pass
 
-    def visit_predicate(self, element: Predicate):
+    def visit_predicate_pre(self, element: Predicate):
         pass
 
-    def visit_atom(self, element: Atom):
+    def visit_atom_pre(self, element: Atom):
         pass
 
-    def visit_cnf_clause(self, element: CNFClause):
+    def visit_cnf_clause_pre(self, element: CNFClause):
         pass
 
-    def visit_cnf_formula(self, element: CNFFOLFormula):
+    def visit_cnf_formula_pre(self, element: CNFFirstOrderLogicFormula):
         pass
 
-    def visit_quantifier(self, element: Quantifier):
+    def visit_quantifier_pre(self, element: Quantifier):
         pass
 
-    def visit_formula(self, element: FOLFormula):
+    def visit_fol_formula_pre(self, element: FirstOrderLogicFormula):
+        pass
+
+    def visit_variable_in_between_children(self, element: Variable):
+        pass
+
+    def visit_functor_in_between_children(self, element: Functor):
+        pass
+
+    def visit_predicate_in_between_children(self, element: Predicate):
+        pass
+
+    def visit_atom_in_between_children(self, element: Atom):
+        pass
+
+    def visit_cnf_clause_in_between_children(self, element: CNFClause):
+        pass
+
+    def visit_cnf_formula_in_between_children(self, element: CNFFirstOrderLogicFormula):
+        pass
+
+    def visit_quantifier_in_between_children(self, element: Quantifier):
+        pass
+
+    def visit_fol_formula_in_between_children(self, element: FirstOrderLogicFormula):
+        pass
+
+    def visit_variable_post(self, element: Variable):
+        pass
+
+    def visit_functor_post(self, element: Functor):
+        pass
+
+    def visit_predicate_post(self, element: Predicate):
+        pass
+
+    def visit_atom_post(self, element: Atom):
+        pass
+
+    def visit_cnf_clause_post(self, element: CNFClause):
+        pass
+
+    def visit_cnf_formula_post(self, element: CNFFirstOrderLogicFormula):
+        pass
+
+    def visit_quantifier_post(self, element: Quantifier):
+        pass
+
+    def visit_fol_formula_post(self, element: FirstOrderLogicFormula):
         pass

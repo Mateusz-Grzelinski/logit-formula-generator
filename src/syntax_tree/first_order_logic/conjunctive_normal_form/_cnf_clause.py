@@ -2,11 +2,11 @@ from __future__ import annotations
 
 from collections.abc import Iterable
 
-from .. import FOLFormula
+from .. import FirstOrderLogicFormula
 from ...connectives import LogicalConnective
 
 
-class CNFClause(FOLFormula):
+class CNFClause(FirstOrderLogicFormula):
     def __init__(self, children: Iterable[Atom] = None):
         super().__init__(children=children, binary_logical_connective=LogicalConnective.OR)
 

@@ -6,7 +6,7 @@ import os
 import textwrap
 from typing import NoReturn, Dict
 
-from .._exporter import Exporter
+from src.syntax_tree.exporters import Exporter
 
 
 class InkresatExporter(Exporter):
@@ -17,7 +17,7 @@ class InkresatExporter(Exporter):
         super().__init__(output_dir, additional_statistics)
         self.statistics_to_file = statistics_to_file
 
-    def export(self, expression: PTLFormula, filename: str = '') -> NoReturn:
+    def get_formula_as_string(self) -> NoReturn:
         # by 'coincidence' default visualisation of teporal logic is inkresat
         from src.syntax_tree.propositional_temporal_logic import PTLFormula
         from src.syntax_tree.propositional_temporal_logic.info.cnf_ptl_formula_info import \
@@ -25,7 +25,7 @@ class InkresatExporter(Exporter):
 
         if not isinstance(expression, PTLFormula):
             raise NotImplementedError('Other elements of syntax tree arte not properly supported')
-        formula_info: ConjunctiveNormalFormPropositionalTemporalLogicFormulaInfo = expression.get_info()
+        formula_info: ConjunctiveNormalFormPropositionalTemporalLogicFormulaInfo = expression.get_formula_info()
         formula_info.additional_statistics = self.additional_statistics
         filename = filename + self.extension
 
