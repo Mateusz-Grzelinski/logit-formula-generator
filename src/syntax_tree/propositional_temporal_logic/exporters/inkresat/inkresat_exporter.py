@@ -1,45 +1,33 @@
 from __future__ import annotations
 
-import json
-import logging
-import os
-import textwrap
-from typing import NoReturn, Dict
+import io
+from typing import NoReturn
 
-from src.syntax_tree.exporters import Exporter
+from src.syntax_tree.propositional_temporal_logic import PTLFormula, Variable
+from ..ptl_exporter import PropositionalTemporalLogicExporter
 
 
-class InkresatExporter(Exporter):
+class InkresatExporter(PropositionalTemporalLogicExporter):
     extension = '.fml'
-    comment_sign = '#'
 
-    def __init__(self, output_dir: str, statistics_to_file=True, additional_statistics: Dict = None):
-        super().__init__(output_dir, additional_statistics)
-        self.statistics_to_file = statistics_to_file
+    def visit_variable(self, element: Variable):
+        self.formula_buffer.write(''.join(connective.sign for connective in element.unary_connectives))
+        self.formula_buffer.write(element.name)
 
-    def get_formula_as_string(self) -> NoReturn:
-        # by 'coincidence' default visualisation of teporal logic is inkresat
-        from src.syntax_tree.propositional_temporal_logic import PTLFormula
-        from src.syntax_tree.propositional_temporal_logic.info.cnf_ptl_formula_info import \
-            ConjunctiveNormalFormPropositionalTemporalLogicFormulaInfo
+    def visit_temporal_logic_formula_in_between_children(self, element: PTLFormula) -> NoReturn:
+        self.formula_buffer.write(element.logical_connective.sign)
 
-        if not isinstance(expression, PTLFormula):
-            raise NotImplementedError('Other elements of syntax tree arte not properly supported')
-        formula_info: ConjunctiveNormalFormPropositionalTemporalLogicFormulaInfo = expression.get_formula_info()
-        formula_info.additional_statistics = self.additional_statistics
-        filename = filename + self.extension
+    def visit_temporal_logic_formula_pre(self, element: PTLFormula):
+        if not self.context:
+            self.formula_buffer.write('begin\n')
+        elif len(element) != 1:
+            self.formula_buffer.write('(')
 
-        if self.statistics_to_file:
-            full_json_out_path = os.path.join(self.output_dir, filename + '.json')
-            logging.debug(f'Writing json to {full_json_out_path}')
-            with open(full_json_out_path, 'w') as out_json:
-                json.dump(formula_info.__dict__, out_json, indent=2)
+    def visit_temporal_logic_formula_post(self, element: PTLFormula) -> NoReturn:
+        if not self.context:
+            self.formula_buffer.write('\nend')
+        elif len(element) != 1:
+            self.formula_buffer.write(')')
 
-        full_out_path = os.path.join(self.output_dir, filename)
-        with open(full_out_path, 'w') as out_file:
-            logging.debug(f'Writing formula to {full_out_path}')
-            if not self.statistics_to_file:
-                text = json.dumps(**formula_info.__dict__, indent=2)
-                text = textwrap.indent(text=text, prefix=f'{self.comment_sign} ', predicate=lambda line: True) + '\n'
-                out_file.write(text)
-            out_file.write(str(expression))
+    def get_formula_as_string(self) -> io.StringIO:
+        return self.formula_buffer

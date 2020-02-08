@@ -10,4 +10,4 @@ class VariableGenerator(SyntaxTreeGenerator):
         self.variable_names = list(variable_names)
 
     def generate(self) -> Variable:
-        return Variable(name=random.choice(self.variable_names))
+        return Variable(name=random.choice(self.variable_names), unary_connectives=[])

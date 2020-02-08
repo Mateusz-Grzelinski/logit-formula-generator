@@ -12,13 +12,16 @@ from ...connectives import TemporalLogicConnective
 
 class CNFPTLFormulaVisitor(PropositionalTemporalLogicVisitor):
     def __init__(self):
+        super().__init__()
         self.info = ConjunctiveNormalFormPropositionalTemporalLogicFormulaInfo()
-        # no braces are generated so we can get away wothout context
-        # self.context: Optional[PTLFormula] = None
 
     def visit_variable(self, element: Variable):
         self.info.number_of_variables += 1
-        unary_connectives = [e.connective for e in element.unary_connectives]
+        try:
+            self.info.repeated_variables[element.name] += 1
+        except KeyError:
+            self.info.repeated_variables[element.name] = 1
+        unary_connectives = element.unary_connectives
         if TemporalLogicConnective.ALWAYS in unary_connectives:
             self.info.number_of_variables_with_always_connectives += 1
         if TemporalLogicConnective.EVENTUALLY in unary_connectives:
@@ -31,16 +34,14 @@ class CNFPTLFormulaVisitor(PropositionalTemporalLogicVisitor):
         # elif any(TemporalLogicConnective.ALWAYS == e.connective for e in element.unary_connectives):
         #     self.info.number_of_variables_with_both_connectives += 1
 
-    def visit_temporal_logic_formula(self, element: PTLFormula):
-        from src.syntax_tree import ConnectiveProperties
-        element.logical_connective: ConnectiveProperties
-        if LogicalConnective.OR == element.logical_connective.sign:
+    def visit_temporal_logic_formula_pre(self, element: PTLFormula):
+        if LogicalConnective.OR == element.logical_connective:
             # this is inside clause
             try:
                 self.info.clause_sizes[len(element)] += 1
             except KeyError:
                 self.info.clause_sizes[len(element)] = 1
-        elif LogicalConnective.AND == element.logical_connective.sign:
+        elif LogicalConnective.AND == element.logical_connective:
             # this is root formula
             self.info.number_of_clauses = len(element)
 

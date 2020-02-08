@@ -1,9 +1,13 @@
+from typing import Iterable
+
+from src.syntax_tree import ConnectiveProperties
 from ..syntax_tree import TemporalLogicNode
 
 
 class Variable(TemporalLogicNode):
-    def __init__(self, name: str, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+    def __init__(self, name: str, unary_connectives: Iterable[ConnectiveProperties]):
+        super().__init__(children=[])
+        self.unary_connectives = list(unary_connectives)
         self.name = name
 
     def __hash__(self):
@@ -15,4 +19,4 @@ class Variable(TemporalLogicNode):
         raise NotImplementedError
 
     def __str__(self):
-        return ''.join(i.connective.value for i in self.unary_connectives if i.connective is not None) + self.name
+        return ''.join(i.sign for i in self.unary_connectives) + self.name
