@@ -2,8 +2,8 @@ from __future__ import annotations
 
 from typing import Iterable
 
-from src.syntax_tree.first_order_logic.conjunctive_normal_form.info.cnf_formula_info import CNFFormulaInfo
-from .info.cnf_formula_info_collector import CNFFormulaInfoCollector
+from src.data_model.cnf_formula_info import CNFFormulaInfo
+from src.syntax_tree.first_order_logic.visitors.cnf_formula_info_collector import CNFFormulaInfoCollector
 from .._fol_formula import FirstOrderLogicFormula
 from ..conjunctive_normal_form._cnf_clause import CNFClause
 from ...connectives import LogicalConnective

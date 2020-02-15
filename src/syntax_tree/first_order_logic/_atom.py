@@ -7,10 +7,10 @@ from ..syntax_tree import SyntaxTreeNode, FirstOrderLogicNode
 
 
 class Atom(FirstOrderLogicNode):
-    def __init__(self, children: Iterable[Term, Predicate], unary_connective: Iterable[LogicalConnective],
+    def __init__(self, children: Iterable[Term, Predicate], unary_connective: Iterable[LogicalConnective] = None,
                  math_connective: ConnectiveProperties = None):
         super().__init__(children=children)
-        self.unary_connectives = list(unary_connective)
+        self.unary_connectives = list(unary_connective) if unary_connective else []
         self.math_connective = math_connective
 
     def __hash__(self):

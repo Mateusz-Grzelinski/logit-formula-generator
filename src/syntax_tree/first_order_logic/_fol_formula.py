@@ -7,6 +7,7 @@ import shutil
 import typing
 from typing import Iterable
 
+from src.data_model._fol_formula_info import FirstOrderLogicFormulaInfo
 from src.syntax_tree import ConnectiveProperties
 from ._atom import Atom
 from ._quantifier import Quantifier

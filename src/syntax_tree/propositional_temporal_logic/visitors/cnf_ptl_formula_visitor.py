@@ -1,8 +1,8 @@
 from __future__ import annotations
 
-from src.syntax_tree import LogicalConnective
-from src.syntax_tree.propositional_temporal_logic.info.cnf_ptl_formula_info import \
+from src.data_model.cnf_ptl_formula_info import \
     ConjunctiveNormalFormPropositionalTemporalLogicFormulaInfo
+from src.syntax_tree import LogicalConnective
 from src.syntax_tree.propositional_temporal_logic.visitors.propositional_temporal_logic_visitor import \
     PropositionalTemporalLogicVisitor
 from .._ptl_formula import PTLFormula

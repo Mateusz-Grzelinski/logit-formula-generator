@@ -3,14 +3,14 @@ from __future__ import annotations
 from collections import defaultdict
 from typing import Optional, Dict, Set
 
+from src.data_model.cnf_formula_info import CNFFormulaInfo
 from src.syntax_tree import MathConnective, LogicalConnective
+from src.syntax_tree.first_order_logic._atom import Atom
+from src.syntax_tree.first_order_logic._functor import Functor
+from src.syntax_tree.first_order_logic._predicate import Predicate
+from src.syntax_tree.first_order_logic._variable import Variable
+from src.syntax_tree.first_order_logic.conjunctive_normal_form._cnf_clause import CNFClause
 from src.syntax_tree.first_order_logic.visitors.first_order_logic_visitor import FirstOrderLogicSyntaxTreeVisitor
-from ..._atom import Atom
-from ..._functor import Functor
-from ..._predicate import Predicate
-from ..._variable import Variable
-from ...conjunctive_normal_form._cnf_clause import CNFClause
-from ...conjunctive_normal_form.info.cnf_formula_info import CNFFormulaInfo
 
 
 class MathSense:
@@ -46,7 +46,6 @@ class MathSense:
 class CNFFormulaInfoCollector(FirstOrderLogicSyntaxTreeVisitor):
     def __init__(self):
         super().__init__()
-        from ...conjunctive_normal_form._cnf_formula import CNFFirstOrderLogicFormula
         self.info = CNFFormulaInfo()
         self.info.clause_lengths = defaultdict(int)
         self.info.functor_arities = defaultdict(int)
@@ -55,6 +54,7 @@ class CNFFormulaInfoCollector(FirstOrderLogicSyntaxTreeVisitor):
         # in future more advanced mechanism for context may be needed
         self.last_visited_cnf_clause: Optional[CNFClause] = None  # or quantifier
         self._hashes_in_math_sense: Dict[str, Set[int]] = {}
+        from src.syntax_tree.first_order_logic import CNFFirstOrderLogicFormula
         for element_type in [Variable, Functor, Predicate, Atom, CNFClause, CNFFirstOrderLogicFormula]:
             self._hashes_in_math_sense[element_type.__name__] = set()
             self.info.number_of_instances[element_type.__name__] = 0
@@ -105,7 +105,7 @@ class CNFFormulaInfoCollector(FirstOrderLogicSyntaxTreeVisitor):
         self.last_visited_cnf_clause = element
 
     def visit_cnf_formula_pre(self, element: CNFFirstOrderLogicFormula):
-        from ...conjunctive_normal_form._cnf_formula import CNFFirstOrderLogicFormula
+        from src.syntax_tree.first_order_logic import CNFFirstOrderLogicFormula
         self.info.number_of[CNFFirstOrderLogicFormula.__name__] += 1
         self.info.number_of_instances[CNFFirstOrderLogicFormula.__name__] += 1
         # instances can be handled here (but should they?)

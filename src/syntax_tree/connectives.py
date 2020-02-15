@@ -9,7 +9,7 @@ LOGICS = Literal['FirstOrderLogic', 'TemporalLogic']
 @dataclass(frozen=True, eq=True)
 class ConnectiveProperties:
     arity: int = field(compare=False, hash=False)
-    commutative: Optional[bool] = field(compare=False, hash=False, default=None)
+    is_commutative: Optional[bool] = field(compare=False, hash=False, default=None)
     sign: str = ''
 
     def __str__(self):
@@ -21,16 +21,16 @@ class Connective:
 
 
 class LogicalConnective(Connective):
-    AND = ConnectiveProperties(sign='&', arity=2, commutative=True)
-    OR = ConnectiveProperties(sign='|', arity=2, commutative=True)
+    AND = ConnectiveProperties(sign='&', arity=2, is_commutative=True)
+    OR = ConnectiveProperties(sign='|', arity=2, is_commutative=True)
     NOT = ConnectiveProperties(sign='~', arity=1)
-    IMPLY = ConnectiveProperties(sign='=>', arity=2, commutative=False)
-    BICONDITION = ConnectiveProperties(sign='<=>', arity=2, commutative=True)
+    IMPLY = ConnectiveProperties(sign='=>', arity=2, is_commutative=False)
+    BICONDITION = ConnectiveProperties(sign='<=>', arity=2, is_commutative=True)
 
 
 class MathConnective(Connective):
-    EQUAL = ConnectiveProperties(sign='==', arity=2, commutative=True)
-    NOT_EQUAL = ConnectiveProperties(sign='!=', arity=2, commutative=True)
+    EQUAL = ConnectiveProperties(sign='==', arity=2, is_commutative=True)
+    NOT_EQUAL = ConnectiveProperties(sign='!=', arity=2, is_commutative=True)
 
 
 class TemporalLogicConnective(LogicalConnective):
