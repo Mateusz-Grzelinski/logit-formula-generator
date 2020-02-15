@@ -49,10 +49,10 @@ class CNFPropositionalTemporalLogicGeneratorNoSolver(SyntaxTreeGenerator):
             clause = ptl.PTLFormula(children=[], logical_connective=LogicalConnective.OR)
             for _ in range(clause_length):
                 variable = var_gen.generate()
-                if random.random() < self.negation_probability:
-                    variable.unary_connectives.append(LogicalConnective.NOT)
                 if unary_connective := random.choices(self.unary_connective, weights=self.unary_connective_weights)[0]:
                     variable.unary_connectives.append(unary_connective)
+                if random.random() < self.negation_probability:
+                    variable.unary_connectives.append(LogicalConnective.NOT)
                 clause.append(variable)
                 number_of_variables += 1
             root.append(clause)
