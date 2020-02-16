@@ -15,7 +15,7 @@ class InkresatExporter(PropositionalTemporalLogicExporter):
         self.formula_buffer.write(element.name)
 
     def visit_temporal_logic_formula_in_between_children(self, element: PTLFormula) -> NoReturn:
-        self.formula_buffer.write(element.logical_connective.sign)
+        self.formula_buffer.write(element.binary_logical_connective.sign)
 
     def visit_temporal_logic_formula_pre(self, element: PTLFormula):
         if not self.context:

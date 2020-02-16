@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from src.data_model.cnf_ptl_formula_info import \
+from src.data_model._cnf_ptl_formula_info import \
     ConjunctiveNormalFormPropositionalTemporalLogicFormulaInfo
 from src.syntax_tree import LogicalConnective
 from src.syntax_tree.propositional_temporal_logic.visitors.propositional_temporal_logic_visitor import \
@@ -35,13 +35,13 @@ class CNFPTLFormulaVisitor(PropositionalTemporalLogicVisitor):
         #     self.info.number_of_variables_with_both_connectives += 1
 
     def visit_temporal_logic_formula_pre(self, element: PTLFormula):
-        if LogicalConnective.OR == element.logical_connective:
+        if LogicalConnective.OR == element.binary_logical_connective:
             # this is inside clause
             try:
                 self.info.clause_sizes[len(element)] += 1
             except KeyError:
                 self.info.clause_sizes[len(element)] = 1
-        elif LogicalConnective.AND == element.logical_connective:
+        elif LogicalConnective.AND == element.binary_logical_connective:
             # this is root formula
             self.info.number_of_clauses = len(element)
 

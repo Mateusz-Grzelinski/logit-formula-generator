@@ -5,7 +5,7 @@ import src.syntax_tree.first_order_logic as fol
 from ...syntax_tree_generator import SyntaxTreeGenerator
 
 
-class FormulaGenerator(SyntaxTreeGenerator):
+class FirstOrderLogicFormulaPreset(SyntaxTreeGenerator):
     def __init__(self, functor_arity: Iterable[int], functor_recursion_depth: int, predicate_arities: Iterable[int],
                  atom_connectives: Iterable[Union[str, None]], number_of_atoms: int, atom_negation_chance: float,
                  number_of_universal_quantifiers: int,

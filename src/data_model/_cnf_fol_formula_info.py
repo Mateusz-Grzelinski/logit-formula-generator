@@ -3,7 +3,7 @@ from typing import Dict
 
 
 @dataclass
-class CNFFormulaInfo:
+class CNFFOLFormulaInfo:
     number_of: Dict[str, int] = field(default_factory=dict)
     """Dict[FolElement, quantity], in mathematical sense"""
     # number_of_signatures: Dict[Type[FolElement], int] = field(default_factory=partial(defaultdict, int))

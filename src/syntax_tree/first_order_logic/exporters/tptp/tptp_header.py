@@ -80,8 +80,8 @@ class TPTPHeader:
     max_term_depth: Optional[int] = None
     average_term_depth: Optional[int] = None
 
-    def read_from(self, object: fol.CNFFormulaInfo):
-        if isinstance(object, fol.CNFFormulaInfo):
+    def read_from(self, object: fol.CNFFOLFormulaInfo):
+        if isinstance(object, fol.CNFFOLFormulaInfo):
             self.number_of_clause_instances = object.number_of_instances[fol.CNFClause.__name__]
             self.max_clause_size = object.max_clause_size
             self.average_clause_size = int(object.average_clause_size)

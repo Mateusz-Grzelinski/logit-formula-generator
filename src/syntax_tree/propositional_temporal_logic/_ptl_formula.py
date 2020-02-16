@@ -6,7 +6,7 @@ import os
 import shutil
 from typing import Set, Type, MutableSequence, NoReturn, Dict
 
-from src.data_model.cnf_ptl_formula_info import \
+from src.data_model._cnf_ptl_formula_info import \
     ConjunctiveNormalFormPropositionalTemporalLogicFormulaInfo
 from src.syntax_tree import ConnectiveProperties
 from ..syntax_tree import ChildrenType, TemporalLogicNode
@@ -15,9 +15,9 @@ from ..syntax_tree import ChildrenType, TemporalLogicNode
 class PTLFormula(TemporalLogicNode):
     """Propositional Temporal Logic"""
 
-    def __init__(self, children: MutableSequence[ChildrenType], logical_connective: ConnectiveProperties):
+    def __init__(self, children: MutableSequence[ChildrenType], binary_logical_connective: ConnectiveProperties):
         super().__init__(children)
-        self.logical_connective = logical_connective
+        self.binary_logical_connective = binary_logical_connective
 
     @classmethod
     def contains(cls) -> Set[Type[TemporalLogicNode]]:

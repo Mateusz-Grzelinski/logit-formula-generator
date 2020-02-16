@@ -7,8 +7,8 @@ from ._predicate import Predicate
 from ._quantifier import Quantifier
 from ._variable import Variable
 from .conjunctive_normal_form import CNFClause
+from .conjunctive_normal_form import CNFFOLFormulaInfo
 from .conjunctive_normal_form import CNFFirstOrderLogicFormula
-from .conjunctive_normal_form import CNFFormulaInfo
 
 Term = Union[Variable, Functor]
 
@@ -22,5 +22,5 @@ __all__ = [
     'Quantifier',
     'CNFClause',
     'CNFFirstOrderLogicFormula',
-    'CNFFormulaInfo',
+    'CNFFOLFormulaInfo',
 ]

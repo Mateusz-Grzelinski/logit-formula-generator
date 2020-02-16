@@ -1,9 +1,11 @@
-from .cnf_formula_generator import CNFFormulaGenerator
-from .cnf_safety_liveness_generator import CNFSafetyLivenessGenerator
-from .formula_generator import FormulaGenerator
+from ._cnf_formula_preset import CNFFormulaPreset
+from ._cnf_formula_preset_no_solver import CNFFormulaPresetNoSolver
+from ._cnf_safety_liveness_preset import CNFSafetyLivenessPreset
+from ._fol_formula_preset import FirstOrderLogicFormulaPreset
 
 __all__ = [
-    'CNFFormulaGenerator',
-    'CNFSafetyLivenessGenerator',
-    'FormulaGenerator'
+    'CNFFormulaPreset',
+    'CNFFormulaPresetNoSolver',
+    'CNFSafetyLivenessPreset',
+    'FirstOrderLogicFormulaPreset'
 ]

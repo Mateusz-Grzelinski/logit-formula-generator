@@ -25,13 +25,13 @@ class CNFFormulaGenerator(SyntaxTreeGenerator):
         self.min_number_of_clauses = min_number_of_clauses
 
     def generate(self) -> ptl.PTLFormula:
-        root = ptl.PTLFormula(children=[], logical_connective=LogicalConnective.AND)
+        root = ptl.PTLFormula(children=[], binary_logical_connective=LogicalConnective.AND)
 
         number_of_clauses = 0
         number_of_variables = 0
         while True:
             clause_length = random.choices(population=self.clause_lengths, weights=self.clause_lengths_weights)[0]
-            clause = ptl.PTLFormula(children=[], logical_connective=LogicalConnective.OR)
+            clause = ptl.PTLFormula(children=[], binary_logical_connective=LogicalConnective.OR)
             for _ in range(clause_length):
                 variable = self.var_gen.generate()
                 if unary_connective := random.choices(self.unary_connective, weights=self.unary_connective_weights)[0]:

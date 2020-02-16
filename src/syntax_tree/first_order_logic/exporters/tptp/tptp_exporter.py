@@ -48,6 +48,8 @@ class TPTPExporter(FirstOrderLogicExporter):
         # if this is root formula
         if not self.context:
             self.formula_buffer.write('fol(name,axiom,')
+        if len(element) != 1:
+            self.formula_buffer.write('(')
 
     def visit_functor_in_between_children(self, element: Functor):
         self.formula_buffer.write(',')
@@ -91,6 +93,8 @@ class TPTPExporter(FirstOrderLogicExporter):
         super().visit_quantifier_post(element)
 
     def visit_fol_formula_post(self, element: FirstOrderLogicFormula):
+        if len(element) != 1:
+            self.formula_buffer.write(')')
         if not self.context:
             self.formula_buffer.write(').')
         super().visit_fol_formula_post(element)

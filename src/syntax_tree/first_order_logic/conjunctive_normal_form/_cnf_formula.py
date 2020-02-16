@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import Iterable
 
-from src.data_model.cnf_formula_info import CNFFormulaInfo
+from src.data_model._cnf_fol_formula_info import CNFFOLFormulaInfo
 from src.syntax_tree.first_order_logic.visitors.cnf_formula_info_collector import CNFFormulaInfoCollector
 from .._fol_formula import FirstOrderLogicFormula
 from ..conjunctive_normal_form._cnf_clause import CNFClause
@@ -25,12 +25,12 @@ class CNFFirstOrderLogicFormula(FirstOrderLogicFormula):
             return False
         raise NotImplementedError
 
-    def get_formula_info(self) -> CNFFormulaInfo:
+    def get_formula_info(self) -> CNFFOLFormulaInfo:
         walker = CNFFormulaInfoCollector()
         self._accept(walker)
         return walker.info
 
-    def get_tptp_header(self, info: CNFFormulaInfo) -> str:
+    def get_tptp_header(self, info: CNFFOLFormulaInfo) -> str:
         # todo implement
         raise NotImplementedError
 

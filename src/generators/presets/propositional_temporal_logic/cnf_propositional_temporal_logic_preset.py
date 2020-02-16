@@ -29,14 +29,14 @@ class CNFPropositionalTemporalLogicPreset(SyntaxTreeGenerator):
 
         def generate_clause(length: int):
             return ptl.PTLFormula(children=[var_gen.generate() for _ in range(length)],
-                                  logical_connective=LogicalConnective.OR)
+                                  binary_logical_connective=LogicalConnective.OR)
 
         solver = Z3CNFConstraintSolver(
             clause_lengths=self.clause_lengths,
             number_of_clauses=self.number_of_clauses,
             number_of_literals=self.number_of_variables)
         for solution in solver.solve_in_random_order():
-            root = ptl.PTLFormula(children=[], logical_connective=LogicalConnective.AND)
+            root = ptl.PTLFormula(children=[], binary_logical_connective=LogicalConnective.AND)
             random_unary_connective_generator = self._random_unary_connective_generator()
             for clause_len, amount_of_clauses in solution.items():
                 for _ in range(amount_of_clauses):

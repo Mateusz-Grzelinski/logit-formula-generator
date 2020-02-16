@@ -3,7 +3,7 @@ from __future__ import annotations
 from collections import defaultdict
 from typing import Optional, Dict, Set
 
-from src.data_model.cnf_formula_info import CNFFormulaInfo
+from src.data_model._cnf_fol_formula_info import CNFFOLFormulaInfo
 from src.syntax_tree import MathConnective, LogicalConnective
 from src.syntax_tree.first_order_logic._atom import Atom
 from src.syntax_tree.first_order_logic._functor import Functor
@@ -46,7 +46,7 @@ class MathSense:
 class CNFFormulaInfoCollector(FirstOrderLogicSyntaxTreeVisitor):
     def __init__(self):
         super().__init__()
-        self.info = CNFFormulaInfo()
+        self.info = CNFFOLFormulaInfo()
         self.info.clause_lengths = defaultdict(int)
         self.info.functor_arities = defaultdict(int)
         self.info.predicate_arities = defaultdict(int)
@@ -96,7 +96,7 @@ class CNFFormulaInfoCollector(FirstOrderLogicSyntaxTreeVisitor):
     def visit_cnf_clause_pre(self, element: CNFClause):
         self._hashes_in_math_sense[CNFClause.__name__].add(MathSense.hash_clause(element))
         self.info.number_of[CNFClause.__name__] = len(self._hashes_in_math_sense[CNFClause.__name__])
-        # variable is clause scoped
+        # variable is clause scoped - this might be TPTP specific
         self.info.number_of_singleton_variables += element.number_of_singleton_variables
         self.info.number_of_instances[CNFClause.__name__] += 1
         self.info.clause_lengths[element.length] += 1
