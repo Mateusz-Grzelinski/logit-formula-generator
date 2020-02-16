@@ -8,7 +8,7 @@ from test.test_signatues.mock_signature_generators.mock_cnf_clause_signature_gen
 class TestCNFFormulaSignatureGenerator:
     def test_cnf_formula_clause_len_1(self):
         fg = CNFFormulaGenerator(clause_gens={MockCNFClauseGenerator(): 1})
-        formulas = list(fg.generate())
+        formulas = list(fg.generate)
         assert CNFFirstOrderLogicFormula(children=[clause1]).equivalent_in(formulas)
         assert CNFFirstOrderLogicFormula(children=[clause1_1]).equivalent_in(formulas)
         assert CNFFirstOrderLogicFormula(children=[clause2]).equivalent_in(formulas)
@@ -17,7 +17,7 @@ class TestCNFFormulaSignatureGenerator:
 
     def test_cnf_formula_clause_len_2(self):
         fg = CNFFormulaGenerator(clause_gens={MockCNFClauseGenerator(): 2})
-        formulas = list(fg.generate())
+        formulas = list(fg.generate)
         assert CNFFirstOrderLogicFormula(children=[clause1, clause1]).equivalent_in(formulas)
         assert CNFFirstOrderLogicFormula(children=[clause1, clause1_1]).equivalent_in(formulas)
         assert CNFFirstOrderLogicFormula(children=[clause1, clause2]).equivalent_in(formulas)

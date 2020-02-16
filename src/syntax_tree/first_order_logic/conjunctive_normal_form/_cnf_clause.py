@@ -7,6 +7,7 @@ from ...connectives import LogicalConnective
 
 
 class CNFClause(FirstOrderLogicFormula):
+    """todo remove"""
     def __init__(self, children: Iterable[Atom] = None):
         super().__init__(children=children, binary_logical_connective=LogicalConnective.OR)
 

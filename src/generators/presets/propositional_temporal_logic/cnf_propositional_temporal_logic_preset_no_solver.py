@@ -1,15 +1,15 @@
 from __future__ import annotations
 
-import random
 from typing import Iterable
 
 import src.generators.syntax_tree_generators.propositional_temporal_logic as ptl_gen
+import src.generators.syntax_tree_generators.propositional_temporal_logic.normal_forms as ptl_normal_form_gen
 import src.syntax_tree.propositional_temporal_logic as ptl
 from src.generators import SyntaxTreeGenerator
-from src.syntax_tree import LogicalConnective, TemporalLogicConnective
+from src.syntax_tree import TemporalLogicConnective
 
 
-class CNFPropositionalTemporalLogicGeneratorNoSolver(SyntaxTreeGenerator):
+class CNFPropositionalTemporalLogicPresetNoSolver(SyntaxTreeGenerator):
     """Currently used only in examples/temporal_logic/thesis/k_sat.py"""
 
     def __init__(self, variable_names: Iterable[str],
@@ -40,22 +40,11 @@ class CNFPropositionalTemporalLogicGeneratorNoSolver(SyntaxTreeGenerator):
 
     def generate(self) -> ptl.PTLFormula:
         var_gen = ptl_gen.VariableGenerator(variable_names=self.variable_names)
-        root = ptl.PTLFormula(children=[], logical_connective=LogicalConnective.AND)
-
-        number_of_clauses = 0
-        number_of_variables = 0
-        while True:
-            clause_length = random.choices(population=self.clause_lengths, weights=self.clause_lengths_weights)[0]
-            clause = ptl.PTLFormula(children=[], logical_connective=LogicalConnective.OR)
-            for _ in range(clause_length):
-                variable = var_gen.generate()
-                if unary_connective := random.choices(self.unary_connective, weights=self.unary_connective_weights)[0]:
-                    variable.unary_connectives.append(unary_connective)
-                if random.random() < self.negation_probability:
-                    variable.unary_connectives.append(LogicalConnective.NOT)
-                clause.append(variable)
-                number_of_variables += 1
-            root.append(clause)
-            number_of_clauses += 1
-            if number_of_clauses > self.min_number_of_clauses and number_of_variables > self.min_number_of_variables:
-                return root
+        cnf_form_gen = ptl_normal_form_gen.CNFFormulaGenerator(
+            var_gen=var_gen,
+            negation_probability=self.negation_probability,
+            unary_connectives=self.unary_connective, unary_connectives_weights=self.unary_connective_weights,
+            clause_lengths=self.clause_lengths, clause_lengths_weights=self.clause_lengths_weights,
+            min_number_of_clauses=self.min_number_of_clauses, min_number_of_variables=self.min_number_of_variables
+        )
+        return cnf_form_gen.generate()

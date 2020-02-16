@@ -8,12 +8,12 @@ from test.test_signatues.mock_signature_generators.mock_predicate_signature_gene
 class TestAtomSignatureGenerator:
     def test_atom_connective_empty(self):
         ag = AtomGenerator(connectives={}, predicate_gen=MockPredicateGenerator())
-        atoms = list(ag.generate())
+        atoms = list(ag.generate)
         assert atoms == []
 
     def test_atom_connective_none(self):
         ag = AtomGenerator(connectives={''}, predicate_gen=MockPredicateGenerator())
-        atoms = list(ag.generate())
+        atoms = list(ag.generate)
         assert Atom(children=[Variable(name=ag.variable_name)], math_connective='') in atoms
         assert Atom(children=[pred_var], math_connective='') in atoms
         assert Atom(children=[pred_var_func1], math_connective='') in atoms

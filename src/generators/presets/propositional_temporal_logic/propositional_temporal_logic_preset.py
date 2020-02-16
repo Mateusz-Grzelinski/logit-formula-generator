@@ -8,7 +8,7 @@ from src.generators import SyntaxTreeGenerator
 from src.syntax_tree import get_connective_properties
 
 
-class PropositionalTemporalLogicGenerator(SyntaxTreeGenerator):
+class PropositionalTemporalLogicPreset(SyntaxTreeGenerator):
     variable_name = 'v'
 
     def __init__(self, variable_names: Iterable[str], number_of_variables_without_connective: int,

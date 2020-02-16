@@ -8,6 +8,7 @@ from src.syntax_tree.first_order_logic import CNFClause
 
 
 class CNFClauseGenerator(SyntaxTreeGenerator):
+    """todo remove in favour on normal forms"""
     def __init__(self, clause_lengths: Iterable[int], atom_gen: AtomGenerator):
         self.allowed_clause_lengths = list(set(clause_lengths))
         assert 0 not in self.allowed_clause_lengths

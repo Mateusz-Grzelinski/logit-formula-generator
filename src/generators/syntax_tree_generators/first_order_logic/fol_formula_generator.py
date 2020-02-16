@@ -9,7 +9,7 @@ from src.syntax_tree import LogicalConnective
 from .atom_generator import AtomGenerator
 
 
-class FormulaGenerator(SyntaxTreeGenerator):
+class FOLFormulaGenerator(SyntaxTreeGenerator):
     def __init__(self, atoms_gen: AtomGenerator, number_of_atoms: int, number_of_existential_quantifiers: int,
                  number_of_universal_quantifiers: int, quantifier_number_of_atoms: Iterable[int]) -> None:
         self.atoms_gen = atoms_gen

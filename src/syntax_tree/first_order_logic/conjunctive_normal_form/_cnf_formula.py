@@ -11,6 +11,7 @@ from ...syntax_tree import FirstOrderLogicNode
 
 
 class CNFFirstOrderLogicFormula(FirstOrderLogicFormula):
+    """todo remove"""
     def __init__(self, children: Iterable[CNFClause]):
         super().__init__(children=children, binary_logical_connective=LogicalConnective.AND)
 

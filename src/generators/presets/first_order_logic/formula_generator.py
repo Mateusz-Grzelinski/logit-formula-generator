@@ -35,9 +35,9 @@ class FormulaGenerator(SyntaxTreeGenerator):
         a = fol_gen.AtomGenerator(math_connectives=self.atom_connectives, negation_chance=self.atom_negation_chance,
                                   predicate_gen=p, variable_gen=v, functor_gen=f)
         # q = fol_sig.QuantifierGenerator(atom_gen=a, number_of_atoms=)
-        F = fol_gen.FormulaGenerator(atoms_gen=a, number_of_atoms=self.number_of_atoms,
-                                     number_of_universal_quantifiers=self.number_of_universal_quantifiers,
-                                     number_of_existential_quantifiers=self.number_of_existential_quantifiers,
-                                     quantifier_number_of_atoms=self.quantifier_number_of_atoms)
+        F = fol_gen.FOLFormulaGenerator(atoms_gen=a, number_of_atoms=self.number_of_atoms,
+                                        number_of_universal_quantifiers=self.number_of_universal_quantifiers,
+                                        number_of_existential_quantifiers=self.number_of_existential_quantifiers,
+                                        quantifier_number_of_atoms=self.quantifier_number_of_atoms)
         # add more constrains, similar to cnf generator
         return F.generate()

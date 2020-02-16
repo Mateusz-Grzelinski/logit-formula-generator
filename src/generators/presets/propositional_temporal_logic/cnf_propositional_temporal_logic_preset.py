@@ -10,7 +10,7 @@ from src.generators.contraint_solver.first_order_logic.z3_solver import Z3CNFCon
 from src.syntax_tree import LogicalConnective, TemporalLogicConnective
 
 
-class CNFPropositionalTemporalLogicGenerator(SyntaxTreeGenerator):
+class CNFPropositionalTemporalLogicPreset(SyntaxTreeGenerator):
     def __init__(self, variable_names: Iterable[str], number_of_variables_without_connective: IntegerRange,
                  number_of_variables_with_always_connectives: IntegerRange,
                  number_of_variables_with_eventually_connectives: IntegerRange, number_of_clauses: IntegerRange,

@@ -36,10 +36,3 @@ class FormulaGenerator(SyntaxTreeGenerator):
             right_subtree = self._formula_signature_generator_helper(number_of_variables=right_subtree_size)
             return ptl.PTLFormula(children=[left_subtree, right_subtree],
                                   logical_connective=random.choice(self.logical_connective))
-
-    def cnf_efficient_formula_gen(self):
-        formula = ptl.PTLFormula(children=[], logical_connective=TemporalLogicConnective.ALWAYS)
-        memoize = []
-
-        for i in self.number_of_clauses:
-            pass
