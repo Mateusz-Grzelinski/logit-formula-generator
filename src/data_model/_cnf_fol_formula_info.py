@@ -1,14 +1,24 @@
 from dataclasses import dataclass, field
-from typing import Dict
+from typing import Dict, TypedDict
+
+
+class FolElements(TypedDict):
+    variables: int
+    functors: int
+    predicates: int
+    atoms: int
+    clauses: int
+    """Only CNF"""
+    quantifiers: int
 
 
 @dataclass
 class CNFFOLFormulaInfo:
-    number_of: Dict[str, int] = field(default_factory=dict)
+    number_of: FolElements = field(default_factory=dict)
     """Dict[FolElement, quantity], in mathematical sense"""
     # number_of_signatures: Dict[Type[FolElement], int] = field(default_factory=partial(defaultdict, int))
     # """Dict[FolElement, quantity], by element's signature (see bachelor thesis)"""
-    number_of_instances: Dict[str, int] = field(default_factory=dict)
+    number_of_instances: FolElements = field(default_factory=dict)
     """Dict[FolElement, quantity], every occurrence of element"""
 
     clause_lengths: Dict[int, int] = field(default_factory=dict)

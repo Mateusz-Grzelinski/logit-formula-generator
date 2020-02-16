@@ -17,8 +17,6 @@ class FirstOrderLogicSyntaxTreeVisitor(SyntaxTreeVisitor):
         from .._predicate import Predicate
         from .._quantifier import Quantifier
         from .._variable import Variable
-        from ..conjunctive_normal_form._cnf_clause import CNFClause
-        from ..conjunctive_normal_form._cnf_formula import CNFFirstOrderLogicFormula
         if isinstance(element, Variable):
             self.visit_variable_pre(element)
         elif isinstance(element, Functor):
@@ -27,10 +25,6 @@ class FirstOrderLogicSyntaxTreeVisitor(SyntaxTreeVisitor):
             self.visit_predicate_pre(element)
         elif isinstance(element, Atom):
             self.visit_atom_pre(element)
-        elif isinstance(element, CNFClause):
-            self.visit_cnf_clause_pre(element)
-        elif isinstance(element, CNFFirstOrderLogicFormula):
-            self.visit_cnf_formula_pre(element)
         elif isinstance(element, FirstOrderLogicFormula):
             self.visit_fol_formula_pre(element)
         elif isinstance(element, Quantifier):
@@ -46,8 +40,6 @@ class FirstOrderLogicSyntaxTreeVisitor(SyntaxTreeVisitor):
         from .._predicate import Predicate
         from .._quantifier import Quantifier
         from .._variable import Variable
-        from ..conjunctive_normal_form._cnf_clause import CNFClause
-        from ..conjunctive_normal_form._cnf_formula import CNFFirstOrderLogicFormula
         if isinstance(element, Variable):
             self.visit_variable_in_between_children(element)
         elif isinstance(element, Functor):
@@ -56,10 +48,6 @@ class FirstOrderLogicSyntaxTreeVisitor(SyntaxTreeVisitor):
             self.visit_predicate_in_between_children(element)
         elif isinstance(element, Atom):
             self.visit_atom_in_between_children(element)
-        elif isinstance(element, CNFClause):
-            self.visit_cnf_clause_in_between_children(element)
-        elif isinstance(element, CNFFirstOrderLogicFormula):
-            self.visit_cnf_formula_in_between_children(element)
         elif isinstance(element, FirstOrderLogicFormula):
             self.visit_fol_formula_in_between_children(element)
         elif isinstance(element, Quantifier):
@@ -74,8 +62,6 @@ class FirstOrderLogicSyntaxTreeVisitor(SyntaxTreeVisitor):
         from .._predicate import Predicate
         from .._quantifier import Quantifier
         from .._variable import Variable
-        from ..conjunctive_normal_form._cnf_clause import CNFClause
-        from ..conjunctive_normal_form._cnf_formula import CNFFirstOrderLogicFormula
         self.context.pop()
         if isinstance(element, Variable):
             self.visit_variable_post(element)
@@ -85,10 +71,6 @@ class FirstOrderLogicSyntaxTreeVisitor(SyntaxTreeVisitor):
             self.visit_predicate_post(element)
         elif isinstance(element, Atom):
             self.visit_atom_post(element)
-        elif isinstance(element, CNFClause):
-            self.visit_cnf_clause_post(element)
-        elif isinstance(element, CNFFirstOrderLogicFormula):
-            self.visit_cnf_formula_post(element)
         elif isinstance(element, FirstOrderLogicFormula):
             self.visit_fol_formula_post(element)
         elif isinstance(element, Quantifier):
@@ -106,12 +88,6 @@ class FirstOrderLogicSyntaxTreeVisitor(SyntaxTreeVisitor):
         pass
 
     def visit_atom_pre(self, element: Atom):
-        pass
-
-    def visit_cnf_clause_pre(self, element: CNFClause):
-        pass
-
-    def visit_cnf_formula_pre(self, element: CNFFirstOrderLogicFormula):
         pass
 
     def visit_quantifier_pre(self, element: Quantifier):
@@ -132,12 +108,6 @@ class FirstOrderLogicSyntaxTreeVisitor(SyntaxTreeVisitor):
     def visit_atom_in_between_children(self, element: Atom):
         pass
 
-    def visit_cnf_clause_in_between_children(self, element: CNFClause):
-        pass
-
-    def visit_cnf_formula_in_between_children(self, element: CNFFirstOrderLogicFormula):
-        pass
-
     def visit_quantifier_in_between_children(self, element: Quantifier):
         pass
 
@@ -154,12 +124,6 @@ class FirstOrderLogicSyntaxTreeVisitor(SyntaxTreeVisitor):
         pass
 
     def visit_atom_post(self, element: Atom):
-        pass
-
-    def visit_cnf_clause_post(self, element: CNFClause):
-        pass
-
-    def visit_cnf_formula_post(self, element: CNFFirstOrderLogicFormula):
         pass
 
     def visit_quantifier_post(self, element: Quantifier):

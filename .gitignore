@@ -11,3 +11,4 @@ venv
 *.interp
 
 test_data
+_test*

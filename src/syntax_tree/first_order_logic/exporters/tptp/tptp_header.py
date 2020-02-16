@@ -4,7 +4,7 @@ import textwrap
 from dataclasses import field, dataclass
 from typing import Optional, Set, Dict, Any
 
-import src.syntax_tree.first_order_logic as fol
+from src.data_model import CNFFOLFormulaInfo
 
 
 def _print_arity(arities: Set[int]) -> str:
@@ -80,31 +80,31 @@ class TPTPHeader:
     max_term_depth: Optional[int] = None
     average_term_depth: Optional[int] = None
 
-    def read_from(self, object: fol.CNFFOLFormulaInfo):
-        if isinstance(object, fol.CNFFOLFormulaInfo):
-            self.number_of_clause_instances = object.number_of_instances[fol.CNFClause.__name__]
+    def read_from(self, object: CNFFOLFormulaInfo):
+        if isinstance(object, CNFFOLFormulaInfo):
+            self.number_of_clause_instances = object.number_of_instances['clauses']
             self.max_clause_size = object.max_clause_size
             self.average_clause_size = int(object.average_clause_size)
             self.number_of_unit_clauses = object.number_of_unit_clauses
             self.number_of_non_horn_clauses = object.number_of_instances[
-                                                  fol.CNFClause.__name__] - object.number_of_horn_clauses_instances
+                                                  'clauses'] - object.number_of_horn_clauses_instances
 
             # self.number_of_literal_instances = object.number_of_instances[Literal.__name__]
             self.number_of_negated_literal_instances = object.number_of_negated_literal_instances
-            self.number_of_atom_instances = object.number_of_instances[fol.Atom.__name__]
+            self.number_of_atom_instances = object.number_of_instances['atoms']
             self.number_of_equality_atom_instances = object.number_of_equality_atom_instances
 
             self.predicate_arities = set(object.predicate_arities.keys())
-            self.number_of_predicates = object.number_of[fol.Predicate.__name__]
+            self.number_of_predicates = object.number_of['predicates']
             self.number_of_propositional_predicates = object.number_of_propositional_predicates
 
-            self.number_of_variables = object.number_of_instances[fol.Variable.__name__]
+            self.number_of_variables = object.number_of_instances['variables']
             self.number_of_singleton_variables = object.number_of_singleton_variables
 
             self.functor_arities = set(object.functor_arities.keys())
-            self.number_of_functors = object.number_of[fol.Functor.__name__]
+            self.number_of_functors = object.number_of['functors']
             self.number_of_constant_functors = object.number_of_constant_functors
-            self.number_of_functors_instances = object.number_of_instances[fol.Functor.__name__]
+            self.number_of_functors_instances = object.number_of_instances['functors']
 
             self.max_term_depth = object.max_term_depth
         else:

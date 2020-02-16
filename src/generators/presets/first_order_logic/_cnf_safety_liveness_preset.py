@@ -1,10 +1,11 @@
 from typing import Iterable, Union, Generator
 
 import src.generators.syntax_tree_generators.first_order_logic as fol_gen
+import src.syntax_tree.first_order_logic as fol
 from src.generators import SyntaxTreeGenerator
 from src.generators.contraint_solver.first_order_logic.z3_solver import Z3CNFConstraintSolver
 from src.generators.utils import IntegerRange
-from src.syntax_tree.first_order_logic import CNFFirstOrderLogicFormula
+from src.syntax_tree import LogicalConnective
 
 
 class CNFSafetyLivenessPreset(SyntaxTreeGenerator):
@@ -25,7 +26,7 @@ class CNFSafetyLivenessPreset(SyntaxTreeGenerator):
         self.predicate_arities = predicate_arities
         self.functor_arity = functor_arity
 
-    def generate(self) -> Generator[CNFFirstOrderLogicFormula, None, None]:
+    def generate(self) -> Generator[fol.FirstOrderLogicFormula, None, None]:
         v = fol_gen.VariableGenerator(variable_names=self.variable_names)
         f = fol_gen.FunctorGenerator(variable_gen=v, arities=self.functor_arity,
                                      functor_names=self.functor_names,
@@ -37,9 +38,11 @@ class CNFSafetyLivenessPreset(SyntaxTreeGenerator):
         solver = Z3CNFConstraintSolver(clause_lengths=self.clause_lengths, number_of_clauses=self.number_of_clauses,
                                        number_of_literals=self.number_of_literals)
         for solution in solver.solve_in_random_order():
-            clause_gens = {}
+            root = fol.FirstOrderLogicFormula(children=[], binary_logical_connective=LogicalConnective.AND)
             for clause_len, amount_of_clauses in solution.items():
-                c = fol_gen.CNFClauseGenerator(clause_lengths={clause_len}, atom_gen=a)
-                clause_gens[c] = amount_of_clauses
-            F = fol_gen.CNFFormulaGenerator(clause_gens=clause_gens)
-            yield F.generate()
+                for _ in range(amount_of_clauses):
+                    clause = fol.FirstOrderLogicFormula(children=[], binary_logical_connective=LogicalConnective.OR)
+                    for _ in range(clause_len):
+                        clause.append(a.generate())
+                    root.append(clause)
+            yield root
