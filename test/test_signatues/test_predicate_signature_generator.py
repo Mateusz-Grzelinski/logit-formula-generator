@@ -1,8 +1,8 @@
 from copy import deepcopy
 
-from src.generators._signatures.first_order_logic import PredicateGenerator
+from logic_formula_generator.generators._signatures.first_order_logic import PredicateGenerator
 
-from src.syntax_tree.first_order_logic import Variable, Predicate
+from logic_formula_generator.syntax_tree.first_order_logic import Variable, Predicate
 from test.test_signatues.mock_signature_generators.mock_functor_signature_generator import \
     MockFunctorGenerator, func_rec_0, func_rec_1, func_rec_2
 

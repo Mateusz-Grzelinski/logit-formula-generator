@@ -1,6 +1,6 @@
-from src.generators._signatures.first_order_logic import LiteralGenerator
+from logic_formula_generator.generators._signatures.first_order_logic import LiteralGenerator
 
-from src.syntax_tree.first_order_logic import Literal
+from logic_formula_generator.syntax_tree.first_order_logic import Literal
 from test.test_signatues.mock_signature_generators.mock_atom_signature_generator import atom0, atom1, atom0_1
 
 

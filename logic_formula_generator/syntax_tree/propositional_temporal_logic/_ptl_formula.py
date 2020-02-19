@@ -1,0 +1,60 @@
+from __future__ import annotations
+
+import io
+import json
+import os
+import shutil
+from typing import Set, Type, MutableSequence, NoReturn, Dict
+
+from logic_formula_generator.data_model._cnf_ptl_formula_info import \
+    ConjunctiveNormalFormPropositionalTemporalLogicFormulaInfo
+from logic_formula_generator.syntax_tree import ConnectiveProperties
+from ..syntax_tree import ChildrenType, TemporalLogicNode
+
+
+class PTLFormula(TemporalLogicNode):
+    """Propositional Temporal Logic"""
+
+    def __init__(self, children: MutableSequence[ChildrenType], binary_logical_connective: ConnectiveProperties):
+        super().__init__(children)
+        self.binary_logical_connective = binary_logical_connective
+
+    @classmethod
+    def contains(cls) -> Set[Type[TemporalLogicNode]]:
+        from ._variable import Variable
+        return {PTLFormula, Variable}
+
+    def get_info(self) -> ConjunctiveNormalFormPropositionalTemporalLogicFormulaInfo:
+        from logic_formula_generator.syntax_tree.propositional_temporal_logic.visitors.cnf_ptl_formula_visitor import CNFPTLFormulaVisitor
+        walker = CNFPTLFormulaVisitor()
+        self._accept(walker)
+        return walker.info
+
+    def get_as_inkresat(self) -> io.StringIO:
+        from .exporters.inkresat.inkresat_exporter import InkresatExporter
+        exporter = InkresatExporter()
+        self._accept(exporter)
+        return exporter.get_formula_as_string()
+
+    def save_to_file(self, path: str, formula_prefix: str = '') -> NoReturn:
+        from logic_formula_generator.syntax_tree.propositional_temporal_logic.exporters.inkresat.inkresat_exporter import InkresatExporter
+
+        os.makedirs(os.path.dirname(path), exist_ok=True)
+        path += InkresatExporter.extension
+
+        buff = self.get_as_inkresat()
+        with open(path, 'w') as out_file:
+            if formula_prefix:
+                out_file.write(formula_prefix)
+            buff.seek(0)
+            shutil.copyfileobj(buff, out_file)
+
+    def save_info_to_file(self, path: str, additional_statistics: Dict = None) -> NoReturn:
+        """Save statistics to json file"""
+        info = self.get_info()
+        info.additional_statistics = additional_statistics
+        path += '.json'
+
+        os.makedirs(os.path.dirname(path), exist_ok=True)
+        with open(path, 'w') as out_file:
+            json.dump(info.__dict__, fp=out_file)

@@ -2,8 +2,8 @@ import logging
 import time
 from pprint import pprint
 
-from src.generators import IntegerRange
-from src.generators._contraint_solver.first_order_logic.z3_solver import Z3CNFConstraintSolver
+from logic_formula_generator.generators import IntegerRange
+from logic_formula_generator.generators._contraint_solver.first_order_logic.z3_solver import Z3CNFConstraintSolver
 
 
 class TestZ3ConstraintSolver:

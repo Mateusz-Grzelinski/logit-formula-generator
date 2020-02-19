@@ -1,4 +1,4 @@
-from src.generators import IntegerRange
+from logic_formula_generator.generators import IntegerRange
 
 
 class TestIntegerRange:

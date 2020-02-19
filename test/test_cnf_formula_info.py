@@ -1,4 +1,4 @@
-import src.syntax_tree.first_order_logic as fol
+import logic_formula_generator.syntax_tree.first_order_logic as fol
 
 
 class TestFOLInfo:

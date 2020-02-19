@@ -1,8 +1,8 @@
 from copy import deepcopy
 
-from src.generators._signatures.first_order_logic import FunctorGenerator
+from logic_formula_generator.generators._signatures.first_order_logic import FunctorGenerator
 
-from src.syntax_tree.first_order_logic import Functor, Variable
+from logic_formula_generator.syntax_tree.first_order_logic import Functor, Variable
 
 
 class TestFunctorSignatureGenerator:

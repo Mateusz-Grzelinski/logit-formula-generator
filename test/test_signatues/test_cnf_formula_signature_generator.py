@@ -1,6 +1,6 @@
-from src.generators._signatures.first_order_logic import CNFFormulaGenerator
+from logic_formula_generator.generators._signatures.first_order_logic import CNFFormulaGenerator
 
-from src.syntax_tree.first_order_logic import CNFFirstOrderLogicFormula
+from logic_formula_generator.syntax_tree.first_order_logic import CNFFirstOrderLogicFormula
 from test.test_signatues.mock_signature_generators.mock_cnf_clause_signature_generator import \
     MockCNFClauseGenerator, clause2_1, clause2, clause1_1, clause1
 

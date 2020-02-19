@@ -1,6 +1,6 @@
-from src.generators._signatures.first_order_logic import AtomGenerator
+from logic_formula_generator.generators._signatures.first_order_logic import AtomGenerator
 
-from src.syntax_tree.first_order_logic import Variable, Atom
+from logic_formula_generator.syntax_tree.first_order_logic import Variable, Atom
 from test.test_signatues.mock_signature_generators.mock_predicate_signature_generator import \
     MockPredicateGenerator, pred_var, pred_var_func1, pred_func0_var
 

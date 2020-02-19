@@ -1,8 +1,8 @@
 from typing import Generator
 
-from src.generators._signatures.first_order_logic import CNFClauseGenerator
+from logic_formula_generator.generators._signatures.first_order_logic import CNFClauseGenerator
 
-from src.syntax_tree.first_order_logic import CNFClause
+from logic_formula_generator.syntax_tree.first_order_logic import CNFClause
 from test.test_signatues.mock_signature_generators.mock_literal_signature_generator import literal0, literal1
 
 
