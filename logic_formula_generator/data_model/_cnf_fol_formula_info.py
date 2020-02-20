@@ -1,5 +1,6 @@
 from dataclasses import dataclass, field
 from typing import Dict, TypedDict
+from dataclasses_json import dataclass_json
 
 
 class FolElements(TypedDict):
@@ -12,6 +13,7 @@ class FolElements(TypedDict):
     quantifiers: int
 
 
+@dataclass_json
 @dataclass
 class CNFFOLFormulaInfo:
     number_of: FolElements = field(default_factory=dict)
