@@ -9,7 +9,7 @@ from .predicate_generator import PredicateGenerator
 from .variable_generator import VariableGenerator
 
 
-class SafetyLivenessPredicateGenerator(PredicateGenerator):
+class PredicateSafetyLivenessGenerator(PredicateGenerator):
     """this implementaion does not makes sense, but whatever..."""
 
     def __init__(self, variable_gen: VariableGenerator, arities: Iterable[int], predicate_names: Iterable[str],

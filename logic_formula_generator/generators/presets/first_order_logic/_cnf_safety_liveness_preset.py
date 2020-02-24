@@ -31,7 +31,7 @@ class CNFSafetyLivenessPreset(SyntaxTreeGenerator):
         f = fol_gen.FunctorGenerator(variable_gen=v, arities=self.functor_arity,
                                      functor_names=self.functor_names,
                                      max_recursion_depth=self.functor_recursion_depth)
-        p = fol_gen.SafetyLivenessPredicateGenerator(variable_gen=v, arities=self.predicate_arities,
+        p = fol_gen.PredicateSafetyLivenessGenerator(variable_gen=v, arities=self.predicate_arities,
                                                      predicate_names=self.predicate_names, functor_gen=f)
         a = fol_gen.AtomGenerator(math_connectives=self.atom_connectives, predicate_gen=p, variable_gen=v,
                                   functor_gen=f, negation_chance=self.literal_negation_chance)
