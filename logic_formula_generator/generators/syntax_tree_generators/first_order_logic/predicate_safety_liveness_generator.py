@@ -10,10 +10,10 @@ from .variable_generator import VariableGenerator
 
 
 class PredicateSafetyLivenessGenerator(PredicateGenerator):
-    """this implementaion does not makes sense, but whatever..."""
-
     def __init__(self, variable_gen: VariableGenerator, arities: Iterable[int], predicate_names: Iterable[str],
-                 functor_gen: FunctorGenerator):
+                 functor_gen: FunctorGenerator, safety_liveness_ratio: float = 0.5):
+        """safety_liveness_ratio range [0, 1] - 0 means all predicates represent safety"""
+        self.safety_liveness_ratio = safety_liveness_ratio
         self.variable_gen = variable_gen
         self.arities = list(set(arities))
         self.functor_gen = functor_gen
@@ -32,7 +32,7 @@ class PredicateSafetyLivenessGenerator(PredicateGenerator):
         p = Predicate(name=random.choice(self.predicate_name_for_arity[arity]), children=[])
 
         # decide if predicate will present safety or liveness
-        if random.random() > 0.5:
+        if random.random() > self.safety_liveness_ratio:
             # safety
             for i in range(arity):
                 p.append(self.variable_gen.generate())
