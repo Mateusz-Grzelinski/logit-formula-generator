@@ -13,31 +13,28 @@ class PredicateSafetyLivenessGenerator(PredicateGenerator):
     def __init__(self, variable_gen: VariableGenerator, arities: Iterable[int], predicate_names: Iterable[str],
                  functor_gen: FunctorGenerator, safety_liveness_ratio: float = 0.5):
         """safety_liveness_ratio range [0, 1] - 0 means all predicates represent safety"""
+        super().__init__(variable_gen, arities, predicate_names, functor_gen)
         self.safety_liveness_ratio = safety_liveness_ratio
-        self.variable_gen = variable_gen
-        self.arities = list(set(arities))
-        self.functor_gen = functor_gen
-        predicate_names = list(predicate_names)
-        assert len(predicate_names) >= len(self.arities), \
-            f'there must be at least {len(self.arities)} predicate names available'
-        random.shuffle(predicate_names)
-        self.predicate_name_for_arity = {}
-        for arity in self.arities:
-            self.predicate_name_for_arity[arity] = [predicate_names.pop()]
-        while predicate_names:
-            self.predicate_name_for_arity[random.choice(self.arities)].append(predicate_names.pop())
 
     def generate(self) -> Predicate:
-        arity = random.choice(self.arities)
-        p = Predicate(name=random.choice(self.predicate_name_for_arity[arity]), children=[])
-
         # decide if predicate will present safety or liveness
         if random.random() > self.safety_liveness_ratio:
-            # safety
-            for i in range(arity):
-                p.append(self.variable_gen.generate())
+            return self.generate_predicate_with_variables()
         else:
-            # liveness
-            for i in range(arity):
-                p.append(self.functor_gen.generate())
+            return self.generate_predicate_with_functors()
+
+    def generate_predicate_with_functors(self) -> Predicate:
+        """liveness property"""
+        arity = random.choice(self.arities)
+        p = Predicate(name=random.choice(self.predicate_name_for_arity[arity]), children=[])
+        for i in range(arity):
+            p.append(self.functor_gen.generate())
+        return p
+
+    def generate_predicate_with_variables(self) -> Predicate:
+        """safety property (if variables are universally quantified)"""
+        arity = random.choice(self.arities)
+        p = Predicate(name=random.choice(self.predicate_name_for_arity[arity]), children=[])
+        for i in range(arity):
+            p.append(self.variable_gen.generate())
         return p

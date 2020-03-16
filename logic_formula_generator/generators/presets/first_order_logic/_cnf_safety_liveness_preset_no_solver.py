@@ -13,7 +13,7 @@ class CNFSafetyLivenessPresetNoSolver(SyntaxTreeGenerator):
                  clause_lengths: Sequence[int], clause_lengths_weights: Sequence[float],
                  functor_names: Iterable[str], variable_names: Iterable[str],
                  min_number_of_clauses: int, min_number_of_literals: int,
-                 literal_negation_chance: float, safety_liveness_ratio: float=0.5):
+                 literal_negation_chance: float, safety_liveness_ratio: float = 0.5):
         """safety_liveness_ratio range [0, 1] - 0 means all predicates represent safety"""
         self.safety_liveness_ratio = safety_liveness_ratio
         self.literal_negation_chance = literal_negation_chance
@@ -38,11 +38,10 @@ class CNFSafetyLivenessPresetNoSolver(SyntaxTreeGenerator):
         p = fol_gen.PredicateSafetyLivenessGenerator(variable_gen=v, arities=self.predicate_arities,
                                                      predicate_names=self.predicate_names, functor_gen=f,
                                                      safety_liveness_ratio=self.safety_liveness_ratio)
-        a = fol_gen.AtomGenerator(math_connectives=self.atom_connectives, negation_chance=self.literal_negation_chance,
-                                  variable_gen=v, predicate_gen=p, functor_gen=f)
-        F = fol_normal_form_gen.CNFFormulaGenerator(
+        a = fol_gen.AtomSafetyLivenessGenerator(predicate_gen=p)
+        F = fol_normal_form_gen.CNFFormulaGeneratorSafetyLiveness(
             atom_gen=a, clause_lengths=self.clause_lengths, clause_lengths_weights=self.clause_lengths_weights,
             min_number_of_clauses=self.min_number_of_clauses, min_number_of_literals=self.min_number_of_literals,
-            negation_probability=self.literal_negation_chance
+            negation_probability=self.literal_negation_chance, safety_liveness_ratio=self.safety_liveness_ratio
         )
         return F.generate()
