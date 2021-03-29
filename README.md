@@ -21,6 +21,5 @@ See `examples/*`
 
 ## Related
 
-- some documentation and thesis: https://github.com/Przemcom/studio_projektowe1
-- tool used to benchmark solvers: https://github.com/Przemcom/proversBenchmark 
-- TPTP format and benchmark library: http://tptp.org/
+- some documentation: https://github.com/Mateusz-Grzelinski/set-research-documentation
+- more tools: https://github.com/Mateusz-Grzelinski/sat-research
